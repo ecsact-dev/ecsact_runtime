@@ -1,0 +1,79 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "ecsact/runtime/common.h",
+    "ecsact/runtime/core.h",
+    "ecsact/runtime/definitions.h",
+    "ecsact/runtime/dynamic.h",
+    "ecsact/runtime/meta.h",
+    "ecsact/runtime/serialize.h",
+    "ecsact/runtime/static.h",
+    "ecsact/runtime.h",
+])
+
+cc_library(
+    name = "common",
+    hdrs = ["ecsact/runtime/common.h"],
+    copts = copts,
+)
+
+cc_library(
+    name = "definitions",
+    hdrs = ["ecsact/runtime/definitions.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "core",
+    hdrs = ["ecsact/runtime/core.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "dynamic",
+    hdrs = ["ecsact/runtime/dynamic.h"],
+    copts = copts,
+    deps = [
+        ":common",
+        ":definitions",
+    ],
+)
+
+cc_library(
+    name = "meta",
+    hdrs = ["ecsact/runtime/meta.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "serialize",
+    hdrs = ["ecsact/runtime/serialize.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "static",
+    hdrs = ["ecsact/runtime/static.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "ecsact_runtime",
+    hdrs = ["ecsact/runtime.h"],
+    copts = copts,
+    deps = [
+        ":core",
+        ":dynamic",
+        ":meta",
+        ":serialize",
+        ":static",
+    ],
+)
