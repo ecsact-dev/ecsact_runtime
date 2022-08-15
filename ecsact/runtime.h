@@ -5,11 +5,11 @@
 #ifndef ECSACT_RUNTIME_H
 #define ECSACT_RUNTIME_H
 
-#include <ecsact/runtime/core.h>
-#include <ecsact/runtime/dynamic.h>
-#include <ecsact/runtime/static.h>
-#include <ecsact/runtime/meta.h>
-#include <ecsact/runtime/serialize.h>
+#include "ecsact/runtime/core.h"
+#include "ecsact/runtime/dynamic.h"
+#include "ecsact/runtime/static.h"
+#include "ecsact/runtime/meta.h"
+#include "ecsact/runtime/serialize.h"
 
 #define FOR_EACH_ECSACT_API_FN(fn, ...)\
 	FOR_EACH_ECSACT_CORE_API_FN(fn, __VA_ARGS__);\

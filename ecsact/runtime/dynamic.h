@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#include <ecsact/runtime/common.h>
-#include <ecsact/runtime/definitions.h>
+#include "ecsact/runtime/common.h"
+#include "ecsact/runtime/definitions.h"
 
 #ifndef ECSACT_DYNAMIC_API_VISIBILITY
 #	ifdef ECSACT_DYNAMIC_API_LOAD_AT_RUNTIME

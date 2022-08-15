@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ecsact/runtime/common.h>
+#include "ecsact/runtime/common.h"
 
 #ifndef ECSACT_SERIALIZE_API_VISIBILITY
 #	ifdef ECSACT_SERIALIZE_API_LOAD_AT_RUNTIME
