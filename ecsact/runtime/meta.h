@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 
-#include <ecsact/runtime/common.h>
+#include "ecsact/runtime/common.h"
+#include "ecsact/runtime/definitions.h"
 
 #ifndef ECSACT_META_API_VISIBILITY
 #	ifdef ECSACT_META_API_LOAD_AT_RUNTIME
@@ -40,6 +41,39 @@
 #		define ECSACT_META_API_FN(ret, name) ECSACT_META_API ret name
 #	endif
 #endif // ECSACT_META_API_FN
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_components)();
+
+ECSACT_META_API_FN(void, ecsact_meta_get_component_ids)
+	( int32_t               max_component_count
+	, ecsact_component_id*  out_component_ids
+	, int32_t*              out_component_count
+	);
+
+/**
+ * @param declaration_id component or action ID
+ * @returns number of fields declaration has
+ */
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_fields)
+	( int32_t declaration_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_field_ids)
+	( int32_t   declaration_id
+	, int32_t   max_field_count
+	, int32_t*  out_field_ids
+	, int32_t*  out_field_ids_count
+	);
+
+ECSACT_META_API_FN(const char*, ecsact_meta_field_name)
+	( int32_t  declaration_id
+	, int32_t  field_id
+	);
+
+ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
+	( int32_t  declaration_id
+	, int32_t  field_id
+	);
 
 /**
  * Get a registry name. May or may not return originally set name when creating

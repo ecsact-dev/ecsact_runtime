@@ -34,11 +34,6 @@ typedef enum {
 
 typedef struct {
 	/**
-	 * Name of field. Null-terminated string. May be empty.
-	 */
-	char* name;
-
-	/**
 	 * Type of field.
 	 */
 	ecsact_builtin_type type;
@@ -49,6 +44,18 @@ typedef struct {
 	 * equals 0        invalid - reserved for future use
 	 */
 	int32_t length;
+} ecsact_field_type;
+
+typedef struct {
+	/**
+	 * Name of field. Null-terminated string. May be empty.
+	 */
+	char* name;
+
+	/**
+	 * Type of field.
+	 */
+	ecsact_field_type type;
 } ecsact_field_definition;
 
 typedef struct {
