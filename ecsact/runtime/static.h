@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include <ecsact/runtime/common.h>
+#include "ecsact/runtime/common.h"
 
 #ifndef ECSACT_STATIC_API_VISIBILITY
 #	ifdef ECSACT_STATIC_API_LOAD_AT_RUNTIME

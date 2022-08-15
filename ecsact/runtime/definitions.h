@@ -2,7 +2,7 @@
 #define ECSACT_DEFINITIONS_H
 
 #include <stdint.h>
-#include <ecsact/runtime/common.h>
+#include "ecsact/runtime/common.h"
 
 /**
  * Built-in Ecsact types.
