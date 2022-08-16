@@ -182,7 +182,7 @@ typedef struct ecsact_action {
 	 * ID of action originally given by `ecsact_register_action` or the statically
 	 * known ID in the case of a compile time action.
 	 */
-	ecsact_system_id action_id;
+	ecsact_action_id action_id;
 
 	/**
 	 * Pointer to action data. Size is determined by the registerd action

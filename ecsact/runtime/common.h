@@ -10,12 +10,32 @@
 #endif
 
 ECSACT_TYPED_ID(ecsact_system_id);
+ECSACT_TYPED_ID(ecsact_action_id);
 ECSACT_TYPED_ID(ecsact_component_id);
+ECSACT_TYPED_ID(ecsact_field_id);
 ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
 ECSACT_TYPED_ID(ecsact_entity_id);
 
+ECSACT_TYPED_ID(ecsact_composite_id);
+ECSACT_TYPED_ID(ecsact_system_like_id);
+
+#ifdef __cplusplus
+template<typename To, typename From> To ecsact_id_cast(From);
+#	define ECSACT_CAST_ID_FN(From, To)\
+	template<> inline To ecsact_id_cast<To, From>(From id) { return (To)id; }
+#else
+inline int32_t ecsact_id_cast(int32_t id) { return id; }
+#	define ECSACT_CAST_ID_FN(From, To)
+#endif
+
+ECSACT_CAST_ID_FN(ecsact_system_id, ecsact_system_like_id)
+ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_system_like_id)
+ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_composite_id)
+ECSACT_CAST_ID_FN(ecsact_component_id, ecsact_composite_id)
+
 #undef ECSACT_TYPED_ID
+#undef ECSACT_CAST_ID_FN
 
 /**
  * Context for system execution. This contains (or points to) state required for
