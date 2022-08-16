@@ -55,24 +55,24 @@ ECSACT_META_API_FN(void, ecsact_meta_get_component_ids)
  * @returns number of fields declaration has
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_fields)
-	( int32_t declaration_id
+	( ecsact_composite_id composite_id
 	);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_field_ids)
-	( int32_t   declaration_id
-	, int32_t   max_field_count
-	, int32_t*  out_field_ids
-	, int32_t*  out_field_ids_count
+	( ecsact_composite_id  composite_id
+	, int32_t              max_field_count
+	, ecsact_field_id*     out_field_ids
+	, int32_t*             out_field_ids_count
 	);
 
 ECSACT_META_API_FN(const char*, ecsact_meta_field_name)
-	( int32_t  declaration_id
-	, int32_t  field_id
+	( ecsact_composite_id  composite_id
+	, ecsact_field_id      field_id
 	);
 
 ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
-	( int32_t  declaration_id
-	, int32_t  field_id
+	( ecsact_composite_id  composite_id
+	, ecsact_field_id      field_id
 	);
 
 /**

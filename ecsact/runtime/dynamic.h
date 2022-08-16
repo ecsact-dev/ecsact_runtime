@@ -205,11 +205,11 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_reorder_system)
  *       called while a system is executing.
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_set_system_execution_impl)
-	( ecsact_system_id              system_id
+	( ecsact_system_like_id         system_id
 	, ecsact_system_execution_impl  system_exec_impl
 	);
 
-ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_create_action)
+ECSACT_DYNAMIC_API_FN(ecsact_action_id, ecsact_create_action)
 	( const char* action_name
 	);
 
@@ -226,8 +226,8 @@ ECSACT_DYNAMIC_API_FN(ecsact_component_id, ecsact_create_component)
  * @param declaration_id - Component or action ID
  * @returns field index for declaration
  */
-ECSACT_DYNAMIC_API_FN(int32_t, ecsact_add_field)
-	( int32_t              declaration_id
+ECSACT_DYNAMIC_API_FN(ecsact_field_id, ecsact_add_field)
+	( ecsact_composite_id  composite_id
 	, const char*          field_name
 	, ecsact_builtin_type  field_type
 	, int32_t              length
@@ -237,8 +237,8 @@ ECSACT_DYNAMIC_API_FN(int32_t, ecsact_add_field)
  * @param declaration_id - Component or action ID
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_remove_field)
-	( int32_t  declaration_id
-	, int32_t  field_index
+	( ecsact_composite_id  composite_id
+	, ecsact_field_id      field_id
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_destroy_component)
@@ -246,26 +246,26 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_destroy_component)
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_capability)
-	( ecsact_system_id
+	( ecsact_system_like_id
 	, ecsact_component_id
 	, ecsact_system_capability
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_capability)
-	( ecsact_system_id
+	( ecsact_system_like_id
 	, ecsact_component_id
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_entity_association)
-	( ecsact_system_id
+	( ecsact_system_like_id
 	, ecsact_component_id  
-	, int32_t              field_id
+	, ecsact_field_id
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_add_system_entity_association_capability)
-	( ecsact_system_id
+	( ecsact_system_like_id
 	, ecsact_component_id  
-	, int32_t              field_id
+	, ecsact_field_id
 	, ecsact_component_id
 	, ecsact_system_capability
 	);
@@ -282,7 +282,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_add_system_entity_association_capability)
  * @return returns -1 if unsuccessful otherwise returns unspecified value
  */
 ECSACT_DYNAMIC_API_FN(int, ecsact_add_system_generate_component_set)
-	( ecsact_system_id         system_id
+	( ecsact_system_like_id    system_id
 	, int                      components_count
 	, ecsact_component_id*     component_ids
 	, ecsact_system_generate*  component_generate_flags
@@ -300,7 +300,7 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_register_system)
 
 ECSACT_DYNAMIC_API_FN(bool, ecsact_register_action)
 	( ecsact_registry_id
-	, ecsact_system_id
+	, ecsact_action_id
 	);
 
 #define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...)\
