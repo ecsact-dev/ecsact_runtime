@@ -42,6 +42,21 @@
 #	endif
 #endif // ECSACT_META_API_FN
 
+/**
+ * @returns number of packages
+ */
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_packages)();
+
+ECSACT_META_API_FN(void, ecsact_meta_get_package_ids)
+	( int32_t             max_package_count
+	, ecsact_package_id*  out_package_ids
+	, int32_t*            out_package_count
+	);
+
+ECSACT_META_API_FN(const char*, ecsact_meta_package_name)
+	( ecsact_package_id package_id
+	);
+
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_components)();
 
 ECSACT_META_API_FN(void, ecsact_meta_get_component_ids)

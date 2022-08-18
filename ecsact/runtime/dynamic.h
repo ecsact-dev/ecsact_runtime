@@ -182,8 +182,30 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_system_execution_context_id)
 	( ecsact_system_execution_context* context
 	);
 
+ECSACT_DYNAMIC_API_FN(ecsact_package_id, ecsact_create_package)
+	( bool         main_package
+	, const char*  package_name
+	, int32_t      package_name_len
+	);
+
+ECSACT_DYNAMIC_API_FN(void, ecsact_add_dependency)
+	( ecsact_package_id target
+	, ecsact_package_id dependency
+	);
+
+ECSACT_DYNAMIC_API_FN(void, ecsact_remove_dependency)
+	( ecsact_package_id target
+	, ecsact_package_id dependency
+	);
+
+ECSACT_DYNAMIC_API_FN(void, ecsact_destroy_package)
+	( ecsact_package_id package_id
+	);
+
 ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_create_system)
-	( const char* system_name
+	( ecsact_package_id  owner
+	, const char*        system_name
+	, int32_t            system_name_len
 	);
 
 /**
@@ -192,9 +214,9 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_create_system)
  * systems.
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_reorder_system)
-	( ecsact_system_id  target_system_id
-	, ecsact_system_id  relative_system_id
-	, bool              target_before_relative
+	( ecsact_system_like_id  target_system_id
+	, ecsact_system_like_id  relative_system_id
+	, bool                   target_before_relative
 	);
 
 /**
@@ -210,7 +232,9 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_set_system_execution_impl)
 	);
 
 ECSACT_DYNAMIC_API_FN(ecsact_action_id, ecsact_create_action)
-	( const char* action_name
+	( ecsact_package_id  owner
+	, const char*        action_name
+	, int32_t            action_name_len
 	);
 
 /**
@@ -218,8 +242,9 @@ ECSACT_DYNAMIC_API_FN(ecsact_action_id, ecsact_create_action)
  * @returns unique component ID for newly created component
  */
 ECSACT_DYNAMIC_API_FN(ecsact_component_id, ecsact_create_component)
-	( const char*  component_name
-	, int32_t      component_name_len
+	( ecsact_package_id  owner
+	, const char*        component_name
+	, int32_t            component_name_len
 	);
 
 /**
