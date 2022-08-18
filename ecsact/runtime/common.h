@@ -9,6 +9,7 @@
 #	define ECSACT_TYPED_ID(name) typedef int32_t name
 #endif
 
+ECSACT_TYPED_ID(ecsact_package_id);
 ECSACT_TYPED_ID(ecsact_system_id);
 ECSACT_TYPED_ID(ecsact_action_id);
 ECSACT_TYPED_ID(ecsact_component_id);
@@ -17,6 +18,7 @@ ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
 ECSACT_TYPED_ID(ecsact_entity_id);
 
+ECSACT_TYPED_ID(ecsact_decl_id);
 ECSACT_TYPED_ID(ecsact_composite_id);
 ECSACT_TYPED_ID(ecsact_system_like_id);
 
@@ -33,6 +35,13 @@ ECSACT_CAST_ID_FN(ecsact_system_id, ecsact_system_like_id)
 ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_system_like_id)
 ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_composite_id)
 ECSACT_CAST_ID_FN(ecsact_component_id, ecsact_composite_id)
+
+ECSACT_CAST_ID_FN(ecsact_component_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_system_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_variant_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_system_like_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_composite_id, ecsact_decl_id)
 
 #undef ECSACT_TYPED_ID
 #undef ECSACT_CAST_ID_FN
