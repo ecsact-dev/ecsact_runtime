@@ -90,6 +90,14 @@ ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
 	, ecsact_field_id      field_id
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_systems)();
+
+ECSACT_META_API_FN(void, ecsact_meta_get_system_ids)
+	( int32_t            max_system_count
+	, ecsact_system_id*  out_system_ids
+	, int32_t*           out_system_count
+	);
+
 /**
  * Get a registry name. May or may not return originally set name when creating
  * the registry. Typically not returned in release/optimized build.
@@ -139,8 +147,8 @@ ECSACT_META_API_FN(const char*, ecsact_meta_system_name)
 /**
  * Get the count of capabilities for a particular system/action.
  */
-ECSACT_META_API_FN(size_t, ecsact_meta_system_capabilities_count)
-	( ecsact_system_id system_id
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_capabilities_count)
+	( ecsact_system_like_id system_id
 	);
 
 /**
@@ -151,9 +159,11 @@ ECSACT_META_API_FN(size_t, ecsact_meta_system_capabilities_count)
  * size returned from `ecsact_meta_system_capabilities_count`
  */
 ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
-	( ecsact_system_id           system_id
+	( ecsact_system_like_id      system_id
+	, int32_t                    max_capabilities_count
 	, ecsact_component_id*       out_capability_component_ids
 	, ecsact_system_capability*  out_capabilities
+	, int32_t*                   out_capabilities_count
 	);
 
 #define FOR_EACH_ECSACT_META_API_FN(fn, ...)\
