@@ -144,6 +144,10 @@ ECSACT_META_API_FN(const char*, ecsact_meta_system_name)
 	( ecsact_system_id
 	);
 
+ECSACT_META_API_FN(const char*, ecsact_meta_decl_full_name)
+	( ecsact_decl_id
+	);
+
 /**
  * Get the count of capabilities for a particular system/action.
  */

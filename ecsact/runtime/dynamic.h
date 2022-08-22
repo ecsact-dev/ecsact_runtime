@@ -208,6 +208,16 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_create_system)
 	, int32_t            system_name_len
 	);
 
+ECSACT_DYNAMIC_API_FN(void, ecsact_add_child_system)
+	( ecsact_system_like_id  parent
+	, ecsact_system_id       child
+	);
+
+ECSACT_DYNAMIC_API_FN(void, ecsact_remove_child_system)
+	( ecsact_system_like_id  parent
+	, ecsact_system_id       child
+	);
+
 /**
  * Systems execute in the order they are registered in. If the order needs to be
  * adjusted this method can be used to move systems before or after other
@@ -281,13 +291,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_capability)
 	, ecsact_component_id
 	);
 
-ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_entity_association)
-	( ecsact_system_like_id
-	, ecsact_component_id  
-	, ecsact_field_id
-	);
-
-ECSACT_DYNAMIC_API_FN(void, ecsact_add_system_entity_association_capability)
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_association_capability)
 	( ecsact_system_like_id
 	, ecsact_component_id  
 	, ecsact_field_id
@@ -295,6 +299,12 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_add_system_entity_association_capability)
 	, ecsact_system_capability
 	);
 
+ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_association_capability)
+	( ecsact_system_like_id
+	, ecsact_component_id  
+	, ecsact_field_id
+	, ecsact_component_id
+	);
 
 /**
  * Adds a set of component ids that this system may use to generate new
