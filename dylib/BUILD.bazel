@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "util",
+    hdrs = ["dylib-util.hh"],
+    copts = copts,
+)
+
+cc_library(
+    name = "meta",
+    srcs = ["meta-dylib.cc"],
+    copts = copts,
+    defines = ["ECSACT_META_API_LOAD_AT_RUNTIME"],
+    deps = [
+        ":util",
+        "//:meta",
+    ],
+)
