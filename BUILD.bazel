@@ -48,7 +48,10 @@ cc_library(
     name = "meta",
     hdrs = ["ecsact/runtime/meta.h"],
     copts = copts,
-    deps = [":common"],
+    deps = [
+        ":common",
+        ":definitions",
+    ],
 )
 
 cc_library(
@@ -63,6 +66,23 @@ cc_library(
     hdrs = ["ecsact/runtime/static.h"],
     copts = copts,
     deps = [":common"],
+)
+
+cc_library(
+    name = "codegen_plugin_lib",
+    hdrs = [
+        "ecsact/codegen/write.h",
+        "ecsact/codegen/write.hh",
+    ],
+    copts = copts,
+)
+
+cc_library(
+    name = "codegen_plugin_entry",
+    hdrs = [
+        "ecsact/codegen/plugin_entry.h",
+    ],
+    copts = copts,
 )
 
 cc_library(

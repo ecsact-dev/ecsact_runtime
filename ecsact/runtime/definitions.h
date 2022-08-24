@@ -21,7 +21,7 @@
  *     Although this implies the bit size of a type can be up to 255^3, only the
  *     values specified in the `ecsact_builtin_type` enum are valid.
  */
-typedef enum {
+typedef enum ecsact_builtin_type {
 	ECSACT_I8            = 0b1000'0000'0000'1000,
 	ECSACT_U8            = 0b0000'0000'0000'1000,
 	ECSACT_I16           = 0b1000'0000'0001'0000,
@@ -32,7 +32,7 @@ typedef enum {
 	ECSACT_ENTITY_TYPE   = 0b0010'0000'0010'0000,
 } ecsact_builtin_type;
 
-typedef struct {
+typedef struct ecsact_field_type {
 	/**
 	 * Type of field.
 	 */
@@ -46,7 +46,7 @@ typedef struct {
 	int32_t length;
 } ecsact_field_type;
 
-typedef struct {
+typedef struct ecsact_field_definitions {
 	/**
 	 * Name of field. Null-terminated string. May be empty.
 	 */
@@ -58,7 +58,7 @@ typedef struct {
 	ecsact_field_type type;
 } ecsact_field_definition;
 
-typedef struct {
+typedef struct ecsact_component_definition {
 	/**
 	 * Name of component. Null-terminated string. May be empty.
 	 */
@@ -80,7 +80,7 @@ typedef struct {
 	ecsact_field_definition* fields;
 } ecsact_component_definition;
 
-typedef struct {
+typedef struct ecsact_system_definition {
 	char* name;
 	int32_t capabilities_len;
 	ecsact_component_id* capability_components;

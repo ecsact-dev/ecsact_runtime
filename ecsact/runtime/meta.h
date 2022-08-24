@@ -57,10 +57,35 @@ ECSACT_META_API_FN(const char*, ecsact_meta_package_name)
 	( ecsact_package_id package_id
 	);
 
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_components)();
+/**
+ * @param package_id the ID given to the package when created
+ * @returns the ecsact file path for the package
+ */
+ECSACT_META_API_FN(const char*, ecsact_meta_package_file_path)
+	( ecsact_package_id package_id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_dependencies)
+	( ecsact_package_id package_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_dependencies)
+	( ecsact_package_id   package_id
+	, int32_t             max_dependency_count
+	, ecsact_package_id*  out_package_ids
+	, int32_t*            out_dependencies_count
+	);
+
+/**
+ * Get number of components in package
+ */
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_components)
+	( ecsact_package_id package_id
+	);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_component_ids)
-	( int32_t               max_component_count
+	( ecsact_package_id     package_id
+	, int32_t               max_component_count
 	, ecsact_component_id*  out_component_ids
 	, int32_t*              out_component_count
 	);
@@ -90,12 +115,26 @@ ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
 	, ecsact_field_id      field_id
 	);
 
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_systems)();
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_systems)
+	( ecsact_package_id package_id
+	);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_system_ids)
-	( int32_t            max_system_count
+	( ecsact_package_id  package_id
+	, int32_t            max_system_count
 	, ecsact_system_id*  out_system_ids
 	, int32_t*           out_system_count
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_actions)
+	( ecsact_package_id package_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_action_ids)
+	( ecsact_package_id  package_id
+	, int32_t            max_action_count
+	, ecsact_action_id*  out_action_ids
+	, int32_t*           out_action_count
 	);
 
 /**
@@ -133,7 +172,7 @@ ECSACT_META_API_FN(size_t, ecsact_meta_action_size)
  * creating a action. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_action_name)
-	( ecsact_system_id
+	( ecsact_action_id
 	);
 
 /**
@@ -171,13 +210,28 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	);
 
 #define FOR_EACH_ECSACT_META_API_FN(fn, ...)\
+	fn(ecsact_meta_get_package_ids, __VA_ARGS__);\
+	fn(ecsact_meta_package_name, __VA_ARGS__);\
+	fn(ecsact_meta_package_file_path, __VA_ARGS__);\
+	fn(ecsact_meta_count_dependencies, __VA_ARGS__);\
+	fn(ecsact_meta_get_dependencies, __VA_ARGS__);\
+	fn(ecsact_meta_count_components, __VA_ARGS__);\
+	fn(ecsact_meta_get_component_ids, __VA_ARGS__);\
+	fn(ecsact_meta_count_fields, __VA_ARGS__);\
+	fn(ecsact_meta_get_field_ids, __VA_ARGS__);\
+	fn(ecsact_meta_field_name, __VA_ARGS__);\
+	fn(ecsact_meta_field_type, __VA_ARGS__);\
+	fn(ecsact_meta_count_systems, __VA_ARGS__);\
+	fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
+	fn(ecsact_meta_count_actions, __VA_ARGS__);\
+	fn(ecsact_meta_get_action_ids, __VA_ARGS__);\
 	fn(ecsact_meta_registry_name, __VA_ARGS__);\
 	fn(ecsact_meta_component_size, __VA_ARGS__);\
 	fn(ecsact_meta_component_name, __VA_ARGS__);\
 	fn(ecsact_meta_action_size, __VA_ARGS__);\
 	fn(ecsact_meta_action_name, __VA_ARGS__);\
 	fn(ecsact_meta_system_name, __VA_ARGS__);\
-	fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
-	fn(ecsact_meta_system_capabilities, __VA_ARGS__)
+	fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
+	fn(ecsact_meta_system_capabilities_count, __VA_ARGS__)
 
 #endif // ECSACT_RUNTIME_META_H

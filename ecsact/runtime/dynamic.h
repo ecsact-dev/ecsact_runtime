@@ -188,6 +188,12 @@ ECSACT_DYNAMIC_API_FN(ecsact_package_id, ecsact_create_package)
 	, int32_t      package_name_len
 	);
 
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_package_source_file_path)
+	( ecsact_package_id  package_id
+	, const char*        source_file_path
+	, int32_t            source_file_path_len
+	);
+
 ECSACT_DYNAMIC_API_FN(void, ecsact_add_dependency)
 	( ecsact_package_id target
 	, ecsact_package_id dependency
