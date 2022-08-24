@@ -32,11 +32,19 @@ typedef enum ecsact_builtin_type {
 	ECSACT_ENTITY_TYPE   = 0b0010'0000'0010'0000,
 } ecsact_builtin_type;
 
+typedef enum ecsact_type_kind {
+	ECSACT_TYPE_KIND_BUILTIN,
+	ECSACT_TYPE_KIND_ENUM,
+} ecsact_type_kind;
+
+typedef union ecsact_type {
+	ecsact_builtin_type builtin;
+	ecsact_enum_id enum_id;
+} ecsact_type;
+
 typedef struct ecsact_field_type {
-	/**
-	 * Type of field.
-	 */
-	ecsact_builtin_type type;
+	ecsact_type_kind kind;
+	ecsact_type type;
 
 	/**
 	 * equals 1        single field (not fixed array)

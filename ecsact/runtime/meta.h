@@ -137,6 +137,52 @@ ECSACT_META_API_FN(void, ecsact_meta_get_action_ids)
 	, int32_t*           out_action_count
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_enums)
+	( ecsact_package_id package_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_enum_ids)
+	( ecsact_package_id  package_id
+	, int32_t            max_enum_count
+	, ecsact_enum_id*    out_enum_ids
+	, int32_t*           out_enum_count
+	);
+
+/**
+ * The storage type of the enum can be an unsigned or signed integer based on
+ * the enum values. The storage type will be the smallest integer that can hold
+ * all possible valid enum values.
+ * @returns storage type that can be used to represent the enum
+ */
+ECSACT_META_API_FN(ecsact_builtin_type, ecsact_meta_enum_storage_type)
+	( ecsact_enum_id enum_id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_enum_values)
+	( ecsact_enum_id enum_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_enum_value_ids)
+	( ecsact_enum_id         enum_id
+	, int32_t                max_enum_value_ids
+	, ecsact_enum_value_id*  out_enum_value_ids
+	, int32_t*               out_enum_values_count
+	);
+
+ECSACT_META_API_FN(const char*, ecsact_meta_enum_name)
+	( ecsact_enum_id enum_id
+	);
+
+ECSACT_META_API_FN(const char*, ecsact_meta_enum_value_name)
+	( ecsact_enum_id        enum_id
+	, ecsact_enum_value_id  value_id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_enum_value)
+	( ecsact_enum_id        enum_id
+	, ecsact_enum_value_id  value_id
+	);
+
 /**
  * Get a registry name. May or may not return originally set name when creating
  * the registry. Typically not returned in release/optimized build.
@@ -225,6 +271,14 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
 	fn(ecsact_meta_count_actions, __VA_ARGS__);\
 	fn(ecsact_meta_get_action_ids, __VA_ARGS__);\
+	fn(ecsact_meta_count_enums, __VA_ARGS__);\
+	fn(ecsact_meta_get_enum_ids, __VA_ARGS__);\
+	fn(ecsact_meta_enum_storage_type, __VA_ARGS__);\
+	fn(ecsact_meta_count_enum_values, __VA_ARGS__);\
+	fn(ecsact_meta_get_enum_value_ids, __VA_ARGS__);\
+	fn(ecsact_meta_enum_name, __VA_ARGS__);\
+	fn(ecsact_meta_enum_value_name, __VA_ARGS__);\
+	fn(ecsact_meta_enum_value, __VA_ARGS__);\
 	fn(ecsact_meta_registry_name, __VA_ARGS__);\
 	fn(ecsact_meta_component_size, __VA_ARGS__);\
 	fn(ecsact_meta_component_name, __VA_ARGS__);\
@@ -232,6 +286,7 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	fn(ecsact_meta_action_name, __VA_ARGS__);\
 	fn(ecsact_meta_system_name, __VA_ARGS__);\
 	fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
-	fn(ecsact_meta_system_capabilities_count, __VA_ARGS__)
+	fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
+	fn(ecsact_meta_system_capabilities, __VA_ARGS__)
 
 #endif // ECSACT_RUNTIME_META_H
