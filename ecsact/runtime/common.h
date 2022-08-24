@@ -13,6 +13,8 @@ ECSACT_TYPED_ID(ecsact_package_id);
 ECSACT_TYPED_ID(ecsact_system_id);
 ECSACT_TYPED_ID(ecsact_action_id);
 ECSACT_TYPED_ID(ecsact_component_id);
+ECSACT_TYPED_ID(ecsact_enum_id);
+ECSACT_TYPED_ID(ecsact_enum_value_id);
 ECSACT_TYPED_ID(ecsact_field_id);
 ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
