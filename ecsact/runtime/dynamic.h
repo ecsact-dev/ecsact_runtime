@@ -305,7 +305,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_enum_value_id, ecsact_add_enum_value)
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_remove_enum_value)
 	( ecsact_enum_id        enum_id
-	, ecsact_enum_value_id  value_iud
+	, ecsact_enum_value_id  value_id
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_capability)
