@@ -3,6 +3,8 @@ load("//bazel:copts.bzl", "copts")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["dylib.cc"])
+
 cc_library(
     name = "util",
     hdrs = ["dylib-util.hh"],

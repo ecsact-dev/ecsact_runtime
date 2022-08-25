@@ -48,6 +48,19 @@ ECSACT_CAST_ID_FN(ecsact_composite_id, ecsact_decl_id)
 #undef ECSACT_TYPED_ID
 #undef ECSACT_CAST_ID_FN
 
+#if defined(_WIN32) && (!defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL)
+#define ECSACT_MSVC_TRADITIONAL
+#endif
+
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define ECSACT_MSVC_TRADITIONAL_ERROR_MESSAGE "\nTraditional MSVC preprocessor not supported.\n\tSee: https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160\n"
+#	ifdef __cplusplus
+#		define ECSACT_MSVC_TRADITIONAL_ERROR() static_assert(false, ECSACT_MSVC_TRADITIONAL_ERROR_MESSAGE);
+#	else
+#		define ECSACT_MSVC_TRADITIONAL_ERROR() _STATIC_ASSERT(false && ECSACT_MSVC_TRADITIONAL_ERROR_MESSAGE);
+#	endif
+#endif // ECSACT_MSVC_TRADITIONAL
+
 /**
  * Context for system execution. This contains (or points to) state required for
  * executing a systems implementation. The structure for this type is runtime

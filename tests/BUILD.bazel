@@ -1,5 +1,10 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 
+exports_files(
+    ["ecsact_codegen_plugin_test.cc"],
+    visibility = ["//visibility:public"],
+)
+
 cc_test(
     name = "test",
     srcs = ["test.cc"],
