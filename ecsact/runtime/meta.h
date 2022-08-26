@@ -192,25 +192,11 @@ ECSACT_META_API_FN(const char*, ecsact_meta_registry_name)
 	);
 
 /**
- * Get the component data size
- */
-ECSACT_META_API_FN(size_t, ecsact_meta_component_size)
-	( ecsact_component_id
-	);
-
-/**
  * Get the component name. May or may not return originally set name when
  * creating a component. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_component_name)
 	( ecsact_component_id
-	);
-
-/**
- * Get the action data size
- */
-ECSACT_META_API_FN(size_t, ecsact_meta_action_size)
-	( ecsact_system_id
 	);
 
 /**
@@ -227,10 +213,6 @@ ECSACT_META_API_FN(const char*, ecsact_meta_action_name)
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_system_name)
 	( ecsact_system_id
-	);
-
-ECSACT_META_API_FN(const char*, ecsact_meta_decl_full_name)
-	( ecsact_decl_id
 	);
 
 /**
@@ -284,12 +266,9 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 		fn(ecsact_meta_enum_value_name, __VA_ARGS__);\
 		fn(ecsact_meta_enum_value, __VA_ARGS__);\
 		fn(ecsact_meta_registry_name, __VA_ARGS__);\
-		fn(ecsact_meta_component_size, __VA_ARGS__);\
 		fn(ecsact_meta_component_name, __VA_ARGS__);\
-		fn(ecsact_meta_action_size, __VA_ARGS__);\
 		fn(ecsact_meta_action_name, __VA_ARGS__);\
 		fn(ecsact_meta_system_name, __VA_ARGS__);\
-		fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
 		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
 		fn(ecsact_meta_system_capabilities, __VA_ARGS__)
 #endif

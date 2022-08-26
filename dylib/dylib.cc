@@ -11,8 +11,7 @@
 
 #define ASSIGN_FN_IF(fn_name, target_fn_name, fn_ptr)\
 	if(std::strcmp(#fn_name, target_fn_name) == 0)\
-		decltype(::fn_name) (::fn_name) =\
-			reinterpret_cast<decltype(::fn_name)>(fn_ptr)
+		::fn_name = reinterpret_cast<decltype(::fn_name)>(fn_ptr)
 
 bool ecsact_dylib_has_fn
 	( const char* fn_name
@@ -29,12 +28,14 @@ void ecsact_dylib_set_fn_addr
 	, void(*fn_ptr)()
 	)
 {
+#ifndef NDEBUG
 	if(std::strncmp(fn_name, "ecsact_", 7) != 0) {
 		assert(false && "Cannot load non ecsact fn");
 		return;
 	}
+#endif//NDEBUG
 
 #ifdef ECSACT_META_API_LOAD_AT_RUNTIME
-	// FOR_EACH_ECSACT_META_API_FN(ASSIGN_FN_IF, fn_name, fn_ptr);
+	FOR_EACH_ECSACT_META_API_FN(ASSIGN_FN_IF, fn_name, fn_ptr);
 #endif
 }
