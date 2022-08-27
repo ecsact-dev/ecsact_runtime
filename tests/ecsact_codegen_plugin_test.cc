@@ -26,12 +26,12 @@ int main(int argc, char* argv[]) {
 	std::cerr << GREY_TEXT("Checking ") << argc - 1 << GREY_TEXT(" plugin(s)\n");
 
 	for(int i=1; argc > i; ++i) {
-		fs::path plugin_path(runfiles->Rlocation(argv[i]));
-		if(!fs::exists(plugin_path)) {
-			plugin_path = argv[i];
+		fs::path plugin_path = argv[i];
+		if(runfiles && !fs::exists(plugin_path)) {
+			plugin_path = runfiles->Rlocation(argv[i]);
 		}
 		if(bwd && !fs::exists(plugin_path)) {
-			plugin_path = plugin_path / std::string(bwd);
+			plugin_path = fs::path(argv[i]) / std::string(bwd);
 		}
 
 		std::cerr << GREY_TEXT("Validating plugin ") << plugin_path.string() << GREY_TEXT(" ...");
