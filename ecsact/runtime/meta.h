@@ -192,25 +192,11 @@ ECSACT_META_API_FN(const char*, ecsact_meta_registry_name)
 	);
 
 /**
- * Get the component data size
- */
-ECSACT_META_API_FN(size_t, ecsact_meta_component_size)
-	( ecsact_component_id
-	);
-
-/**
  * Get the component name. May or may not return originally set name when
  * creating a component. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_component_name)
 	( ecsact_component_id
-	);
-
-/**
- * Get the action data size
- */
-ECSACT_META_API_FN(size_t, ecsact_meta_action_size)
-	( ecsact_system_id
 	);
 
 /**
@@ -227,10 +213,6 @@ ECSACT_META_API_FN(const char*, ecsact_meta_action_name)
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_system_name)
 	( ecsact_system_id
-	);
-
-ECSACT_META_API_FN(const char*, ecsact_meta_decl_full_name)
-	( ecsact_decl_id
 	);
 
 /**
@@ -255,38 +237,40 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	, int32_t*                   out_capabilities_count
 	);
 
-#define FOR_EACH_ECSACT_META_API_FN(fn, ...)\
-	fn(ecsact_meta_get_package_ids, __VA_ARGS__);\
-	fn(ecsact_meta_package_name, __VA_ARGS__);\
-	fn(ecsact_meta_package_file_path, __VA_ARGS__);\
-	fn(ecsact_meta_count_dependencies, __VA_ARGS__);\
-	fn(ecsact_meta_get_dependencies, __VA_ARGS__);\
-	fn(ecsact_meta_count_components, __VA_ARGS__);\
-	fn(ecsact_meta_get_component_ids, __VA_ARGS__);\
-	fn(ecsact_meta_count_fields, __VA_ARGS__);\
-	fn(ecsact_meta_get_field_ids, __VA_ARGS__);\
-	fn(ecsact_meta_field_name, __VA_ARGS__);\
-	fn(ecsact_meta_field_type, __VA_ARGS__);\
-	fn(ecsact_meta_count_systems, __VA_ARGS__);\
-	fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
-	fn(ecsact_meta_count_actions, __VA_ARGS__);\
-	fn(ecsact_meta_get_action_ids, __VA_ARGS__);\
-	fn(ecsact_meta_count_enums, __VA_ARGS__);\
-	fn(ecsact_meta_get_enum_ids, __VA_ARGS__);\
-	fn(ecsact_meta_enum_storage_type, __VA_ARGS__);\
-	fn(ecsact_meta_count_enum_values, __VA_ARGS__);\
-	fn(ecsact_meta_get_enum_value_ids, __VA_ARGS__);\
-	fn(ecsact_meta_enum_name, __VA_ARGS__);\
-	fn(ecsact_meta_enum_value_name, __VA_ARGS__);\
-	fn(ecsact_meta_enum_value, __VA_ARGS__);\
-	fn(ecsact_meta_registry_name, __VA_ARGS__);\
-	fn(ecsact_meta_component_size, __VA_ARGS__);\
-	fn(ecsact_meta_component_name, __VA_ARGS__);\
-	fn(ecsact_meta_action_size, __VA_ARGS__);\
-	fn(ecsact_meta_action_name, __VA_ARGS__);\
-	fn(ecsact_meta_system_name, __VA_ARGS__);\
-	fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
-	fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
-	fn(ecsact_meta_system_capabilities, __VA_ARGS__)
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#else
+#	define FOR_EACH_ECSACT_META_API_FN(fn, ...)\
+		fn(ecsact_meta_count_packages, __VA_ARGS__);\
+		fn(ecsact_meta_get_package_ids, __VA_ARGS__);\
+		fn(ecsact_meta_package_name, __VA_ARGS__);\
+		fn(ecsact_meta_package_file_path, __VA_ARGS__);\
+		fn(ecsact_meta_count_dependencies, __VA_ARGS__);\
+		fn(ecsact_meta_get_dependencies, __VA_ARGS__);\
+		fn(ecsact_meta_count_components, __VA_ARGS__);\
+		fn(ecsact_meta_get_component_ids, __VA_ARGS__);\
+		fn(ecsact_meta_count_fields, __VA_ARGS__);\
+		fn(ecsact_meta_get_field_ids, __VA_ARGS__);\
+		fn(ecsact_meta_field_name, __VA_ARGS__);\
+		fn(ecsact_meta_field_type, __VA_ARGS__);\
+		fn(ecsact_meta_count_systems, __VA_ARGS__);\
+		fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
+		fn(ecsact_meta_count_actions, __VA_ARGS__);\
+		fn(ecsact_meta_get_action_ids, __VA_ARGS__);\
+		fn(ecsact_meta_count_enums, __VA_ARGS__);\
+		fn(ecsact_meta_get_enum_ids, __VA_ARGS__);\
+		fn(ecsact_meta_enum_storage_type, __VA_ARGS__);\
+		fn(ecsact_meta_count_enum_values, __VA_ARGS__);\
+		fn(ecsact_meta_get_enum_value_ids, __VA_ARGS__);\
+		fn(ecsact_meta_enum_name, __VA_ARGS__);\
+		fn(ecsact_meta_enum_value_name, __VA_ARGS__);\
+		fn(ecsact_meta_enum_value, __VA_ARGS__);\
+		fn(ecsact_meta_registry_name, __VA_ARGS__);\
+		fn(ecsact_meta_component_name, __VA_ARGS__);\
+		fn(ecsact_meta_action_name, __VA_ARGS__);\
+		fn(ecsact_meta_system_name, __VA_ARGS__);\
+		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
+		fn(ecsact_meta_system_capabilities, __VA_ARGS__)
+#endif
 
 #endif // ECSACT_RUNTIME_META_H

@@ -10,6 +10,17 @@ http_archive(
 )
 
 http_archive(
+    name = "boost",
+    sha256 = "c41441a6e9f8038ad626e9f937ddc3675ab896b6c3512eefc6840037b3816d03",
+    strip_prefix = "boost-563e8e0de4eac4b48a02d296581dc2454127608e",
+    urls = ["https://github.com/bazelboost/boost/archive/563e8e0de4eac4b48a02d296581dc2454127608e.zip"],
+)
+
+load("@boost//:index.bzl", "boost_http_archives")
+
+boost_http_archives()
+
+http_archive(
     name = "hedron_compile_commands",
     sha256 = "f5cf960d7477b95546a96b05397129969133ec0c1af9889e5d02ebe42dba6abd",
     strip_prefix = "bazel-compile-commands-extractor-2a72a3b761e21a0405995b323a3b765d93bd6df4",

@@ -69,20 +69,43 @@ cc_library(
 )
 
 cc_library(
-    name = "codegen_plugin_lib",
-    hdrs = [
-        "ecsact/codegen/write.h",
-        "ecsact/codegen/write.hh",
-    ],
+    name = "codegen_plugin",
+    hdrs = ["ecsact/codegen_plugin.h"],
     copts = copts,
+    deps = [
+        ":meta",
+    ],
 )
 
 cc_library(
-    name = "codegen_plugin_entry",
-    hdrs = [
-        "ecsact/codegen/plugin_entry.h",
-    ],
+    name = "dylib",
+    hdrs = ["ecsact/runtime/dylib.h"],
     copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "codegen_plugin_cc",
+    hdrs = ["ecsact/codegen_plugin.hh"],
+    copts = copts,
+    deps = [
+        ":codegen_plugin",
+        ":common",
+        ":definitions",
+        ":meta",
+    ],
+)
+
+cc_library(
+    name = "codegen_plugin_validate",
+    srcs = ["ecsact/codegen/plugin_validate.cc"],
+    hdrs = ["ecsact/codegen/plugin_validate.hh"],
+    copts = copts,
+    deps = [
+        "@boost//libs/dll",
+        "@ecsact_runtime//:dylib",
+        "@ecsact_runtime//:meta",
+    ],
 )
 
 cc_library(
