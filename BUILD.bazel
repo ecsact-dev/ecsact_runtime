@@ -14,6 +14,14 @@ exports_files([
     "ecsact/runtime.h",
 ])
 
+filegroup(
+    name = "headers",
+    srcs = glob([
+        "ecsact/**/*.h",
+        "ecsact/**/*.hh",
+    ]),
+)
+
 cc_library(
     name = "common",
     hdrs = ["ecsact/runtime/common.h"],

@@ -237,6 +237,32 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	, int32_t*                   out_capabilities_count
 	);
 
+/**
+ * @returns a declarations full name including package and any parent
+ *          declarations.
+ */
+ECSACT_META_API_FN(const char*, ecsact_meta_decl_full_name)
+	( ecsact_decl_id id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_systems)
+	( ecsact_system_like_id system_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_child_system_ids)
+	( ecsact_system_like_id  system_id
+	, int32_t                max_child_system_ids_count
+	, ecsact_system_id*      out_child_system_ids
+	, int32_t*               out_child_system_count
+	);
+
+/**
+ * @returns the parent system-like ID. Returns -1 if child has no parent
+ */
+ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
+	( ecsact_system_id  child_system_id
+	);
+
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
@@ -270,7 +296,11 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 		fn(ecsact_meta_action_name, __VA_ARGS__);\
 		fn(ecsact_meta_system_name, __VA_ARGS__);\
 		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
-		fn(ecsact_meta_system_capabilities, __VA_ARGS__)
+		fn(ecsact_meta_system_capabilities, __VA_ARGS__);\
+		fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
+		fn(ecsact_meta_count_child_systems, __VA_ARGS__);\
+		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);\
+		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
