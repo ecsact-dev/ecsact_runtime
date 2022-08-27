@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 			plugin_path = runfiles->Rlocation(argv[i]);
 		}
 		if(bwd && !fs::exists(plugin_path)) {
-			plugin_path = fs::path(argv[i]) / std::string(bwd);
+			plugin_path = std::string(bwd) / fs::path(argv[i]);
 		}
 
 		std::cerr << GREY_TEXT("Validating plugin ") << plugin_path.string() << GREY_TEXT(" ...");
