@@ -2,7 +2,9 @@
 #include <iostream>
 #include <cassert>
 #include "ecsact/codegen/plugin_validate.hh"
+#include "tools/cpp/runfiles/runfiles.h"
 
+using bazel::tools::cpp::runfiles::Runfiles;
 namespace fs = std::filesystem;
 
 #define RED_TEXT(text)     "\033[31m" text "\033[0m"
@@ -16,11 +18,17 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	auto runfiles = Runfiles::CreateForTest();
+
 	int invalid_plugins = 0;
 	std::cerr << GREY_TEXT("Checking ") << argc - 1 << GREY_TEXT(" plugin(s)\n");
 
 	for(int i=1; argc > i; ++i) {
-		fs::path plugin_path(argv[i]);
+		fs::path plugin_path(runfiles->Rlocation(argv[i]));
+		if(!fs::exists(plugin_path)) {
+			plugin_path = argv[i];
+		}
+
 		std::cerr << GREY_TEXT("Validating plugin ") << plugin_path.string() << GREY_TEXT(" ...");
 		auto result = ecsact::codegen::plugin_validate(plugin_path);
 		if(result.ok()) {

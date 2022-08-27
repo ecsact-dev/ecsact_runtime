@@ -35,8 +35,11 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
         cc_test(
             name = "{}__validate".format(name),
             srcs = ["@ecsact_runtime//tests:ecsact_codegen_plugin_test.cc"],
+            args = ["$(rootpath :{})".format(name)],
             copts = _copts,
             data = [":{}".format(name)],
-            args = ["$(rootpath :{})".format(name)],
-            deps = ["@ecsact_runtime//:codegen_plugin_validate"],
+            deps = [
+                "@bazel_tools//tools/cpp/runfiles",
+                "@ecsact_runtime//:codegen_plugin_validate",
+            ],
         )
