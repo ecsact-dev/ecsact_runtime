@@ -22,6 +22,7 @@
  *     values specified in the `ecsact_builtin_type` enum are valid.
  */
 typedef enum ecsact_builtin_type {
+	ECSACT_BOOL          = 0b0000'0000'0000'0001,
 	ECSACT_I8            = 0b1000'0000'0000'1000,
 	ECSACT_U8            = 0b0000'0000'0000'1000,
 	ECSACT_I16           = 0b1000'0000'0001'0000,

@@ -178,7 +178,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_execution_context*, ecsact_system_execution_
 /**
  * Get the current system/action ID
  */
-ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_system_execution_context_id)
+ECSACT_DYNAMIC_API_FN(ecsact_system_like_id, ecsact_system_execution_context_id)
 	( ecsact_system_execution_context* context
 	);
 
