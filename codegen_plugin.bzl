@@ -37,6 +37,6 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
             srcs = ["@ecsact_runtime//tests:ecsact_codegen_plugin_test.cc"],
             copts = _copts,
             data = [":{}".format(name)],
-            args = ["$(location :{})".format(name)],
+            args = ["$(rootpath :{})".format(name)],
             deps = ["@ecsact_runtime//:codegen_plugin_validate"],
         )
