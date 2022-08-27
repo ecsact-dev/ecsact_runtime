@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	auto runfiles = Runfiles::CreateForTest();
+	auto runfiles = Runfiles::Create(argv[0]);
 	auto bwd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
 
 	int invalid_plugins = 0;
