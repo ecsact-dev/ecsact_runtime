@@ -33,7 +33,7 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
 
     if not no_validate_test:
         cc_test(
-            name = "{}__plugin_validate_test".format(name),
+            name = "{}__validate".format(name),
             srcs = ["@ecsact_runtime//tests:ecsact_codegen_plugin_test.cc"],
             copts = _copts,
             data = [":{}".format(name)],
