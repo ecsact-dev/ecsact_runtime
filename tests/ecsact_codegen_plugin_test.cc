@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <iostream>
 #include <cassert>
+#include <cstdlib>
 #include "ecsact/codegen/plugin_validate.hh"
 #include "tools/cpp/runfiles/runfiles.h"
 
@@ -19,6 +20,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	auto runfiles = Runfiles::CreateForTest();
+	auto bwd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
 
 	int invalid_plugins = 0;
 	std::cerr << GREY_TEXT("Checking ") << argc - 1 << GREY_TEXT(" plugin(s)\n");
@@ -27,6 +29,9 @@ int main(int argc, char* argv[]) {
 		fs::path plugin_path(runfiles->Rlocation(argv[i]));
 		if(!fs::exists(plugin_path)) {
 			plugin_path = argv[i];
+		}
+		if(bwd && !fs::exists(plugin_path)) {
+			plugin_path = plugin_path / std::string(bwd);
 		}
 
 		std::cerr << GREY_TEXT("Validating plugin ") << plugin_path.string() << GREY_TEXT(" ...");
