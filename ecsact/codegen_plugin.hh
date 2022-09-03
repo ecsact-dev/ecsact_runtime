@@ -23,20 +23,64 @@ namespace ecsact {
 	struct codegen_plugin_context {
 		const ecsact_package_id package_id;
 		const ecsact_codegen_write_fn_t write_fn;
+		int indentation = 0;
+
+		std::string get_indent_str() {
+			return std::string(indentation, '\t');
+		}
+
+		void begin_indent() {
+			indentation += 1;
+			auto indent_str = get_indent_str();
+			write_fn(indent_str.data(), static_cast<int32_t>(indent_str.size()));
+		}
+
+		void end_indent() {
+			indentation -= 1;
+		}
+
+		void write_
+			( const char*  str_data
+			, int32_t      str_data_len
+			)
+		{
+			assert(indentation >= 0);
+
+			if(indentation <= 0) {
+				write_fn(str_data, str_data_len);
+			} else {
+				std::string_view str(str_data, str_data_len);
+				auto indent_str = get_indent_str();
+				auto nl_idx = str.find('\n');
+				while(nl_idx != std::string_view::npos) {
+					write_fn(str.data(), nl_idx + 1);
+					write_fn(indent_str.data(), indent_str.size());
+					str = std::string_view(
+						str.data() + nl_idx + 1,
+						str.size() - nl_idx - 1
+					);
+					nl_idx = str.find('\n');
+				}
+
+				if(!str.empty()) {
+					write_fn(str.data(), static_cast<int32_t>(str.size()));
+				}
+			}
+		}
 
 		template<typename T>
 		void write(T&& arg) {
 			using NoRefT = std::remove_cvref_t<T>;
 
 			if constexpr(std::is_same_v<NoRefT, std::string_view>) {
-				write_fn(arg.data(), static_cast<int32_t>(arg.size()));
+				write_(arg.data(), static_cast<int32_t>(arg.size()));
 			} else if constexpr(std::is_same_v<NoRefT, std::string>) {
-				write_fn(arg.data(), static_cast<int32_t>(arg.size()));
+				write_(arg.data(), static_cast<int32_t>(arg.size()));
 			} else if constexpr(std::is_convertible_v<NoRefT, const char*>) {
-				write_fn(arg, std::strlen(arg));
+				write_(arg, std::strlen(arg));
 			} else {
 				auto str = std::to_string(std::forward<T>(arg));
-				write_fn(str.data(), static_cast<int32_t>(str.size()));
+				write_(str.data(), static_cast<int32_t>(str.size()));
 			}
 		}
 

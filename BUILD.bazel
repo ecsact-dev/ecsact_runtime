@@ -54,7 +54,10 @@ cc_library(
 
 cc_library(
     name = "meta",
-    hdrs = ["ecsact/runtime/meta.h"],
+    hdrs = [
+        "ecsact/runtime/meta.h",
+        "ecsact/runtime/meta.hh",
+    ],
     copts = copts,
     deps = [
         ":common",

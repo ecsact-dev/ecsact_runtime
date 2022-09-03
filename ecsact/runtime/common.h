@@ -45,6 +45,20 @@ ECSACT_CAST_ID_FN(ecsact_variant_id, ecsact_decl_id)
 ECSACT_CAST_ID_FN(ecsact_system_like_id, ecsact_decl_id)
 ECSACT_CAST_ID_FN(ecsact_composite_id, ecsact_decl_id)
 
+ECSACT_CAST_ID_FN(ecsact_package_id, ecsact_package_id)
+ECSACT_CAST_ID_FN(ecsact_system_id, ecsact_system_id)
+ECSACT_CAST_ID_FN(ecsact_action_id, ecsact_action_id)
+ECSACT_CAST_ID_FN(ecsact_component_id, ecsact_component_id)
+ECSACT_CAST_ID_FN(ecsact_enum_id, ecsact_enum_id)
+ECSACT_CAST_ID_FN(ecsact_enum_value_id, ecsact_enum_value_id)
+ECSACT_CAST_ID_FN(ecsact_field_id, ecsact_field_id)
+ECSACT_CAST_ID_FN(ecsact_variant_id, ecsact_variant_id)
+ECSACT_CAST_ID_FN(ecsact_registry_id, ecsact_registry_id)
+ECSACT_CAST_ID_FN(ecsact_entity_id, ecsact_entity_id)
+ECSACT_CAST_ID_FN(ecsact_decl_id, ecsact_decl_id)
+ECSACT_CAST_ID_FN(ecsact_composite_id, ecsact_composite_id)
+ECSACT_CAST_ID_FN(ecsact_system_like_id, ecsact_system_like_id)
+
 #undef ECSACT_TYPED_ID
 #undef ECSACT_CAST_ID_FN
 
