@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <cstring>
+#include <iterator>
 #include "ecsact/runtime/common.h"
 #include "ecsact/codegen_plugin.h"
 
@@ -27,16 +28,6 @@ namespace ecsact {
 
 		std::string get_indent_str() {
 			return std::string(indentation, '\t');
-		}
-
-		void begin_indent() {
-			indentation += 1;
-			auto indent_str = get_indent_str();
-			write_fn(indent_str.data(), static_cast<int32_t>(indent_str.size()));
-		}
-
-		void end_indent() {
-			indentation -= 1;
 		}
 
 		void write_
@@ -87,6 +78,18 @@ namespace ecsact {
 		template<typename... T>
 		void write(T&&... args) {
 			(write<T>(std::forward<T>(args)), ...);
+		}
+
+		void write_each(auto&& delim, auto&& range, auto&& callback) {
+			auto begin = std::begin(range);
+			auto end = std::end(range);
+			if(begin != end) {
+				callback(*begin);
+				for(auto itr = std::next(begin); itr != end; ++itr) {
+					write(delim);
+					callback(*itr);
+				}
+			}
 		}
 	};
 }
