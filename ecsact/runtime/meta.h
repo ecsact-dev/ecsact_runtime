@@ -309,6 +309,11 @@ ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lanes)
 	( ecsact_system_like_id parent_system_id
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lane_systems)
+	( ecsact_system_like_id  parent_system_id
+	, int32_t                index
+	);
+
 ECSACT_META_API_FN(void, ecsact_meta_get_child_execution_lane_systems)
 	( ecsact_system_like_id   parent_system_id
 	, int32_t                 index
