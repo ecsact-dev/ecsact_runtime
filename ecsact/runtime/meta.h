@@ -278,6 +278,10 @@ ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_systems)
 	( ecsact_system_like_id system_id
 	);
 
+/**
+ * Get a list of system IDs in declaration order (which also means execution
+ * order.)
+ */
 ECSACT_META_API_FN(void, ecsact_meta_get_child_system_ids)
 	( ecsact_system_like_id  system_id
 	, int32_t                max_child_system_ids_count
@@ -292,34 +296,22 @@ ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
 	( ecsact_system_id  child_system_id
 	);
 
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lanes)();
-
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lane_systems)
-	( int32_t index
+/**
+ * Count the number of top level systems and actions.
+ */
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_top_level_systems)
+	( ecsact_package_id package_id
 	);
 
-ECSACT_META_API_FN(void, ecsact_meta_get_execution_lane_systems)
-	( int32_t                 index
+/**
+ * Get a list of system-like ids (system and actions) that are at the top level
+ * in declaration order (which also means execution order.)
+ */
+ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
+	( ecsact_package_id       package_id
 	, int32_t                 max_systems_count
 	, ecsact_system_like_id*  out_systems
 	, int32_t*                out_systems_count
-	);
-
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lanes)
-	( ecsact_system_like_id parent_system_id
-	);
-
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lane_systems)
-	( ecsact_system_like_id  parent_system_id
-	, int32_t                index
-	);
-
-ECSACT_META_API_FN(void, ecsact_meta_get_child_execution_lane_systems)
-	( ecsact_system_like_id   parent_system_id
-	, int32_t                 index
-	, int32_t                 max_child_systems_count
-	, ecsact_system_id*       out_child_systems
-	, int32_t*                out_child_systems_count
 	);
 
 #ifdef ECSACT_MSVC_TRADITIONAL
@@ -359,7 +351,9 @@ ECSACT_META_API_FN(void, ecsact_meta_get_child_execution_lane_systems)
 		fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
 		fn(ecsact_meta_count_child_systems, __VA_ARGS__);\
 		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);\
-		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__)
+		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__);\
+		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);\
+		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
