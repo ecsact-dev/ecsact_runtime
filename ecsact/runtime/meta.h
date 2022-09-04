@@ -299,7 +299,9 @@ ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
 /**
  * Count the number of top level systems and actions.
  */
-ECSACT_META_API_FN(int32_t, ecsact_meta_count_top_level_systems)();
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_top_level_systems)
+	( ecsact_package_id package_id
+	);
 
 /**
  * Get a list of system-like ids (system and actions) that are at the top level
