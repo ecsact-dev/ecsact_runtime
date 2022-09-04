@@ -321,7 +321,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_capability)
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_association_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id  
+	, ecsact_component_id
 	, ecsact_field_id
 	, ecsact_component_id
 	, ecsact_system_capability
@@ -329,7 +329,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_association_capability)
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_association_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id  
+	, ecsact_component_id
 	, ecsact_field_id
 	, ecsact_component_id
 	);

@@ -237,6 +237,35 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	, int32_t*                   out_capabilities_count
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_fields_count)
+	( ecsact_system_like_id  system_id
+	, ecsact_component_id    component_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_system_association_fields)
+	( ecsact_system_like_id  system_id
+	, ecsact_component_id    component_id
+	, int32_t                max_fields_count
+	, ecsact_field_id*       out_fields
+	, int32_t*               out_fields_count
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_capabilities_count)
+	( ecsact_system_like_id  system_id
+	, ecsact_component_id    component_id
+	, ecsact_field_id        field_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_system_association_capabilities)
+	( ecsact_system_like_id      system_id
+	, ecsact_component_id        component_id
+	, ecsact_field_id            field_id
+	, int32_t                    max_capabilities_count
+	, ecsact_component_id*       out_capability_component_ids
+	, ecsact_system_capability*  out_capabilities
+	, int32_t*                   out_capabilities_count
+	);
+
 /**
  * @returns a declarations full name including package and any parent
  *          declarations.
@@ -261,6 +290,36 @@ ECSACT_META_API_FN(void, ecsact_meta_get_child_system_ids)
  */
 ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
 	( ecsact_system_id  child_system_id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lanes)();
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lane_systems)
+	( int32_t index
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_execution_lane_systems)
+	( int32_t                 index
+	, int32_t                 max_systems_count
+	, ecsact_system_like_id*  out_systems
+	, int32_t*                out_systems_count
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lanes)
+	( ecsact_system_like_id parent_system_id
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lane_systems)
+	( ecsact_system_like_id  parent_system_id
+	, int32_t                index
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_child_execution_lane_systems)
+	( ecsact_system_like_id   parent_system_id
+	, int32_t                 index
+	, int32_t                 max_child_systems_count
+	, ecsact_system_id*       out_child_systems
+	, int32_t*                out_child_systems_count
 	);
 
 #ifdef ECSACT_MSVC_TRADITIONAL
