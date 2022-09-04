@@ -292,6 +292,31 @@ ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
 	( ecsact_system_id  child_system_id
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lanes)();
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_execution_lane_systems)
+	( int32_t index
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_execution_lane_systems)
+	( int32_t                 index
+	, int32_t                 max_systems_count
+	, ecsact_system_like_id*  out_systems
+	, int32_t*                out_systems_count
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_execution_lanes)
+	( ecsact_system_like_id parent_system_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_get_child_execution_lane_systems)
+	( ecsact_system_like_id   parent_system_id
+	, int32_t                 index
+	, int32_t                 max_child_systems_count
+	, ecsact_system_id*       out_child_systems
+	, int32_t*                out_child_systems_count
+	);
+
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
 #else

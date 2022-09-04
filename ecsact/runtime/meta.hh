@@ -326,4 +326,48 @@ namespace ecsact::meta {
 		return parent_sys_id;
 	}
 
+	struct execution_lane {
+		std::vector<ecsact_system_like_id> systems;
+	};
+
+	inline std::vector<execution_lane> get_execution_lanes() {
+		std::vector<execution_lane> lanes;
+		lanes.resize(ecsact_meta_count_execution_lanes());
+		for(int index=0; lanes.size() > index; ++index) {
+			auto& lane = lanes[index];
+			lane.systems.resize(ecsact_meta_count_execution_lane_systems(index));
+			ecsact_meta_get_execution_lane_systems(
+				index,
+				static_cast<int32_t>(lane.systems.size()),
+				lane.systems.data(),
+				nullptr
+			);
+		}
+
+		return lanes;
+	}
+
+	template<typename SystemLikeID>
+	inline std::vector<execution_lane> get_child_execution_lanes
+		( SystemLikeID parent_id
+		)
+	{
+		auto parent_sys_like_id = ecsact_id_cast<ecsact_system_like_id>(parent_id);
+		std::vector<execution_lane> lanes;
+		lanes.resize(ecsact_meta_count_child_execution_lanes(parent_sys_like_id));
+		for(int index=0; lanes.size() > index; ++index) {
+			auto& lane = lanes[index];
+			lane.systems.resize(ecsact_meta_count_execution_lane_systems(index));
+			ecsact_meta_get_child_execution_lane_systems(
+				parent_sys_like_id,
+				index,
+				static_cast<int32_t>(lane.systems.size()),
+				reinterpret_cast<ecsact_system_id*>(lane.systems.data()),
+				nullptr
+			);
+		}
+
+		return lanes;
+	}
+
 }
