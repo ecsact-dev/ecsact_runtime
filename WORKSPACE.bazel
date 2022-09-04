@@ -4,9 +4,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "com_google_googletest",
-    sha256 = "e891e3e8d81179d93da06ae93db0779cb55dc5479b6c9d4bce63cd62ae9befb8",
-    strip_prefix = "googletest-afd902e992b720d1b3e106bc5e425a5768872265",
-    url = "https://github.com/google/googletest/archive/afd902e992b720d1b3e106bc5e425a5768872265.zip",
+    sha256 = "ca6c78876bd052a7730dd717ba083e7351e26b3cfa68c5e3babd1b9d9925402e",
+    strip_prefix = "googletest-0e0d9feefab1b51aaab9dfd70132e93c0b6964e5",
+    url = "https://github.com/google/googletest/archive/0e0d9feefab1b51aaab9dfd70132e93c0b6964e5.zip",
 )
 
 http_archive(
@@ -22,9 +22,9 @@ boost_http_archives()
 
 http_archive(
     name = "hedron_compile_commands",
-    sha256 = "f5cf960d7477b95546a96b05397129969133ec0c1af9889e5d02ebe42dba6abd",
-    strip_prefix = "bazel-compile-commands-extractor-2a72a3b761e21a0405995b323a3b765d93bd6df4",
-    url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/2a72a3b761e21a0405995b323a3b765d93bd6df4.tar.gz",
+    sha256 = "4b251a482a85de6c5cb0dc34c5671e73190b9ff348e9979fa2c033d81de0f928",
+    strip_prefix = "bazel-compile-commands-extractor-5bb5ff2f32d542a986033102af771aa4206387b9",
+    url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/5bb5ff2f32d542a986033102af771aa4206387b9.tar.gz",
 )
 
 load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_setup")
