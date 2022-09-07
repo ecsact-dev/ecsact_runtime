@@ -390,9 +390,14 @@ namespace ecsact::meta {
 		( SystemLikeID id
 		)
 	{
+		using result_t = std::unordered_map
+			< ecsact_component_like_id
+			, ecsact_system_capability
+			>;
+
 		const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
 		auto count = ecsact_meta_system_capabilities_count(sys_like_id);
-		std::vector<ecsact_component_id> components;
+		std::vector<ecsact_component_like_id> components;
 		std::vector<ecsact_system_capability> capabilities;
 		components.resize(count);
 		capabilities.resize(count);
@@ -405,7 +410,7 @@ namespace ecsact::meta {
 			nullptr
 		);
 
-		std::unordered_map<ecsact_component_id, ecsact_system_capability> result;
+		result_t result;
 		result.reserve(count);
 
 		for(decltype(count) i=0; count > i; ++i) {
