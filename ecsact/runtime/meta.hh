@@ -4,6 +4,7 @@
 #include <string>
 #include <optional>
 #include <filesystem>
+#include <unordered_map>
 #include "ecsact/runtime/meta.h"
 
 namespace ecsact::meta {
@@ -339,6 +340,36 @@ namespace ecsact::meta {
 			nullptr
 		);
 		return top_sys_like_ids;
+	}
+
+	template<typename SystemLikeID>
+	inline auto system_capabilities
+		( SystemLikeID id
+		)
+	{
+		const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+		auto count = ecsact_meta_system_capabilities_count(sys_like_id);
+		std::vector<ecsact_component_id> components;
+		std::vector<ecsact_system_capability> capabilities;
+		components.resize(count);
+		capabilities.resize(count);
+
+		ecsact_meta_system_capabilities(
+			sys_like_id,
+			count,
+			components.data(),
+			capabilities.data(),
+			nullptr
+		);
+
+		std::unordered_map<ecsact_component_id, ecsact_system_capability> result;
+		result.reserve(count);
+
+		for(decltype(count) i=0; count > i; ++i) {
+			result[components[i]] = capabilities[i];
+		}
+
+		return result;
 	}
 
 }
