@@ -132,6 +132,49 @@ namespace ecsact::meta {
 		return comp_name;
 	}
 
+	inline std::vector<ecsact_transient_id> get_transient_ids
+		( ecsact_package_id package_id
+		)
+	{
+		std::vector<ecsact_transient_id> transient_ids;
+		transient_ids.resize(ecsact_meta_count_transients(package_id));
+		ecsact_meta_get_transient_ids(
+			package_id,
+			static_cast<int32_t>(transient_ids.size()),
+			transient_ids.data(),
+			nullptr
+		);
+		return transient_ids;
+	}
+
+	inline std::vector<ecsact_transient_id> get_transient_ids
+		( ecsact_package_id  package_id
+		, int32_t            max_size
+		)
+	{
+		std::vector<ecsact_transient_id> transient_ids;
+		transient_ids.resize(max_size);
+		ecsact_meta_get_transient_ids(
+			package_id,
+			max_size,
+			transient_ids.data(),
+			&max_size
+		);
+		transient_ids.resize(max_size);
+		return transient_ids;
+	}
+
+	inline std::string transient_name
+		( ecsact_transient_id transient_id
+		)
+	{
+		auto comp_name = ecsact_meta_transient_name(transient_id);
+		if(comp_name == nullptr) {
+			return {};
+		}
+		return comp_name;
+	}
+
 	template<typename CompositeID>
 	inline std::vector<ecsact_field_id> get_field_ids
 		( CompositeID id

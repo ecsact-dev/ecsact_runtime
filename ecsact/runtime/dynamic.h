@@ -61,7 +61,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_action)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
 	( ecsact_system_execution_context*  context
-	, ecsact_component_id               component_id
+	, ecsact_component_like_id          component_id
 	, const void*                       component_data
 	);
 
@@ -74,7 +74,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
 	( ecsact_system_execution_context*  context
-	, ecsact_component_id               component_id
+	, ecsact_component_like_id          component_id
 	);
 
 /**
@@ -92,7 +92,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
 	( ecsact_system_execution_context*  context
-	, ecsact_component_id               component_id
+	, ecsact_component_like_id          component_id
 	, void*                             out_component_data
 	);
 
@@ -105,7 +105,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
 	( ecsact_system_execution_context*  context
-	, ecsact_component_id               component_id
+	, ecsact_component_like_id          component_id
 	, const void*                       component_data
 	);
 
@@ -120,7 +120,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 	( ecsact_system_execution_context*  context
-	, ecsact_component_id               component_id
+	, ecsact_component_like_id          component_id
 	);
 
 /**
@@ -264,6 +264,16 @@ ECSACT_DYNAMIC_API_FN(ecsact_component_id, ecsact_create_component)
 	);
 
 /**
+ * Create new transient
+ * @returns unique transient ID for newly created transient
+ */
+ECSACT_DYNAMIC_API_FN(ecsact_transient_id, ecsact_create_transient)
+	( ecsact_package_id  owner
+	, const char*        transient_name
+	, int32_t            transient_name_len
+	);
+
+/**
  * @param declaration_id - Component or action ID
  * @returns field index for declaration
  */
@@ -284,6 +294,10 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_remove_field)
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_destroy_component)
 	( ecsact_component_id component_id
+	);
+
+ECSACT_DYNAMIC_API_FN(void, ecsact_destroy_transient)
+	( ecsact_transient_id component_id
 	);
 
 ECSACT_DYNAMIC_API_FN(ecsact_enum_id, ecsact_create_enum)
@@ -310,28 +324,28 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_remove_enum_value)
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	, ecsact_system_capability
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_association_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	, ecsact_field_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	, ecsact_system_capability
 	);
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_association_capability)
 	( ecsact_system_like_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	, ecsact_field_id
-	, ecsact_component_id
+	, ecsact_component_like_id
 	);
 
 /**
