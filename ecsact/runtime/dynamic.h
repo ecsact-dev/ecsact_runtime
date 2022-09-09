@@ -351,18 +351,17 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_association_capability)
 /**
  * Adds a set of component ids that this system may use to generate new
  * entities.
- * 
- * @note there is no way to remove a system generate component set. If it is
- *       a requirement, however, you may destroy the system and re-create it
- *       without the generate component set(s).
- * 
- * @return returns -1 if unsuccessful otherwise returns unspecified value
  */
-ECSACT_DYNAMIC_API_FN(int, ecsact_add_system_generate_component_set)
+ECSACT_DYNAMIC_API_FN(ecsact_system_generates_id, ecsact_add_system_generates)
 	( ecsact_system_like_id    system_id
-	, int                      components_count
+	, int32_t                  components_count
 	, ecsact_component_id*     component_ids
 	, ecsact_system_generate*  component_generate_flags
+	);
+
+ECSACT_DYNAMIC_API_FN(ecsact_system_generates_id, ecsact_removes_system_generates)
+	( ecsact_system_like_id       system_id
+	, ecsact_system_generates_id  generates_id
 	);
 
 ECSACT_DYNAMIC_API_FN(bool, ecsact_register_component)
