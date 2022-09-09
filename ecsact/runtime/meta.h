@@ -288,6 +288,31 @@ ECSACT_META_API_FN(void, ecsact_meta_system_association_capabilities)
 	, int32_t*                   out_capabilities_count
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_system_generates_ids)
+	( ecsact_system_like_id system_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_system_generates_ids)
+	( ecsact_system_like_id        system_id
+	, int32_t                      max_generates_ids_count
+	, ecsact_system_generates_id*  out_generates_ids
+	, int32_t*                     out_generates_ids_count
+	);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_count_system_generates_components)
+	( ecsact_system_like_id       system_id
+	, ecsact_system_generates_id  generates_id
+	);
+
+ECSACT_META_API_FN(void, ecsact_meta_system_generates_components)
+	( ecsact_system_like_id       system_id
+	, ecsact_system_generates_id  generates_id
+	, int32_t                     max_components_count
+	, ecsact_component_id*        component_ids
+	, ecsact_system_generate*     component_generate_flags
+	, int32_t*                    out_components_count
+	);
+
 /**
  * @returns a declarations full name including package and any parent
  *          declarations.
