@@ -359,7 +359,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_generates_id, ecsact_add_system_generates)
 	, ecsact_system_generate*  component_generate_flags
 	);
 
-ECSACT_DYNAMIC_API_FN(ecsact_system_generates_id, ecsact_removes_system_generates)
+ECSACT_DYNAMIC_API_FN(ecsact_system_generates_id, ecsact_remove_system_generates)
 	( ecsact_system_like_id       system_id
 	, ecsact_system_generates_id  generates_id
 	);
