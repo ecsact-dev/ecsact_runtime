@@ -385,6 +385,29 @@ namespace ecsact::meta {
 		return top_sys_like_ids;
 	}
 
+	inline auto get_all_system_like_ids
+		( ecsact_package_id package_id
+		)
+	{
+		std::vector<ecsact_system_like_id> result;
+		auto sys_ids = get_system_ids(package_id);
+		auto act_ids = get_action_ids(package_id);
+		result.reserve(sys_ids.size() + act_ids.size());
+
+		result.insert(
+			result.end(),
+			reinterpret_cast<ecsact_system_like_id*>(sys_ids.data()),
+			reinterpret_cast<ecsact_system_like_id*>(sys_ids.data() + sys_ids.size())
+		);
+		result.insert(
+			result.end(),
+			reinterpret_cast<ecsact_system_like_id*>(act_ids.data()),
+			reinterpret_cast<ecsact_system_like_id*>(act_ids.data() + act_ids.size())
+		);
+
+		return result;
+	}
+
 	template<typename SystemLikeID>
 	inline auto system_capabilities
 		( SystemLikeID id
@@ -417,6 +440,23 @@ namespace ecsact::meta {
 			result[components[i]] = capabilities[i];
 		}
 
+		return result;
+	}
+
+	template<typename SystemLikeID>
+	static auto get_system_generates_ids
+		( SystemLikeID id
+		)
+	{
+		auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+		std::vector<ecsact_system_generates_id> result;
+		result.resize(ecsact_meta_count_system_generates_ids(sys_like_id));
+		ecsact_meta_system_generates_ids(
+			sys_like_id,
+			static_cast<int32_t>(result.size()),
+			result.data(),
+			nullptr
+		);
 		return result;
 	}
 
