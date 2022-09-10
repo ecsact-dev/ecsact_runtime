@@ -3,10 +3,30 @@ workspace(name = "ecsact_runtime")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
+    name = "bazel_skylib",
+    sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+http_archive(
     name = "com_google_googletest",
     sha256 = "669b52ce29b510b1d96d15e3d5aeeca14cc9adb6306986290cb047d8fafa3174",
     strip_prefix = "googletest-c29315dda476f195298ab8da180e564478649b9e",
     url = "https://github.com/google/googletest/archive/c29315dda476f195298ab8da180e564478649b9e.zip",
+)
+
+http_archive(
+    name = "com_google_absl",
+    sha256 = "13c086356d01079377b9d894ee461cf63550bafd4119e93107afa70e0eb16fec",
+    strip_prefix = "abseil-cpp-0a066f31d981d69f7bde961055691906dabd4a3c",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/0a066f31d981d69f7bde961055691906dabd4a3c.zip"],
 )
 
 http_archive(
