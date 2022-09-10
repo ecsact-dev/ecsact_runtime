@@ -361,6 +361,7 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 	, int32_t*                out_systems_count
 	);
 
+//# BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
@@ -405,5 +406,6 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);\
 		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__)
 #endif
+//# END FOR_EACH_ECSACT_META_API_FN
 
 #endif // ECSACT_RUNTIME_META_H
