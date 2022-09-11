@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 namespace ecsact {
 	/**
 	 * Helper type to contain an arbitrary amounts of types. Meant for 
