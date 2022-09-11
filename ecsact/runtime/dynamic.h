@@ -385,6 +385,7 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_register_action)
 	, ecsact_action_id
 	);
 
+//# BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...)\
 	fn(ecsact_system_execution_context_action, __VA_ARGS__);\
 	fn(ecsact_system_execution_context_add, __VA_ARGS__);\

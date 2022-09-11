@@ -93,6 +93,7 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 	, void*                out_component_data
 	);
 
+//# BEGIN FOR_EACH_ECSACT_SERIALIZE_API_FN
 #define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...)\
 	fn(ecsact_serialize_action_size, __VA_ARGS__);\
 	fn(ecsact_serialize_component_size, __VA_ARGS__);\

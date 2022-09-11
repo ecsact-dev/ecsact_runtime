@@ -126,6 +126,7 @@ ECSACT_STATIC_API_FN(void, ecsact_static_off_reload)
 	( ecsact_static_reload_callback callback
 	);
 
+//# BEGIN FOR_EACH_ECSACT_STATIC_API_FN
 #define FOR_EACH_ECSACT_STATIC_API_FN(fn, ...)\
 	fn(ecsact_static_components, __VA_ARGS__);\
 	fn(ecsact_static_variants, __VA_ARGS__);\

@@ -381,6 +381,7 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 	, const ecsact_execution_events_collector*  events_collector
 	);
 
+//# BEGIN FOR_EACH_ECSACT_CORE_API_FN
 #define FOR_EACH_ECSACT_CORE_API_FN(fn, ...)\
 	fn(ecsact_create_registry, __VA_ARGS__);\
 	fn(ecsact_destroy_registry, __VA_ARGS__);\
