@@ -70,7 +70,8 @@ void check_module_header(fs::path module_header_path) {
 		}
 		stream
 			<< "#endif\n\n"
-			<< "#endif // " << for_each_fn_macro_name << "\n";
+			<< "#endif // ECSACT_RUNTIME_"
+			<< absl::AsciiStrToUpper(module_name) << "_H" << "\n";
 		stream.flush();
 	}
 }

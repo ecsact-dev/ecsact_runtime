@@ -435,4 +435,4 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_register_action)
 		fn(ecsact_register_action, __VA_ARGS__)
 #endif
 
-#endif // FOR_EACH_ECSACT_DYNAMIC_API_FN
+#endif // ECSACT_RUNTIME_DYNAMIC_H

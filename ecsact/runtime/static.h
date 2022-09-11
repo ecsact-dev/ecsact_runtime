@@ -139,4 +139,4 @@ ECSACT_STATIC_API_FN(void, ecsact_static_off_reload)
 		fn(ecsact_static_off_reload, __VA_ARGS__)
 #endif
 
-#endif // FOR_EACH_ECSACT_STATIC_API_FN
+#endif // ECSACT_RUNTIME_STATIC_H

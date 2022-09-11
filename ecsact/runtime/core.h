@@ -406,4 +406,4 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 		fn(ecsact_execute_systems, __VA_ARGS__)
 #endif
 
-#endif // FOR_EACH_ECSACT_CORE_API_FN
+#endif // ECSACT_RUNTIME_CORE_H

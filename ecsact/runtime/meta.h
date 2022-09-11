@@ -415,4 +415,4 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__)
 #endif
 
-#endif // FOR_EACH_ECSACT_META_API_FN
+#endif // ECSACT_RUNTIME_META_H

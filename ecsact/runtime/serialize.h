@@ -106,4 +106,4 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 		fn(ecsact_deserialize_component, __VA_ARGS__)
 #endif
 
-#endif // FOR_EACH_ECSACT_SERIALIZE_API_FN
+#endif // ECSACT_RUNTIME_SERIALIZE_H
