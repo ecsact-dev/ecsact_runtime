@@ -382,26 +382,28 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 	);
 
 //# BEGIN FOR_EACH_ECSACT_CORE_API_FN
-#define FOR_EACH_ECSACT_CORE_API_FN(fn, ...)\
-	fn(ecsact_create_registry, __VA_ARGS__);\
-	fn(ecsact_destroy_registry, __VA_ARGS__);\
-	fn(ecsact_clear_registry, __VA_ARGS__);\
-	fn(ecsact_create_entity, __VA_ARGS__);\
-	fn(ecsact_ensure_entity, __VA_ARGS__);\
-	fn(ecsact_entity_exists, __VA_ARGS__);\
-	fn(ecsact_destroy_entity, __VA_ARGS__);\
-	fn(ecsact_count_entities, __VA_ARGS__);\
-	fn(ecsact_get_entities, __VA_ARGS__);\
-	fn(ecsact_add_component, __VA_ARGS__);\
-	fn(ecsact_has_component, __VA_ARGS__);\
-	fn(ecsact_get_component, __VA_ARGS__);\
-	fn(ecsact_each_component, __VA_ARGS__);\
-	fn(ecsact_count_components, __VA_ARGS__);\
-	fn(ecsact_get_components, __VA_ARGS__);\
-	fn(ecsact_update_component, __VA_ARGS__);\
-	fn(ecsact_remove_component, __VA_ARGS__);\
-	fn(ecsact_execute_systems, __VA_ARGS__)
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#else
+#	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...)\
+		fn(ecsact_create_registry, __VA_ARGS__);\
+		fn(ecsact_destroy_registry, __VA_ARGS__);\
+		fn(ecsact_clear_registry, __VA_ARGS__);\
+		fn(ecsact_create_entity, __VA_ARGS__);\
+		fn(ecsact_ensure_entity, __VA_ARGS__);\
+		fn(ecsact_entity_exists, __VA_ARGS__);\
+		fn(ecsact_destroy_entity, __VA_ARGS__);\
+		fn(ecsact_count_entities, __VA_ARGS__);\
+		fn(ecsact_get_entities, __VA_ARGS__);\
+		fn(ecsact_add_component, __VA_ARGS__);\
+		fn(ecsact_has_component, __VA_ARGS__);\
+		fn(ecsact_get_component, __VA_ARGS__);\
+		fn(ecsact_count_components, __VA_ARGS__);\
+		fn(ecsact_get_components, __VA_ARGS__);\
+		fn(ecsact_each_component, __VA_ARGS__);\
+		fn(ecsact_update_component, __VA_ARGS__);\
+		fn(ecsact_remove_component, __VA_ARGS__);\
+		fn(ecsact_execute_systems, __VA_ARGS__)
+#endif
 
-#undef ECSACT_CORE_API
-#undef ECSACT_CORE_API_FN
-#endif // ECSACT_RUNTIME_CORE_H
+#endif // FOR_EACH_ECSACT_CORE_API_FN

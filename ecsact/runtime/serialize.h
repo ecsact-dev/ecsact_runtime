@@ -94,14 +94,16 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 	);
 
 //# BEGIN FOR_EACH_ECSACT_SERIALIZE_API_FN
-#define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...)\
-	fn(ecsact_serialize_action_size, __VA_ARGS__);\
-	fn(ecsact_serialize_component_size, __VA_ARGS__);\
-	fn(ecsact_serialize_action, __VA_ARGS__);\
-	fn(ecsact_serialize_component, __VA_ARGS__);\
-	fn(ecsact_deserialize_action, __VA_ARGS__);\
-	fn(ecsact_deserialize_component, __VA_ARGS__)
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#else
+#	define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...)\
+		fn(ecsact_serialize_action_size, __VA_ARGS__);\
+		fn(ecsact_serialize_component_size, __VA_ARGS__);\
+		fn(ecsact_serialize_action, __VA_ARGS__);\
+		fn(ecsact_deserialize_action, __VA_ARGS__);\
+		fn(ecsact_serialize_component, __VA_ARGS__);\
+		fn(ecsact_deserialize_component, __VA_ARGS__)
+#endif
 
-#undef ECSACT_SERIALIZE_API
-#undef ECSACT_SERIALIZE_API_FN
-#endif // ECSACT_RUNTIME_SERIALIZE_H
+#endif // FOR_EACH_ECSACT_SERIALIZE_API_FN
