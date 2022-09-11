@@ -444,7 +444,7 @@ namespace ecsact::meta {
 	}
 
 	template<typename SystemLikeID>
-	static auto get_system_generates_ids
+	inline auto get_system_generates_ids
 		( SystemLikeID id
 		)
 	{
@@ -457,6 +457,44 @@ namespace ecsact::meta {
 			result.data(),
 			nullptr
 		);
+		return result;
+	}
+
+	template<typename SystemLikeID>
+	inline auto get_system_generates_components
+		( SystemLikeID                id
+		, ecsact_system_generates_id  generates_id
+		)
+	{
+		auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+
+		std::vector<ecsact_component_id> component_ids;
+		std::vector<ecsact_system_generate> generate_flags;
+
+		auto count = ecsact_meta_count_system_generates_components(
+			sys_like_id,
+			generates_id
+		);
+
+		component_ids.resize(count);
+		generate_flags.resize(count);
+
+		ecsact_meta_system_generates_components(
+			sys_like_id,
+			generates_id,
+			count,
+			component_ids.data(),
+			generate_flags.data(),
+			nullptr
+		);
+
+		std::unordered_map<ecsact_component_id, ecsact_system_generate> result;
+		result.reserve(count);
+
+		for(int i=0; count > i; ++i) {
+			result[component_ids[i]] = generate_flags[i];
+		}
+
 		return result;
 	}
 
