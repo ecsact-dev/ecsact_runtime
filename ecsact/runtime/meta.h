@@ -361,6 +361,7 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 	, int32_t*                out_systems_count
 	);
 
+//# BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
@@ -398,6 +399,14 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 		fn(ecsact_meta_system_name, __VA_ARGS__);\
 		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
 		fn(ecsact_meta_system_capabilities, __VA_ARGS__);\
+		fn(ecsact_meta_system_association_fields_count, __VA_ARGS__);\
+		fn(ecsact_meta_system_association_fields, __VA_ARGS__);\
+		fn(ecsact_meta_system_association_capabilities_count, __VA_ARGS__);\
+		fn(ecsact_meta_system_association_capabilities, __VA_ARGS__);\
+		fn(ecsact_meta_count_system_generates_ids, __VA_ARGS__);\
+		fn(ecsact_meta_system_generates_ids, __VA_ARGS__);\
+		fn(ecsact_meta_count_system_generates_components, __VA_ARGS__);\
+		fn(ecsact_meta_system_generates_components, __VA_ARGS__);\
 		fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
 		fn(ecsact_meta_count_child_systems, __VA_ARGS__);\
 		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);\

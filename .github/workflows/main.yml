@@ -56,3 +56,15 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: bazel test --config=ci //...
+  check-module-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel-disk-cache
+          key: ${{runner.os}}-bazel-cache
+      - uses: actions/checkout@v3
+      - run: bazel run --config=ci //scripts:check_module_header ecsact/runtime/core.h ecsact/runtime/dynamic.h ecsact/runtime/meta.h ecsact/runtime/serialize.h ecsact/runtime/static.h
+      - run: git diff --quiet

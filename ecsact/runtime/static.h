@@ -126,14 +126,17 @@ ECSACT_STATIC_API_FN(void, ecsact_static_off_reload)
 	( ecsact_static_reload_callback callback
 	);
 
-#define FOR_EACH_ECSACT_STATIC_API_FN(fn, ...)\
-	fn(ecsact_static_components, __VA_ARGS__);\
-	fn(ecsact_static_variants, __VA_ARGS__);\
-	fn(ecsact_static_systems, __VA_ARGS__);\
-	fn(ecsact_static_actions, __VA_ARGS__);\
-	fn(ecsact_static_on_reload, __VA_ARGS__);\
-	fn(ecsact_static_off_reload, __VA_ARGS__)
+//# BEGIN FOR_EACH_ECSACT_STATIC_API_FN
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define FOR_EACH_ECSACT_STATIC_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#else
+#	define FOR_EACH_ECSACT_STATIC_API_FN(fn, ...)\
+		fn(ecsact_static_components, __VA_ARGS__);\
+		fn(ecsact_static_variants, __VA_ARGS__);\
+		fn(ecsact_static_systems, __VA_ARGS__);\
+		fn(ecsact_static_actions, __VA_ARGS__);\
+		fn(ecsact_static_on_reload, __VA_ARGS__);\
+		fn(ecsact_static_off_reload, __VA_ARGS__)
+#endif
 
-#undef ECSACT_STATIC_API
-#undef ECSACT_STATIC_API_FN
 #endif // ECSACT_RUNTIME_STATIC_H
