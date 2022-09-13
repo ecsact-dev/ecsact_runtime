@@ -550,6 +550,8 @@ namespace ecsact::meta {
 
 		ecsact_meta_system_association_capabilities(
 			sys_like_id,
+			comp_like_id,
+			field_id,
 			count,
 			components.data(),
 			capabilities.data(),
