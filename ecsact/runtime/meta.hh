@@ -498,4 +498,72 @@ namespace ecsact::meta {
 		return result;
 	}
 
+	template<typename SystemLikeID, typename ComponentLikeID>
+	inline auto system_association_fields
+		( SystemLikeID     system_id
+		, ComponentLikeID  component_id
+		)
+	{
+		auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(system_id);
+		auto comp_like_id = ecsact_id_cast<ecsact_component_like_id>(component_id);
+
+		std::vector<ecsact_field_id> field_ids;
+		field_ids.resize(ecsact_meta_system_association_fields_count(
+			sys_like_id,
+			comp_like_id
+		));
+
+		ecsact_meta_system_association_fields(
+			sys_like_id,
+			comp_like_id,
+			static_cast<int32_t>(field_ids.size()),
+			field_ids.data(),
+			nullptr
+		);
+
+		return field_ids;
+	}
+	template<typename SystemLikeID, typename ComponentLikeID>
+	inline auto system_association_capabilities
+		( SystemLikeID     system_id
+		, ComponentLikeID  component_id
+		, ecsact_field_id  field_id
+		)
+	{
+		using result_t = std::unordered_map
+			< ecsact_component_like_id
+			, ecsact_system_capability
+			>;
+
+		auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(system_id);
+		auto comp_like_id = ecsact_id_cast<ecsact_component_like_id>(component_id);
+
+		auto count = ecsact_meta_system_association_capabilities_count(
+			sys_like_id,
+			comp_like_id,
+			field_id
+		);
+		std::vector<ecsact_component_like_id> components;
+		std::vector<ecsact_system_capability> capabilities;
+		components.resize(count);
+		capabilities.resize(count);
+
+		ecsact_meta_system_association_capabilities(
+			sys_like_id,
+			count,
+			components.data(),
+			capabilities.data(),
+			nullptr
+		);
+
+		result_t result;
+		result.reserve(count);
+
+		for(decltype(count) i=0; count > i; ++i) {
+			result[components[i]] = capabilities[i];
+		}
+
+		return result;
+	}
+
 }
