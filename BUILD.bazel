@@ -37,7 +37,10 @@ cc_library(
 
 cc_library(
     name = "core",
-    hdrs = ["ecsact/runtime/core.h"],
+    hdrs = [
+        "ecsact/runtime/core.h",
+        "ecsact/runtime/core.hh",
+    ],
     copts = copts,
     deps = [":common"],
 )
