@@ -58,6 +58,11 @@ ECSACT_META_API_FN(const char*, ecsact_meta_package_name)
 	);
 
 /**
+ * @returns the main package ID. -1 if there is no main package
+ */
+ECSACT_META_API_FN(ecsact_package_id, ecsact_meta_main_package)();
+
+/**
  * @param package_id the ID given to the package when created
  * @returns the ecsact file path for the package
  */
@@ -369,6 +374,7 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 		fn(ecsact_meta_count_packages, __VA_ARGS__);\
 		fn(ecsact_meta_get_package_ids, __VA_ARGS__);\
 		fn(ecsact_meta_package_name, __VA_ARGS__);\
+		fn(ecsact_meta_main_package, __VA_ARGS__);\
 		fn(ecsact_meta_package_file_path, __VA_ARGS__);\
 		fn(ecsact_meta_count_dependencies, __VA_ARGS__);\
 		fn(ecsact_meta_get_dependencies, __VA_ARGS__);\
