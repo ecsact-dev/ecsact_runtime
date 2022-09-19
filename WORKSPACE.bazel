@@ -24,9 +24,9 @@ http_archive(
 
 http_archive(
     name = "com_google_absl",
-    sha256 = "7401c95b521f4f6501453723306d3a56333e6579f5763ec0810c0f57f536849a",
-    strip_prefix = "abseil-cpp-6b7b11a97fc72849f74610ee4d53403ad417d3cd",
-    urls = ["https://github.com/abseil/abseil-cpp/archive/6b7b11a97fc72849f74610ee4d53403ad417d3cd.zip"],
+    sha256 = "8fa6a519ece61c052d79d8c7c769b606f703f02b20b17c8c9791152ff42cc04e",
+    strip_prefix = "abseil-cpp-5937b7f9d123e6b01064fdb488d6c96d28d99a75",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/5937b7f9d123e6b01064fdb488d6c96d28d99a75.zip"],
 )
 
 http_archive(
