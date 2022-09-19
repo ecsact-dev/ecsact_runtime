@@ -225,7 +225,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_remove_child_system)
 	);
 
 /**
- * Systems execute in the order they are registered in. If the order needs to be
+ * Systems execute in the order they are created in. If the order needs to be
  * adjusted this method can be used to move systems before or after other
  * systems.
  */
@@ -370,21 +370,6 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_generates_unset_component)
 	, ecsact_component_id         component_id
 	);
 
-ECSACT_DYNAMIC_API_FN(bool, ecsact_register_component)
-	( ecsact_registry_id
-	, ecsact_component_id
-	);
-
-ECSACT_DYNAMIC_API_FN(bool, ecsact_register_system)
-	( ecsact_registry_id
-	, ecsact_system_id
-	);
-
-ECSACT_DYNAMIC_API_FN(bool, ecsact_register_action)
-	( ecsact_registry_id
-	, ecsact_action_id
-	);
-
 //# BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -429,10 +414,7 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_register_action)
 		fn(ecsact_add_system_generates, __VA_ARGS__);\
 		fn(ecsact_remove_system_generates, __VA_ARGS__);\
 		fn(ecsact_system_generates_set_component, __VA_ARGS__);\
-		fn(ecsact_system_generates_unset_component, __VA_ARGS__);\
-		fn(ecsact_register_component, __VA_ARGS__);\
-		fn(ecsact_register_system, __VA_ARGS__);\
-		fn(ecsact_register_action, __VA_ARGS__)
+		fn(ecsact_system_generates_unset_component, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
