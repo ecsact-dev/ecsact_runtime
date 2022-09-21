@@ -134,6 +134,11 @@ ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
 	, ecsact_field_id      field_id
 	);
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_field_offset)
+	( ecsact_composite_id  composite_id
+	, ecsact_field_id      field_id
+	);
+
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_systems)
 	( ecsact_package_id package_id
 	);
@@ -386,6 +391,7 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 		fn(ecsact_meta_get_field_ids, __VA_ARGS__);\
 		fn(ecsact_meta_field_name, __VA_ARGS__);\
 		fn(ecsact_meta_field_type, __VA_ARGS__);\
+		fn(ecsact_meta_field_offset, __VA_ARGS__);\
 		fn(ecsact_meta_count_systems, __VA_ARGS__);\
 		fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
 		fn(ecsact_meta_count_actions, __VA_ARGS__);\
