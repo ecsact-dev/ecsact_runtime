@@ -95,5 +95,19 @@ namespace ecsact::core {
 				);	
 			}
 		}
+
+		template<typename Component>
+		inline auto update_component
+			( ecsact_entity_id  entity_id
+			, const Component&  component
+			)
+		{
+			return ecsact_update_component(
+				_id,
+				entity_id,
+				Component::id,
+				&component
+			);
+		}
 	};
 }
