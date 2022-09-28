@@ -17,9 +17,9 @@ bazel_skylib_workspace()
 
 http_archive(
     name = "com_google_googletest",
-    sha256 = "5cb522f1427558c6df572d6d0e1bf0fd076428633d080e88ad5312be0b6a8859",
-    strip_prefix = "googletest-e23cdb78e9fef1f69a9ef917f447add5638daf2a",
-    url = "https://github.com/google/googletest/archive/e23cdb78e9fef1f69a9ef917f447add5638daf2a.zip",
+    sha256 = "ec5f8f8fefcbe694f71be7e5e3459465a0d720b9955be97581ac3e3eadd1e545",
+    strip_prefix = "googletest-c43b916a9623e052860f59e52f71de1974ed8823",
+    url = "https://github.com/google/googletest/archive/c43b916a9623e052860f59e52f71de1974ed8823.zip",
 )
 
 http_archive(
