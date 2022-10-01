@@ -179,7 +179,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_execution_context*, ecsact_system_execution_
  * Get the entity for the execution context
  */
 ECSACT_DYNAMIC_API_FN(ecsact_entity_id, ecsact_system_execution_context_entity)
-	( ecsact_system_execution_context*  context
+	( const ecsact_system_execution_context*  context
 	);
 
 /**
