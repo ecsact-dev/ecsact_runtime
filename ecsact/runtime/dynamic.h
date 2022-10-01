@@ -176,6 +176,13 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_execution_context*, ecsact_system_execution_
 	);
 
 /**
+ * Get the entity for the execution context
+ */
+ECSACT_DYNAMIC_API_FN(ecsact_entity_id, ecsact_system_execution_context_entity)
+	( ecsact_system_execution_context*  context
+	);
+
+/**
  * Get the current system/action ID
  */
 ECSACT_DYNAMIC_API_FN(ecsact_system_like_id, ecsact_system_execution_context_id)
@@ -385,6 +392,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_generates_unset_component)
 		fn(ecsact_system_execution_context_parent, __VA_ARGS__);\
 		fn(ecsact_system_execution_context_same, __VA_ARGS__);\
 		fn(ecsact_system_execution_context_other, __VA_ARGS__);\
+		fn(ecsact_system_execution_context_entity, __VA_ARGS__);\
 		fn(ecsact_system_execution_context_id, __VA_ARGS__);\
 		fn(ecsact_create_package, __VA_ARGS__);\
 		fn(ecsact_set_package_source_file_path, __VA_ARGS__);\
