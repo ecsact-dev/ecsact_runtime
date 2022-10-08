@@ -329,6 +329,55 @@ namespace ecsact::meta {
 		return enum_ids;
 	}
 
+	inline std::vector<ecsact_enum_value_id> get_enum_value_ids
+		( ecsact_enum_id  enum_id
+		, int32_t         max_size
+		)
+	{
+		std::vector<ecsact_enum_value_id> enum_value_ids;
+		enum_value_ids.resize(max_size);
+		ecsact_meta_get_enum_value_ids(
+			enum_id,
+			max_size,
+			enum_value_ids.data(),
+			&max_size
+		);
+		enum_value_ids.resize(max_size);
+		return enum_value_ids;
+	}
+
+	inline std::vector<ecsact_enum_value_id> get_enum_value_ids
+		( ecsact_enum_id  enum_id
+		)
+	{
+		return get_enum_value_ids(enum_id, ecsact_meta_count_enum_values(enum_id));
+	}
+
+	struct enum_value {
+		ecsact_enum_value_id id;
+		std::string name;
+		std::int32_t value;
+	};
+
+	inline std::vector<enum_value> get_enum_values
+		( ecsact_enum_id enum_id
+		)
+	{
+		std::vector<enum_value> enum_values;
+		auto size = ecsact_meta_count_enum_values(enum_id);
+		enum_values.reserve(size);
+
+		for(auto enum_value_id : get_enum_value_ids(enum_id, size)) {
+			enum_values.push_back({
+				.id = enum_value_id,
+				.name = ecsact_meta_enum_value_name(enum_id, enum_value_id),
+				.value = ecsact_meta_enum_value(enum_id, enum_value_id),
+			});
+		}
+
+		return enum_values;
+	}
+
 	template<typename DeclarationID>
 	inline std::string decl_full_name
 		( DeclarationID id
