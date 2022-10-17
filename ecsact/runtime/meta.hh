@@ -176,6 +176,15 @@ namespace ecsact::meta {
 	}
 
 	template<typename CompositeID>
+	int32_t count_fields
+		( CompositeID id
+		)
+	{
+		auto compo_id = ecsact_id_cast<ecsact_composite_id>(id);
+		return ecsact_meta_count_fields(compo_id);
+	}
+
+	template<typename CompositeID>
 	inline std::vector<ecsact_field_id> get_field_ids
 		( CompositeID id
 		)
