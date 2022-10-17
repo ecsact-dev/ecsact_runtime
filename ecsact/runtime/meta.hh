@@ -329,6 +329,17 @@ namespace ecsact::meta {
 		return enum_ids;
 	}
 
+	inline std::string enum_name
+		( ecsact_enum_id enum_id
+		)
+	{
+		auto name = ecsact_meta_enum_name(enum_id);
+		if(name == nullptr) {
+			return {};
+		}
+		return name;
+	}
+
 	inline std::vector<ecsact_enum_value_id> get_enum_value_ids
 		( ecsact_enum_id  enum_id
 		, int32_t         max_size
