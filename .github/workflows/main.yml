@@ -17,14 +17,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: jidicula/clang-format-action@v4.9.0
         with: { clang-format-version: "15" }
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/bazelisk
-            ~/.cache/bazel-disk-cache
-          key: ${{runner.os}}-bazel-cache
-      - run: bazel run --config=ci //scripts:check_module_header ecsact/runtime/core.h ecsact/runtime/dynamic.h ecsact/runtime/meta.h ecsact/runtime/serialize.h ecsact/runtime/static.h
-      - run: git diff --quiet
 
   build-windows:
     runs-on: windows-latest
@@ -72,3 +64,16 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: bazel test --config=ci //...
+  check-module-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - run: wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh 15.0.3 && sudo apt install clang-format-15
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel-disk-cache
+          key: ${{runner.os}}-bazel-cache
+      - uses: actions/checkout@v3
+      - run: bazel run --config=ci //scripts:check_module_header ecsact/runtime/core.h ecsact/runtime/dynamic.h ecsact/runtime/meta.h ecsact/runtime/serialize.h ecsact/runtime/static.h -- --clang-format clang-format-15
+      - run: git diff --quiet
