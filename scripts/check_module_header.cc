@@ -22,11 +22,11 @@ void check_module_header(fs::path module_header_path) {
 	const std::string for_each_fn_macro_name =
 		"FOR_EACH_ECSACT_"s + absl::AsciiStrToUpper(module_name) + "_API_FN"s;
 
-	std::cout
+	std::cout //
 		<< "[INFO] Module Name: " << module_name << "\n"
 		<< "[INFO] Module Method Macro Name: " << module_fn_macro_name << "\n"
-		<< "[INFO] For Each Module Method Macro Name: "
-		<< for_each_fn_macro_name << "\n";
+		<< "[INFO] For Each Module Method Macro Name: " << for_each_fn_macro_name
+		<< "\n";
 
 	std::vector<std::string> methods;
 
@@ -34,7 +34,7 @@ void check_module_header(fs::path module_header_path) {
 		module_header_path,
 		std::ios_base::in | std::ios_base::app | std::ios_base::binary
 	);
-	std::string line;
+	std::string                   line;
 	std::optional<std::streampos> for_each_begin;
 	std::optional<std::streampos> for_each_end;
 	while(std::getline(stream, line)) {
@@ -46,7 +46,7 @@ void check_module_header(fs::path module_header_path) {
 
 			auto method_name = absl::StripAsciiWhitespace(second_split[0]);
 			methods.push_back(std::string(method_name));
-		} else if(line.starts_with("//# BEGIN " + for_each_fn_macro_name)) {
+		} else if(line.starts_with("// # BEGIN " + for_each_fn_macro_name)) {
 			for_each_begin = stream.tellg();
 		}
 	}
@@ -54,7 +54,7 @@ void check_module_header(fs::path module_header_path) {
 	if(for_each_begin) {
 		fs::resize_file(module_header_path, static_cast<int>(*for_each_begin));
 		stream.clear();
-		stream
+		stream //
 			<< "#ifdef ECSACT_MSVC_TRADITIONAL\n"
 			<< "#\tdefine " << for_each_fn_macro_name << "(fn, ...) "
 			<< "ECSACT_MSVC_TRADITIONAL_ERROR()\n"
@@ -62,16 +62,17 @@ void check_module_header(fs::path module_header_path) {
 			<< "#\tdefine " << for_each_fn_macro_name << "(fn, ...)\\\n";
 
 		auto methods_count = methods.size();
-		for(int i=0; methods_count - 1 > i; ++i) {
+		for(int i = 0; methods_count - 1 > i; ++i) {
 			stream << "\t\tfn(" << methods[i] << ", __VA_ARGS__);\\\n";
 		}
 		if(methods_count > 0) {
 			stream << "\t\tfn(" << methods[methods_count - 1] << ", __VA_ARGS__)\n";
 		}
-		stream
+		stream //
 			<< "#endif\n\n"
-			<< "#endif // ECSACT_RUNTIME_"
-			<< absl::AsciiStrToUpper(module_name) << "_H" << "\n";
+			<< "#endif // ECSACT_RUNTIME_" << absl::AsciiStrToUpper(module_name)
+			<< "_H"
+			<< "\n";
 		stream.flush();
 	}
 }
@@ -84,7 +85,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	int exit_code = 0;
-	for(int i=1; argc > i; ++i) {
+	for(int i = 1; argc > i; ++i) {
 		fs::path arg(argv[i]);
 		if(!arg.is_absolute()) {
 			arg = bwd / arg;

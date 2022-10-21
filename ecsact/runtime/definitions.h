@@ -6,9 +6,9 @@
 
 /**
  * Built-in Ecsact types.
- * 
+ *
  * @details
- *   Built-in type identifier is composed of 4 bytes. These details are not 
+ *   Built-in type identifier is composed of 4 bytes. These details are not
  *   necessary to understand in order to use this enum, but may provide insight
  *   on the values set.
  *
@@ -22,15 +22,15 @@
  *     values specified in the `ecsact_builtin_type` enum are valid.
  */
 typedef enum ecsact_builtin_type {
-	ECSACT_BOOL          = 0b0000'0000'0000'0001,
-	ECSACT_I8            = 0b1000'0000'0000'1000,
-	ECSACT_U8            = 0b0000'0000'0000'1000,
-	ECSACT_I16           = 0b1000'0000'0001'0000,
-	ECSACT_U16           = 0b0000'0000'0001'0000,
-	ECSACT_I32           = 0b1000'0000'0010'0000,
-	ECSACT_U32           = 0b0000'0000'0010'0000,
-	ECSACT_F32           = 0b0100'0000'0010'0000,
-	ECSACT_ENTITY_TYPE   = 0b0010'0000'0010'0000,
+	ECSACT_BOOL = 0b0000'0000'0000'0001,
+	ECSACT_I8 = 0b1000'0000'0000'1000,
+	ECSACT_U8 = 0b0000'0000'0000'1000,
+	ECSACT_I16 = 0b1000'0000'0001'0000,
+	ECSACT_U16 = 0b0000'0000'0001'0000,
+	ECSACT_I32 = 0b1000'0000'0010'0000,
+	ECSACT_U32 = 0b0000'0000'0010'0000,
+	ECSACT_F32 = 0b0100'0000'0010'0000,
+	ECSACT_ENTITY_TYPE = 0b0010'0000'0010'0000,
 } ecsact_builtin_type;
 
 typedef enum ecsact_type_kind {
@@ -40,12 +40,12 @@ typedef enum ecsact_type_kind {
 
 typedef union ecsact_type {
 	ecsact_builtin_type builtin;
-	ecsact_enum_id enum_id;
+	ecsact_enum_id      enum_id;
 } ecsact_type;
 
 typedef struct ecsact_field_type {
 	ecsact_type_kind kind;
-	ecsact_type type;
+	ecsact_type      type;
 
 	/**
 	 * equals 1        single field (not fixed array)
@@ -90,12 +90,12 @@ typedef struct ecsact_component_definition {
 } ecsact_component_definition;
 
 typedef struct ecsact_system_definition {
-	char* name;
-	int32_t capabilities_len;
-	ecsact_component_id* capability_components;
+	char*                     name;
+	int32_t                   capabilities_len;
+	ecsact_component_id*      capability_components;
 	ecsact_system_capability* capabilities;
-	int32_t child_systems_len;
-	ecsact_system_id* child_systems;
+	int32_t                   child_systems_len;
+	ecsact_system_id*         child_systems;
 } ecsact_system_definition;
 
-#endif//ECSACT_DEFINITIONS_H
+#endif // ECSACT_DEFINITIONS_H
