@@ -10,6 +10,16 @@
 				"@hedron_compile_commands//:refresh_all"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "build //scripts:check_module_header",
+			"command": "bazel",
+			"type": "shell",
+			"args": [
+				"build",
+				"//scripts:check_module_header"
+			],
+			"group": "build"
 		}
 	]
 }

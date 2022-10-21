@@ -14,23 +14,21 @@
 #		else
 #			define ECSACT_DYLIB_API extern __attribute__((visibility("default")))
 #		endif
-# endif
+#	endif
 #endif // ECSACT_DYLIB_API
 
 /**
  * @returns `true` if runtime API function is settable via
  *          `ecsact_dylib_set_fn_addr`
  */
-ECSACT_DYLIB_API bool ecsact_dylib_has_fn
-	( const char* fn_name
-	);
+ECSACT_DYLIB_API bool ecsact_dylib_has_fn(const char* fn_name);
 
 /**
  * Set runtime API function address
  */
-ECSACT_DYLIB_API void ecsact_dylib_set_fn_addr
-	( const char* fn_name
-	, void(*fn_ptr)()
-	);
+ECSACT_DYLIB_API void ecsact_dylib_set_fn_addr(
+	const char* fn_name,
+	void (*fn_ptr)()
+);
 
-#endif//ECSACT_DYLIB_H
+#endif // ECSACT_DYLIB_H

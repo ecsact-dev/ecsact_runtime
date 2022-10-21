@@ -14,7 +14,8 @@
 #			ifdef _WIN32
 #				define ECSACT_META_API_VISIBILITY __declspec(dllexport)
 #			else
-#				define ECSACT_META_API_VISIBILITY __attribute__((visibility("default")))
+#				define ECSACT_META_API_VISIBILITY \
+					__attribute__((visibility("default")))
 #			endif
 #		else
 #			ifdef _WIN32
@@ -31,12 +32,12 @@
 #		define ECSACT_META_API extern "C" ECSACT_META_API_VISIBILITY
 #	else
 #		define ECSACT_META_API extern ECSACT_META_API_VISIBILITY
-# endif
+#	endif
 #endif // ECSACT_META_API
 
 #ifndef ECSACT_META_API_FN
 #	ifdef ECSACT_META_API_LOAD_AT_RUNTIME
-#		define ECSACT_META_API_FN(ret, name) ECSACT_META_API ret (*name)
+#		define ECSACT_META_API_FN(ret, name) ECSACT_META_API ret(*name)
 #	else
 #		define ECSACT_META_API_FN(ret, name) ECSACT_META_API ret name
 #	endif
@@ -48,14 +49,16 @@
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_packages)();
 
 ECSACT_META_API_FN(void, ecsact_meta_get_package_ids)
-	( int32_t             max_package_count
-	, ecsact_package_id*  out_package_ids
-	, int32_t*            out_package_count
-	);
+( //
+	int32_t            max_package_count,
+	ecsact_package_id* out_package_ids,
+	int32_t*           out_package_count
+);
 
 ECSACT_META_API_FN(const char*, ecsact_meta_package_name)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 /**
  * @returns the main package ID. -1 if there is no main package
@@ -67,110 +70,128 @@ ECSACT_META_API_FN(ecsact_package_id, ecsact_meta_main_package)();
  * @returns the ecsact file path for the package
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_package_file_path)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_dependencies)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_dependencies)
-	( ecsact_package_id   package_id
-	, int32_t             max_dependency_count
-	, ecsact_package_id*  out_package_ids
-	, int32_t*            out_dependencies_count
-	);
+( //
+	ecsact_package_id  package_id,
+	int32_t            max_dependency_count,
+	ecsact_package_id* out_package_ids,
+	int32_t*           out_dependencies_count
+);
 
 /**
  * Get number of components in package
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_components)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_component_ids)
-	( ecsact_package_id     package_id
-	, int32_t               max_component_count
-	, ecsact_component_id*  out_component_ids
-	, int32_t*              out_component_count
-	);
+( //
+	ecsact_package_id    package_id,
+	int32_t              max_component_count,
+	ecsact_component_id* out_component_ids,
+	int32_t*             out_component_count
+);
 
 /**
  * Get number of transients in package
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_transients)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_transient_ids)
-	( ecsact_package_id     package_id
-	, int32_t               max_transient_count
-	, ecsact_transient_id*  out_transient_ids
-	, int32_t*              out_transient_count
-	);
+( //
+	ecsact_package_id    package_id,
+	int32_t              max_transient_count,
+	ecsact_transient_id* out_transient_ids,
+	int32_t*             out_transient_count
+);
 
 /**
  * @param declaration_id component or action ID
  * @returns number of fields declaration has
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_fields)
-	( ecsact_composite_id composite_id
-	);
+( //
+	ecsact_composite_id composite_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_field_ids)
-	( ecsact_composite_id  composite_id
-	, int32_t              max_field_count
-	, ecsact_field_id*     out_field_ids
-	, int32_t*             out_field_ids_count
-	);
+( //
+	ecsact_composite_id composite_id,
+	int32_t             max_field_count,
+	ecsact_field_id*    out_field_ids,
+	int32_t*            out_field_ids_count
+);
 
 ECSACT_META_API_FN(const char*, ecsact_meta_field_name)
-	( ecsact_composite_id  composite_id
-	, ecsact_field_id      field_id
-	);
+( //
+	ecsact_composite_id composite_id,
+	ecsact_field_id     field_id
+);
 
 ECSACT_META_API_FN(ecsact_field_type, ecsact_meta_field_type)
-	( ecsact_composite_id  composite_id
-	, ecsact_field_id      field_id
-	);
+( //
+	ecsact_composite_id composite_id,
+	ecsact_field_id     field_id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_field_offset)
-	( ecsact_composite_id  composite_id
-	, ecsact_field_id      field_id
-	);
+( //
+	ecsact_composite_id composite_id,
+	ecsact_field_id     field_id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_systems)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_system_ids)
-	( ecsact_package_id  package_id
-	, int32_t            max_system_count
-	, ecsact_system_id*  out_system_ids
-	, int32_t*           out_system_count
-	);
+( //
+	ecsact_package_id package_id,
+	int32_t           max_system_count,
+	ecsact_system_id* out_system_ids,
+	int32_t*          out_system_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_actions)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_action_ids)
-	( ecsact_package_id  package_id
-	, int32_t            max_action_count
-	, ecsact_action_id*  out_action_ids
-	, int32_t*           out_action_count
-	);
+( //
+	ecsact_package_id package_id,
+	int32_t           max_action_count,
+	ecsact_action_id* out_action_ids,
+	int32_t*          out_action_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_enums)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_enum_ids)
-	( ecsact_package_id  package_id
-	, int32_t            max_enum_count
-	, ecsact_enum_id*    out_enum_ids
-	, int32_t*           out_enum_count
-	);
+( //
+	ecsact_package_id package_id,
+	int32_t           max_enum_count,
+	ecsact_enum_id*   out_enum_ids,
+	int32_t*          out_enum_count
+);
 
 /**
  * The storage type of the enum can be an unsigned or signed integer based on
@@ -179,251 +200,278 @@ ECSACT_META_API_FN(void, ecsact_meta_get_enum_ids)
  * @returns storage type that can be used to represent the enum
  */
 ECSACT_META_API_FN(ecsact_builtin_type, ecsact_meta_enum_storage_type)
-	( ecsact_enum_id enum_id
-	);
+( //
+	ecsact_enum_id enum_id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_enum_values)
-	( ecsact_enum_id enum_id
-	);
+( //
+	ecsact_enum_id enum_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_get_enum_value_ids)
-	( ecsact_enum_id         enum_id
-	, int32_t                max_enum_value_ids
-	, ecsact_enum_value_id*  out_enum_value_ids
-	, int32_t*               out_enum_values_count
-	);
+( //
+	ecsact_enum_id        enum_id,
+	int32_t               max_enum_value_ids,
+	ecsact_enum_value_id* out_enum_value_ids,
+	int32_t*              out_enum_values_count
+);
 
 ECSACT_META_API_FN(const char*, ecsact_meta_enum_name)
-	( ecsact_enum_id enum_id
-	);
+( //
+	ecsact_enum_id enum_id
+);
 
 ECSACT_META_API_FN(const char*, ecsact_meta_enum_value_name)
-	( ecsact_enum_id        enum_id
-	, ecsact_enum_value_id  value_id
-	);
+( //
+	ecsact_enum_id       enum_id,
+	ecsact_enum_value_id value_id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_enum_value)
-	( ecsact_enum_id        enum_id
-	, ecsact_enum_value_id  value_id
-	);
+( //
+	ecsact_enum_id       enum_id,
+	ecsact_enum_value_id value_id
+);
 
 /**
  * Get a registry name. May or may not return originally set name when creating
  * the registry. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_registry_name)
-	( ecsact_registry_id
-	);
+( //
+	ecsact_registry_id
+);
 
 /**
  * Get the component name. May or may not return originally set name when
  * creating a component. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_component_name)
-	( ecsact_component_id
-	);
+( //
+	ecsact_component_id
+);
 
 /**
  * Get the transient name. May or may not return originally set name when
  * creating a transient. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_transient_name)
-	( ecsact_transient_id
-	);
+( //
+	ecsact_transient_id
+);
 
 /**
  * Get the action name. May or may not return originally set name when
  * creating a action. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_action_name)
-	( ecsact_action_id
-	);
+( //
+	ecsact_action_id
+);
 
 /**
  * Get the system name. May or may not return originally set name when
  * creating a system. Typically not returned in release/optimized build.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_system_name)
-	( ecsact_system_id
-	);
+( //
+	ecsact_system_id
+);
 
 /**
  * Get the count of capabilities for a particular system/action.
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_capabilities_count)
-	( ecsact_system_like_id system_id
-	);
+( //
+	ecsact_system_like_id system_id
+);
 
 /**
  * Get all the system/action capabilities
- * @param out_capability_component_ids - Output for component ids. Should be 
+ * @param out_capability_component_ids - Output for component ids. Should be
  * allocated to the size returned from `ecsact_meta_system_capabilities_count`
  * @param out_capabilities - Output for capabilities. Should be allocated to the
  * size returned from `ecsact_meta_system_capabilities_count`
  */
 ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
-	( ecsact_system_like_id      system_id
-	, int32_t                    max_capabilities_count
-	, ecsact_component_like_id*  out_capability_component_ids
-	, ecsact_system_capability*  out_capabilities
-	, int32_t*                   out_capabilities_count
-	);
+( //
+	ecsact_system_like_id     system_id,
+	int32_t                   max_capabilities_count,
+	ecsact_component_like_id* out_capability_component_ids,
+	ecsact_system_capability* out_capabilities,
+	int32_t*                  out_capabilities_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_fields_count)
-	( ecsact_system_like_id     system_id
-	, ecsact_component_like_id  component_id
-	);
+( //
+	ecsact_system_like_id    system_id,
+	ecsact_component_like_id component_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_system_association_fields)
-	( ecsact_system_like_id     system_id
-	, ecsact_component_like_id  component_id
-	, int32_t                   max_fields_count
-	, ecsact_field_id*          out_fields
-	, int32_t*                  out_fields_count
-	);
+( //
+	ecsact_system_like_id    system_id,
+	ecsact_component_like_id component_id,
+	int32_t                  max_fields_count,
+	ecsact_field_id*         out_fields,
+	int32_t*                 out_fields_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_capabilities_count)
-	( ecsact_system_like_id     system_id
-	, ecsact_component_like_id  component_id
-	, ecsact_field_id           field_id
-	);
+( //
+	ecsact_system_like_id    system_id,
+	ecsact_component_like_id component_id,
+	ecsact_field_id          field_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_system_association_capabilities)
-	( ecsact_system_like_id      system_id
-	, ecsact_component_like_id   component_id
-	, ecsact_field_id            field_id
-	, int32_t                    max_capabilities_count
-	, ecsact_component_like_id*  out_capability_component_ids
-	, ecsact_system_capability*  out_capabilities
-	, int32_t*                   out_capabilities_count
-	);
+( //
+	ecsact_system_like_id     system_id,
+	ecsact_component_like_id  component_id,
+	ecsact_field_id           field_id,
+	int32_t                   max_capabilities_count,
+	ecsact_component_like_id* out_capability_component_ids,
+	ecsact_system_capability* out_capabilities,
+	int32_t*                  out_capabilities_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_system_generates_ids)
-	( ecsact_system_like_id system_id
-	);
+( //
+	ecsact_system_like_id system_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_system_generates_ids)
-	( ecsact_system_like_id        system_id
-	, int32_t                      max_generates_ids_count
-	, ecsact_system_generates_id*  out_generates_ids
-	, int32_t*                     out_generates_ids_count
-	);
+( //
+	ecsact_system_like_id       system_id,
+	int32_t                     max_generates_ids_count,
+	ecsact_system_generates_id* out_generates_ids,
+	int32_t*                    out_generates_ids_count
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_system_generates_components)
-	( ecsact_system_like_id       system_id
-	, ecsact_system_generates_id  generates_id
-	);
+( //
+	ecsact_system_like_id      system_id,
+	ecsact_system_generates_id generates_id
+);
 
 ECSACT_META_API_FN(void, ecsact_meta_system_generates_components)
-	( ecsact_system_like_id       system_id
-	, ecsact_system_generates_id  generates_id
-	, int32_t                     max_components_count
-	, ecsact_component_id*        component_ids
-	, ecsact_system_generate*     component_generate_flags
-	, int32_t*                    out_components_count
-	);
+( //
+	ecsact_system_like_id      system_id,
+	ecsact_system_generates_id generates_id,
+	int32_t                    max_components_count,
+	ecsact_component_id*       component_ids,
+	ecsact_system_generate*    component_generate_flags,
+	int32_t*                   out_components_count
+);
 
 /**
  * @returns a declarations full name including package and any parent
  *          declarations.
  */
 ECSACT_META_API_FN(const char*, ecsact_meta_decl_full_name)
-	( ecsact_decl_id id
-	);
+( //
+	ecsact_decl_id id
+);
 
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_child_systems)
-	( ecsact_system_like_id system_id
-	);
+( //
+	ecsact_system_like_id system_id
+);
 
 /**
  * Get a list of system IDs in declaration order (which also means execution
  * order.)
  */
 ECSACT_META_API_FN(void, ecsact_meta_get_child_system_ids)
-	( ecsact_system_like_id  system_id
-	, int32_t                max_child_system_ids_count
-	, ecsact_system_id*      out_child_system_ids
-	, int32_t*               out_child_system_count
-	);
+( //
+	ecsact_system_like_id system_id,
+	int32_t               max_child_system_ids_count,
+	ecsact_system_id*     out_child_system_ids,
+	int32_t*              out_child_system_count
+);
 
 /**
  * @returns the parent system-like ID. Returns -1 if child has no parent
  */
 ECSACT_META_API_FN(ecsact_system_like_id, ecsact_meta_get_parent_system_id)
-	( ecsact_system_id  child_system_id
-	);
+( //
+	ecsact_system_id child_system_id
+);
 
 /**
  * Count the number of top level systems and actions.
  */
 ECSACT_META_API_FN(int32_t, ecsact_meta_count_top_level_systems)
-	( ecsact_package_id package_id
-	);
+( //
+	ecsact_package_id package_id
+);
 
 /**
  * Get a list of system-like ids (system and actions) that are at the top level
  * in declaration order (which also means execution order.)
  */
 ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
-	( ecsact_package_id       package_id
-	, int32_t                 max_systems_count
-	, ecsact_system_like_id*  out_systems
-	, int32_t*                out_systems_count
-	);
+( //
+	ecsact_package_id      package_id,
+	int32_t                max_systems_count,
+	ecsact_system_like_id* out_systems,
+	int32_t*               out_systems_count
+);
 
-//# BEGIN FOR_EACH_ECSACT_META_API_FN
+// # BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
-#	define FOR_EACH_ECSACT_META_API_FN(fn, ...)\
-		fn(ecsact_meta_count_packages, __VA_ARGS__);\
-		fn(ecsact_meta_get_package_ids, __VA_ARGS__);\
-		fn(ecsact_meta_package_name, __VA_ARGS__);\
-		fn(ecsact_meta_main_package, __VA_ARGS__);\
-		fn(ecsact_meta_package_file_path, __VA_ARGS__);\
-		fn(ecsact_meta_count_dependencies, __VA_ARGS__);\
-		fn(ecsact_meta_get_dependencies, __VA_ARGS__);\
-		fn(ecsact_meta_count_components, __VA_ARGS__);\
-		fn(ecsact_meta_get_component_ids, __VA_ARGS__);\
-		fn(ecsact_meta_count_transients, __VA_ARGS__);\
-		fn(ecsact_meta_get_transient_ids, __VA_ARGS__);\
-		fn(ecsact_meta_count_fields, __VA_ARGS__);\
-		fn(ecsact_meta_get_field_ids, __VA_ARGS__);\
-		fn(ecsact_meta_field_name, __VA_ARGS__);\
-		fn(ecsact_meta_field_type, __VA_ARGS__);\
-		fn(ecsact_meta_field_offset, __VA_ARGS__);\
-		fn(ecsact_meta_count_systems, __VA_ARGS__);\
-		fn(ecsact_meta_get_system_ids, __VA_ARGS__);\
-		fn(ecsact_meta_count_actions, __VA_ARGS__);\
-		fn(ecsact_meta_get_action_ids, __VA_ARGS__);\
-		fn(ecsact_meta_count_enums, __VA_ARGS__);\
-		fn(ecsact_meta_get_enum_ids, __VA_ARGS__);\
-		fn(ecsact_meta_enum_storage_type, __VA_ARGS__);\
-		fn(ecsact_meta_count_enum_values, __VA_ARGS__);\
-		fn(ecsact_meta_get_enum_value_ids, __VA_ARGS__);\
-		fn(ecsact_meta_enum_name, __VA_ARGS__);\
-		fn(ecsact_meta_enum_value_name, __VA_ARGS__);\
-		fn(ecsact_meta_enum_value, __VA_ARGS__);\
-		fn(ecsact_meta_registry_name, __VA_ARGS__);\
-		fn(ecsact_meta_component_name, __VA_ARGS__);\
-		fn(ecsact_meta_transient_name, __VA_ARGS__);\
-		fn(ecsact_meta_action_name, __VA_ARGS__);\
-		fn(ecsact_meta_system_name, __VA_ARGS__);\
-		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);\
-		fn(ecsact_meta_system_capabilities, __VA_ARGS__);\
-		fn(ecsact_meta_system_association_fields_count, __VA_ARGS__);\
-		fn(ecsact_meta_system_association_fields, __VA_ARGS__);\
-		fn(ecsact_meta_system_association_capabilities_count, __VA_ARGS__);\
-		fn(ecsact_meta_system_association_capabilities, __VA_ARGS__);\
-		fn(ecsact_meta_count_system_generates_ids, __VA_ARGS__);\
-		fn(ecsact_meta_system_generates_ids, __VA_ARGS__);\
-		fn(ecsact_meta_count_system_generates_components, __VA_ARGS__);\
-		fn(ecsact_meta_system_generates_components, __VA_ARGS__);\
-		fn(ecsact_meta_decl_full_name, __VA_ARGS__);\
-		fn(ecsact_meta_count_child_systems, __VA_ARGS__);\
-		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);\
-		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__);\
-		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);\
+#	define FOR_EACH_ECSACT_META_API_FN(fn, ...)                          \
+		fn(ecsact_meta_count_packages, __VA_ARGS__);                        \
+		fn(ecsact_meta_get_package_ids, __VA_ARGS__);                       \
+		fn(ecsact_meta_package_name, __VA_ARGS__);                          \
+		fn(ecsact_meta_main_package, __VA_ARGS__);                          \
+		fn(ecsact_meta_package_file_path, __VA_ARGS__);                     \
+		fn(ecsact_meta_count_dependencies, __VA_ARGS__);                    \
+		fn(ecsact_meta_get_dependencies, __VA_ARGS__);                      \
+		fn(ecsact_meta_count_components, __VA_ARGS__);                      \
+		fn(ecsact_meta_get_component_ids, __VA_ARGS__);                     \
+		fn(ecsact_meta_count_transients, __VA_ARGS__);                      \
+		fn(ecsact_meta_get_transient_ids, __VA_ARGS__);                     \
+		fn(ecsact_meta_count_fields, __VA_ARGS__);                          \
+		fn(ecsact_meta_get_field_ids, __VA_ARGS__);                         \
+		fn(ecsact_meta_field_name, __VA_ARGS__);                            \
+		fn(ecsact_meta_field_type, __VA_ARGS__);                            \
+		fn(ecsact_meta_field_offset, __VA_ARGS__);                          \
+		fn(ecsact_meta_count_systems, __VA_ARGS__);                         \
+		fn(ecsact_meta_get_system_ids, __VA_ARGS__);                        \
+		fn(ecsact_meta_count_actions, __VA_ARGS__);                         \
+		fn(ecsact_meta_get_action_ids, __VA_ARGS__);                        \
+		fn(ecsact_meta_count_enums, __VA_ARGS__);                           \
+		fn(ecsact_meta_get_enum_ids, __VA_ARGS__);                          \
+		fn(ecsact_meta_enum_storage_type, __VA_ARGS__);                     \
+		fn(ecsact_meta_count_enum_values, __VA_ARGS__);                     \
+		fn(ecsact_meta_get_enum_value_ids, __VA_ARGS__);                    \
+		fn(ecsact_meta_enum_name, __VA_ARGS__);                             \
+		fn(ecsact_meta_enum_value_name, __VA_ARGS__);                       \
+		fn(ecsact_meta_enum_value, __VA_ARGS__);                            \
+		fn(ecsact_meta_registry_name, __VA_ARGS__);                         \
+		fn(ecsact_meta_component_name, __VA_ARGS__);                        \
+		fn(ecsact_meta_transient_name, __VA_ARGS__);                        \
+		fn(ecsact_meta_action_name, __VA_ARGS__);                           \
+		fn(ecsact_meta_system_name, __VA_ARGS__);                           \
+		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);             \
+		fn(ecsact_meta_system_capabilities, __VA_ARGS__);                   \
+		fn(ecsact_meta_system_association_fields_count, __VA_ARGS__);       \
+		fn(ecsact_meta_system_association_fields, __VA_ARGS__);             \
+		fn(ecsact_meta_system_association_capabilities_count, __VA_ARGS__); \
+		fn(ecsact_meta_system_association_capabilities, __VA_ARGS__);       \
+		fn(ecsact_meta_count_system_generates_ids, __VA_ARGS__);            \
+		fn(ecsact_meta_system_generates_ids, __VA_ARGS__);                  \
+		fn(ecsact_meta_count_system_generates_components, __VA_ARGS__);     \
+		fn(ecsact_meta_system_generates_components, __VA_ARGS__);           \
+		fn(ecsact_meta_decl_full_name, __VA_ARGS__);                        \
+		fn(ecsact_meta_count_child_systems, __VA_ARGS__);                   \
+		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);                  \
+		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__);                  \
+		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);               \
 		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__)
 #endif
 

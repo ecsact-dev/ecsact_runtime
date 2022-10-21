@@ -9,10 +9,7 @@ namespace fs = std::filesystem;
 namespace dll = boost::dll;
 using ecsact::codegen::plugin_validate_result;
 
-plugin_validate_result ecsact::codegen::plugin_validate
-	( fs::path plugin_path
-	)
-{
+plugin_validate_result ecsact::codegen::plugin_validate(fs::path plugin_path) {
 	const auto platform_plugin_suffix = dll::shared_library::suffix().string();
 	plugin_validate_result result;
 
@@ -35,7 +32,7 @@ plugin_validate_result ecsact::codegen::plugin_validate
 	}
 
 	boost::system::error_code ec;
-	dll::shared_library plugin;
+	dll::shared_library       plugin;
 	plugin.load(plugin_path.string(), ec);
 	if(ec) {
 		result.errors.push_back(plugin_error::load_fail);
@@ -43,7 +40,7 @@ plugin_validate_result ecsact::codegen::plugin_validate
 	}
 
 	dll::library_info plugin_info(plugin.location());
-	auto symbols = plugin_info.symbols();
+	auto              symbols = plugin_info.symbols();
 
 	if(symbols.empty()) {
 		result.errors.push_back(plugin_error::no_symbols);
@@ -75,9 +72,9 @@ plugin_validate_result ecsact::codegen::plugin_validate
 			}
 		};
 
-		#define CALL_CHECK_META_FN(fn_name, unused) check_meta_fn(#fn_name)
+#define CALL_CHECK_META_FN(fn_name, unused) check_meta_fn(#fn_name)
 		FOR_EACH_ECSACT_META_API_FN(CALL_CHECK_META_FN);
-		#undef CALL_CHECK_META_FN
+#undef CALL_CHECK_META_FN
 
 		if(!has_ecsact_meta_fns) {
 			result.errors.push_back(plugin_error::no_meta_dylib_methods);
@@ -85,10 +82,18 @@ plugin_validate_result ecsact::codegen::plugin_validate
 	}
 
 	for(auto symbol : symbols) {
-		if(symbol == "ecsact_codegen_plugin") continue;
-		if(symbol == "ecsact_codegen_plugin_name") continue;
-		if(symbol == "ecsact_dylib_set_fn_addr") continue;
-		if(symbol == "ecsact_dylib_has_fn") continue;
+		if(symbol == "ecsact_codegen_plugin") {
+			continue;
+		}
+		if(symbol == "ecsact_codegen_plugin_name") {
+			continue;
+		}
+		if(symbol == "ecsact_dylib_set_fn_addr") {
+			continue;
+		}
+		if(symbol == "ecsact_dylib_has_fn") {
+			continue;
+		}
 
 		result.unused_symbols.push_back(symbol);
 	}
