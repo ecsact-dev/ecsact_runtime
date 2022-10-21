@@ -1,0 +1,8 @@
+{
+	"recommendations": [
+		"ms-vscode.cpptools",
+		"BazelBuild.vscode-bazel",
+		"xaver.clang-format",
+		"DavidAnson.vscode-markdownlint"
+	]
+}
