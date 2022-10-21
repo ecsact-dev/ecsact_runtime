@@ -12,6 +12,17 @@
 
 namespace fs = std::filesystem;
 
+void remove_empties(std::vector<std::string>& str_list) {
+	for(auto itr = str_list.begin(); itr != str_list.end();) {
+		*itr = absl::StripAsciiWhitespace(*itr);
+		if(itr->empty()) {
+			itr = str_list.erase(itr);
+		} else {
+			++itr;
+		}
+	}
+}
+
 void check_module_header(fs::path module_header_path) {
 	using namespace std::string_literals;
 
@@ -36,20 +47,48 @@ void check_module_header(fs::path module_header_path) {
 	);
 	std::string                   line;
 	std::optional<std::streampos> for_each_begin;
-	std::optional<std::streampos> for_each_end;
 	while(std::getline(stream, line)) {
 		if(line.starts_with(module_fn_macro_name + "(")) {
 			std::vector<std::string> first_split =
 				absl::StrSplit(line, absl::MaxSplits(',', 1));
-			std::vector<std::string> second_split =
-				absl::StrSplit(first_split[1], absl::MaxSplits(')', 1));
+			std::vector<std::string> second_split;
 
+			remove_empties(first_split);
+
+			if(first_split.size() > 1) {
+				second_split = absl::StrSplit(first_split[1], absl::MaxSplits(')', 1));
+				remove_empties(second_split);
+			}
+
+			while(first_split.size() < 2 || second_split.empty()) {
+				std::string next_line;
+				if(!std::getline(stream, next_line)) {
+					break;
+				}
+
+				line += "\n" + next_line;
+				first_split = absl::StrSplit(line, absl::MaxSplits(',', 1));
+				remove_empties(first_split);
+
+				if(first_split.size() > 1 && second_split.empty()) {
+					second_split =
+						absl::StrSplit(first_split[1], absl::MaxSplits(')', 1));
+					remove_empties(second_split);
+				}
+			}
 			auto method_name = absl::StripAsciiWhitespace(second_split[0]);
+			if(!method_name.starts_with("ecsact_")) {
+				throw std::runtime_error(
+					"Invalid method name "s + std::string(method_name)
+				);
+			}
 			methods.push_back(std::string(method_name));
 		} else if(line.starts_with("// # BEGIN " + for_each_fn_macro_name)) {
 			for_each_begin = stream.tellg();
 		}
 	}
+
+	std::cout << "[INFO] Found " << methods.size() << " methods\n";
 
 	if(for_each_begin) {
 		fs::resize_file(module_header_path, static_cast<int>(*for_each_begin));
@@ -80,12 +119,35 @@ void check_module_header(fs::path module_header_path) {
 int main(int argc, char* argv[]) {
 	auto bwd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
 	if(bwd == nullptr) {
-		std::cerr << "BUILD_WORKSPACE_DIRECTORY environment variable not found\n";
-		return 1;
+		std::cerr //
+			<< "[WARN] BUILD_WORKSPACE_DIRECTORY environment variable not "
+				 "found\n";
+	} else {
+		fs::current_path(bwd);
+	}
+
+	std::string clang_format = "clang-format";
+
+	for(int i = 1; argc > i; ++i) {
+		std::string arg(argv[i]);
+		if(arg == "--clang-format") {
+			if(argc > i + 1) {
+				clang_format = std::string(argv[i + 1]);
+				break;
+			} else {
+				std::cerr << "--clang-format missing value\n";
+				return 1;
+			}
+		}
 	}
 
 	int exit_code = 0;
 	for(int i = 1; argc > i; ++i) {
+		if(argv[i][0] == '-') {
+			i += 1;
+			continue;
+		}
+
 		fs::path arg(argv[i]);
 		if(!arg.is_absolute()) {
 			arg = bwd / arg;
@@ -98,6 +160,17 @@ int main(int argc, char* argv[]) {
 
 		std::cout << "[INFO] Checking " << arg.generic_string() << " ...\n";
 		check_module_header(arg);
+
+		std::string format_str = clang_format + " -i " + arg.string();
+		std::cout << "[INFO] Running " << format_str << " ...\n";
+		auto format_exit_code = std::system(format_str.c_str());
+
+		if(format_exit_code != 0) {
+			std::cerr //
+				<< clang_format << " exited with exit code " << format_exit_code
+				<< "\n";
+			return format_exit_code;
+		}
 	}
 
 	std::cout << "[INFO] Done\n";

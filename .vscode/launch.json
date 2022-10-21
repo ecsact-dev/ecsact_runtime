@@ -1,0 +1,22 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "run //scripts:check_module_header",
+			"request": "launch",
+			"program": "${workspaceRoot}/bazel-bin/scripts/check_module_header",
+			"args": [
+				"${workspaceFolder}/ecsact/runtime/core.h",
+				"${workspaceFolder}/ecsact/runtime/dynamic.h",
+				"${workspaceFolder}/ecsact/runtime/meta.h",
+				"${workspaceFolder}/ecsact/runtime/serialize.h",
+				"${workspaceFolder}/ecsact/runtime/static.h",
+				"--clang-format",
+				"clang-format-15"
+			],
+			"cwd": "${workspaceFolder}",
+			"type": "lldb",
+			"preLaunchTask": "build //scripts:check_module_header"
+		}
+	]
+}
