@@ -44,18 +44,37 @@
 #endif // ECSACT_ASYNC_API_FN
 
 typedef enum {
+	/**
+	 *
+	 */
 	ECSACT_ASYNC_ERR_PERMISSION_DENIED,
+
+	/**
+	 *
+	 */
 	ECSACT_ASYNC_ERR_CONNECTION_CLOSED,
+
+	ECSACT_ASYNC_ERR_COMPONENT_ACCESS
 } ecsact_async_error;
 
-typedef void (*ecsact_async_action_callback)(
+typedef void (*ecsact_async_error_callback)(
 	//
-	ecsact_async_error      err,
-	ecsact_async_request_id request_id,
-	void*                   callback_user_data
+	ecsact_async_error           async_err,
+	ecsact_execute_systems_error execute_err,
+	ecsact_async_request_id      request_id,
+	void*                        callback_user_data
 );
 
 typedef struct ecsact_async_events_collector {
+	/**
+	 *
+	 */
+	ecsact_async_error_callback error_callback;
+
+	/**
+	 *
+	 */
+	void* error_callback_user_data;
 } ecsact_async_events_collector;
 
 /**
@@ -79,18 +98,6 @@ typedef struct ecsact_async_events_collector {
 // 	, int32_t           tick
 // 	);
 
-// Sync Api
-// User calls (Unity) context.AddComponent();
-// AddComponent calls ecsact_add_component <-- What's the new thing?
-
-// AsyncApi
-// User calls (Unity) context.AddComponent();
-// Runtime.AddComponent <-- DELTED THIS
-// runner.ExecutionOptions.PushAction()
-// runner.ExecutionOptions.AddComponent()
-// AddComponent calls function that adds to a global execution_options
-// AddComponent calls ecsact_async_enqueue_execution_options_now()?
-
 /**
  * Enqueues system execution options that will be used during system execution
  * as soon as possible.
@@ -103,15 +110,29 @@ ECSACT_ASYNC_API_FN(
 	ecsact_async_enqueue_execution_options
 )
 ( //
-	const ecsact_execution_options* options
+	const ecsact_execution_options options
 );
+
+/**
+ * Enqueues system execution options at the specified ticks. If multiple
+ * invocations of `ecsact_async_enqueue_execution_options_at` happen for the
+ * same tick(s) the execution options will be _merged_.
+ *
+ * @param list_length the length of @p tick_list and @p options_list
+ * @param tick_list a sequential list of ticks the execution options in @p
+ * options_list will be used during system exeuction. Length is determined by @p
+ * list_length
+ * @param options_list a squential list of execution options. Length is
+ * determined by @p list_length
+ * @returns a request ID TODO(zaucy): talk about errors
+ */
 
 ECSACT_ASYNC_API_FN(
 	ecsact_async_request_id,
 	ecsact_async_enqueue_execution_options_at
 )
 ( //
-	int                             tick_count,
+	int                             list_length,
 	const int*                      tick_list,
 	const ecsact_execution_options* options_list
 );
@@ -133,7 +154,7 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
  *        documentation for your ecsact async api provider. May be NULL to
  *        indiciate wanting to connect to the 'default' if available.
  */
-ECSACT_ASYNC_API_FN(void, ecsact_async_connect)
+ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
 ( //
 	const char* connection_string
 );
