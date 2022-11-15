@@ -21,6 +21,7 @@ ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
 ECSACT_TYPED_ID(ecsact_entity_id);
 ECSACT_TYPED_ID(ecsact_system_generates_id);
+ECSACT_TYPED_ID(ecsact_async_request_id);
 
 ECSACT_TYPED_ID(ecsact_decl_id);
 ECSACT_TYPED_ID(ecsact_composite_id);

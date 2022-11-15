@@ -36,6 +36,18 @@ cc_library(
 )
 
 cc_library(
+    name = "async",
+    hdrs = [
+        "ecsact/runtime/async.h",
+    ],
+    copts = copts,
+    deps = [
+        ":common",
+        ":core",
+    ],
+)
+
+cc_library(
     name = "core",
     hdrs = [
         "ecsact/runtime/core.h",
