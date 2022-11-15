@@ -98,7 +98,7 @@ typedef struct ecsact_async_events_collector {
  * module
  * @returns
  */
-ECSACT_ASYNC_API(
+ECSACT_ASYNC_API_FN(
 	ecsact_async_request_id,
 	ecsact_async_enqueue_execution_options
 )
@@ -106,7 +106,7 @@ ECSACT_ASYNC_API(
 	const ecsact_execution_options* options
 );
 
-ECSACT_ASYNC_API(
+ECSACT_ASYNC_API_FN(
 	ecsact_async_request_id,
 	ecsact_async_enqueue_execution_options_at
 )
@@ -120,7 +120,7 @@ ECSACT_ASYNC_API(
  * Invokes the various callbacks in `execution_events` and `async_events` that
  * have been pending.
  */
-ECSACT_ASYNC_API(void, ecsact_async_flush_events)
+ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
 ( //
 	const ecsact_execution_events_collector* execution_events,
 	const ecsact_async_events_collector*     async_events
@@ -133,7 +133,7 @@ ECSACT_ASYNC_API(void, ecsact_async_flush_events)
  *        documentation for your ecsact async api provider. May be NULL to
  *        indiciate wanting to connect to the 'default' if available.
  */
-ECSACT_ASYNC_API(void, ecsact_async_connect)
+ECSACT_ASYNC_API_FN(void, ecsact_async_connect)
 ( //
 	const char* connection_string
 );
