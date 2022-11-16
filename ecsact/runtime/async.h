@@ -166,11 +166,18 @@ ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
 	const char* connection_string
 );
 
-#define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)       \
-	fn(ecsact_async_execute_action_now, __VA_ARGS__); \
-	fn(ecsact_async_execute_action_at, __VA_ARGS__);  \
-	fn(ecsact_async_flush_events, __VA_ARGS__);       \
-	fn(ecsact_async_connect, __VA_ARGS__)
+/**
+ * Starts a disconnect. May happen in background, but is guaranteed to
+ * disconnect before any new @ref ecsact_async_connect resolves.
+ */
+ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
+
+#define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)                 \
+	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__);    \
+	fn(ecsact_async_enqueue_execution_options_at, __VA_ARGS__); \
+	fn(ecsact_async_flush_events, __VA_ARGS__);                 \
+	fn(ecsact_async_connect, __VA_ARGS__);                      \
+	fn(ecsact_async_disconnect, __VA_ARGS__);
 
 #undef ECSACT_ASYNC_API
 #undef ECSACT_ASYNC_API_FN
