@@ -45,18 +45,39 @@
 
 typedef enum {
 	/**
-	 *
+	 * No error
+	 */
+	ECSACT_ASYNC_OK = 0,
+
+	/**
+	 * Client has invalid permissions
 	 */
 	ECSACT_ASYNC_ERR_PERMISSION_DENIED,
 
 	/**
-	 *
+	 * Connection to the client is closed
 	 */
 	ECSACT_ASYNC_ERR_CONNECTION_CLOSED,
 
-	ECSACT_ASYNC_ERR_COMPONENT_ACCESS
+	/**
+	 * ExecutionOptions failed to merge
+	 */
+	ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE,
 } ecsact_async_error;
 
+/**
+ * When an error occurs due to an async request this callback is invoked, only
+ * either @p async_err or @p execute_err will have a non-ok value.
+ *
+ * @param async_err when there is no async error this will be @ref
+ * ECSACT_ASYNC_OK otherwise @see ecsact_async_error
+ * @param execute_err when there is no system execution error, this will be @ref
+ * ECSACT_EXEC_SYS_OK other @see ecsact_execute_systems_error
+ * @param request_id the request ID returned by an async request function that
+ * was responsible for this error
+ * @param callback_user_data the @ref
+ * ecsact_async_events_collector::error_callback_user_data
+ */
 typedef void (*ecsact_async_error_callback)(
 	//
 	ecsact_async_error           async_err,
@@ -67,43 +88,26 @@ typedef void (*ecsact_async_error_callback)(
 
 typedef struct ecsact_async_events_collector {
 	/**
-	 *
+	 * invoked when an async request failed.
+	 * @see ecsact_async_error_callback
+	 * @see ecsact_async_error
+	 * @see ecsact_execute_systems_error
 	 */
 	ecsact_async_error_callback error_callback;
 
 	/**
-	 *
+	 * `callback_user_data` passed to `error_callback`
 	 */
 	void* error_callback_user_data;
 } ecsact_async_events_collector;
 
 /**
- * Sends a request to execute an action as soon as possible.
- * @returns a request ID used to identify which async event is associated with
- *          this call. SEE: `ecsact_async_events_collector`
- */
-// ECSACT_ASYNC_API(ecsact_async_request_id, ecsact_async_execute_action_now)
-// 	( ecsact_system_id  action_id
-// 	, const void*       action_data
-// 	);
-
-/**
- * Sends a request to execute an action at a given `tick`.
- * @returns a request ID used to identify which async event is associated with
- *          this call. SEE: `ecsact_async_events_collector`
- */
-// ECSACT_ASYNC_API(ecsact_async_request_id, ecsact_async_execute_action_at)
-// 	( ecsact_system_id  action_id
-// 	, const void*       action_data
-// 	, int32_t           tick
-// 	);
-
-/**
  * Enqueues system execution options that will be used during system execution
  * as soon as possible.
- * @param options - the options passed to `ecsact_execute_systems` in the ASYNC
+ * @param options - the options passed to `ecsact_execute_systems` in the Async
  * module
- * @returns
+ * @returns a request ID representing this async request. Later used in @ref
+ * ecsact_async_error_callback if an error occurs
  */
 ECSACT_ASYNC_API_FN(
 	ecsact_async_request_id,
@@ -122,9 +126,10 @@ ECSACT_ASYNC_API_FN(
  * @param tick_list a sequential list of ticks the execution options in @p
  * options_list will be used during system exeuction. Length is determined by @p
  * list_length
- * @param options_list a squential list of execution options. Length is
+ * @param options_list a sequential list of execution options. Length is
  * determined by @p list_length
- * @returns a request ID TODO(zaucy): talk about errors
+ * @returns a request ID representing this async request. Later used in @ref
+ * ecsact_async_error_callback if an error occurs
  */
 
 ECSACT_ASYNC_API_FN(
@@ -153,6 +158,8 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
  *        some other string deinfed by the implementation. Please review
  *        documentation for your ecsact async api provider. May be NULL to
  *        indiciate wanting to connect to the 'default' if available.
+ * @returns a request ID representing this async request. Later used in @ref
+ * ecsact_async_error_callback if an error occurs
  */
 ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
 ( //
