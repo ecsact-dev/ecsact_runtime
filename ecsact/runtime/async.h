@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "ecsact/runtime/common.h"
-// TODO(zaucy): remove this include and move execution options to common.h?
 #include "ecsact/runtime/core.h"
 
 #ifndef ECSACT_ASYNC_API_VISIBILITY
