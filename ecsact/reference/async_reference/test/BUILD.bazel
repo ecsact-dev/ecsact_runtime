@@ -1,14 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//bazel:copts.bzl", "copts")
+package(default_visibility = ["//visibility:public"])
 
-cc_test(
-    name = "test",
-    srcs = ["async_ref_test.cc"],
-    copts = copts,
-    deps = [
-        "//:async",
-        "//ecsact/reference/async_reference:async",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
+# exported to be used for macro in ./index.bzl
+exports_files(["async_ref_test.cc"])

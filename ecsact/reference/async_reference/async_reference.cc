@@ -203,5 +203,7 @@ void async_reference::remove_callback(
 }
 
 void async_reference::disconnect() {
-	execution_thread.join();
+	if(execution_thread.joinable()) {
+		execution_thread.join();
+	}
 }

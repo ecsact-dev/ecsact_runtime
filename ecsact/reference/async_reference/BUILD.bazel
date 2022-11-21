@@ -1,6 +1,14 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("//bazel:copts.bzl", "copts")
 
+package(default_visibility = ["//visiblity:public"])
+
+exports_files([
+    "async_reference.hh",
+    "async_reference.cc",
+    "async.cc",
+])
+
 cc_library(
     name = "async_reference",
     srcs = ["async_reference.cc"],
@@ -17,9 +25,7 @@ cc_library(
     name = "async",
     srcs = ["async.cc"],
     copts = copts,
-    defines = [
-        "ECSACT_ASYNC_API_EXPORT=",
-    ],
+    defines = ["ECSACT_ASYNC_API_EXPORT="],
     visibility = ["//visibility:public"],
     deps = [
         ":async_reference",
