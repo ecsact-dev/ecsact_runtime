@@ -1,0 +1,28 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+cc_library(
+    name = "async_reference",
+    srcs = ["async_reference.cc"],
+    hdrs = ["async_reference.hh"],
+    copts = copts,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:async",
+        "//:core",
+    ],
+)
+
+cc_library(
+    name = "async",
+    srcs = ["async.cc"],
+    copts = copts,
+    defines = [
+        "ECSACT_ASYNC_API_EXPORT=",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":async_reference",
+        "//:async",
+    ],
+)
