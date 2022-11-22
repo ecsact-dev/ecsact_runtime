@@ -58,9 +58,33 @@ _cc_ecsact_codegen_plugin = rule(
     },
 )
 
+_generated_src = """
+#include "ecsact/codegen_plugin.h"
+
+const char* ecsact_codegen_plugin_name() {{
+	return "{output_extension}";
+}}
+"""
+
+def _cc_ecsact_codegen_plugin_src_impl(ctx):
+    ctx.actions.write(
+        output = ctx.outputs.output_cc_src,
+        content = _generated_src.format(output_extension = ctx.attr.output_extension),
+    )
+
+_cc_ecsact_codegen_plugin_src = rule(
+    implementation = _cc_ecsact_codegen_plugin_src_impl,
+    attrs = {
+        "output_cc_src": attr.output(mandatory = True),
+        "output_extension": attr.string(mandatory = True),
+    },
+)
+
 def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no_validate_test = False, output_extension = None, **kwargs):
-    """
-    Create ecsact codegen plugin with C++
+    """Create ecsact codegen plugin with C++
+
+    NOTE: ecsact_codegen_plugin_name() is automatically generated for you based
+          on the `output_extension` attribute.
 
     Args:
         name: Passed to underling cc_binary
@@ -73,7 +97,10 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
     """
     cc_binary(
         name = "{}_bin".format(name),
-        srcs = srcs + ["@ecsact_runtime//dylib:dylib.cc"],
+        srcs = srcs + [
+            "@ecsact_runtime//dylib:dylib.cc",
+            "{}__name_src.cc".format(name),
+        ],
         deps = deps + [
             "@ecsact_runtime//:dylib",
             "@ecsact_runtime//dylib:meta",
@@ -83,6 +110,12 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
         defines = defines + ["ECSACT_META_API_LOAD_AT_RUNTIME"],
         linkshared = True,
         **kwargs
+    )
+
+    _cc_ecsact_codegen_plugin_src(
+        name = "{}__name_src".format(name),
+        output_cc_src = "{}__name_src.cc".format(name),
+        output_extension = output_extension,
     )
 
     _cc_ecsact_codegen_plugin(
