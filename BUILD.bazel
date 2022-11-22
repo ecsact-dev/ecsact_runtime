@@ -12,6 +12,8 @@ exports_files([
     "ecsact/runtime/serialize.h",
     "ecsact/runtime/static.h",
     "ecsact/runtime.h",
+    "codegen_plugin.bzl",
+    "index.bzl",
 ])
 
 filegroup(
