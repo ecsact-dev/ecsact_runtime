@@ -10,9 +10,7 @@ TEST(AsyncRef, ConnectBad) {
 			ecsact_async_error      async_err,
 			ecsact_async_request_id request_id,
 			void*                   callback_user_data
-		) {
-
-		};
+		) { ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_PERMISSION_DENIED); };
 
 	ecsact_async_events_collector async_evc{
 		.async_error_callback = async_err_cb,
@@ -21,4 +19,13 @@ TEST(AsyncRef, ConnectBad) {
 		.system_error_callback_user_data = nullptr,
 	};
 	ecsact_async_flush_events(nullptr, &async_evc);
+}
+
+TEST(AsyncRef, Disconnect) {
+	auto connect_req_id = ecsact_async_connect("good");
+
+	ecsact_async_disconnect();
+}
+
+TEST(AsyncRef, ExecutionOptions) {
 }
