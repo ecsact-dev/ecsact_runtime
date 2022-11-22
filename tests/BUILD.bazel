@@ -11,6 +11,7 @@ cc_ecsact_codegen_plugin(
     name = "empty_codegen_plugin",
     srcs = ["empty_codegen_plugin.cc"],
     copts = copts,
+    output_extension = "txt",
 )
 
 cc_test(
