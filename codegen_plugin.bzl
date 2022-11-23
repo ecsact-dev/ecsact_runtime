@@ -67,15 +67,19 @@ const char* ecsact_codegen_plugin_name() {{
 """
 
 def _cc_ecsact_codegen_plugin_src_impl(ctx):
+    output_cc_src = ctx.actions.declare_file("plugin_name.cc".format(ctx.attr.name))
     ctx.actions.write(
-        output = ctx.outputs.output_cc_src,
+        output = output_cc_src,
         content = _generated_src.format(output_extension = ctx.attr.output_extension),
     )
+
+    return [
+        DefaultInfo(files = depset([output_cc_src])),
+    ]
 
 _cc_ecsact_codegen_plugin_src = rule(
     implementation = _cc_ecsact_codegen_plugin_src_impl,
     attrs = {
-        "output_cc_src": attr.output(mandatory = True),
         "output_extension": attr.string(mandatory = True),
     },
 )
@@ -99,7 +103,7 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
         name = "{}_bin".format(name),
         srcs = srcs + [
             "@ecsact_runtime//dylib:dylib.cc",
-            "{}__pn.cc".format(name),
+            ":{}__pn".format(name),
         ],
         deps = deps + [
             "@ecsact_runtime//:dylib",
@@ -114,7 +118,6 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
 
     _cc_ecsact_codegen_plugin_src(
         name = "{}__pn".format(name),
-        output_cc_src = "{}__pn.cc".format(name),
         output_extension = output_extension,
     )
 
