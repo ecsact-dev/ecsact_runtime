@@ -80,7 +80,6 @@ def _cc_ecsact_codegen_plugin_src_impl(ctx):
 _cc_ecsact_codegen_plugin_src = rule(
     implementation = _cc_ecsact_codegen_plugin_src_impl,
     attrs = {
-        "output_cc_src": attr.output(mandatory = True),
         "output_extension": attr.string(mandatory = True),
     },
 )
