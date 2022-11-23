@@ -67,7 +67,7 @@ const char* ecsact_codegen_plugin_name() {{
 """
 
 def _cc_ecsact_codegen_plugin_src_impl(ctx):
-    output_cc_src = ctx.actions.declare_file("{}_pn.cc".format(ctx.attr.name))
+    output_cc_src = ctx.actions.declare_file("plugin_name.cc".format(ctx.attr.name))
     ctx.actions.write(
         output = output_cc_src,
         content = _generated_src.format(output_extension = ctx.attr.output_extension),
