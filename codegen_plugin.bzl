@@ -99,7 +99,7 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
         name = "{}_bin".format(name),
         srcs = srcs + [
             "@ecsact_runtime//dylib:dylib.cc",
-            "{}__name_src.cc".format(name),
+            "{}__pn.cc".format(name),
         ],
         deps = deps + [
             "@ecsact_runtime//:dylib",
@@ -113,8 +113,8 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
     )
 
     _cc_ecsact_codegen_plugin_src(
-        name = "{}__name_src".format(name),
-        output_cc_src = "{}__name_src.cc".format(name),
+        name = "{}__pn".format(name),
+        output_cc_src = "{}__pn.cc".format(name),
         output_extension = output_extension,
     )
 
