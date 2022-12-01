@@ -11,13 +11,20 @@ exports_files([
 
 cc_library(
     name = "async_reference",
-    srcs = ["async_reference.cc"],
-    hdrs = ["async_reference.hh"],
+    srcs = [
+        "async_reference.cc",
+        "util/util.cc",
+    ],
+    hdrs = [
+        "async_reference.hh",
+        "util/util.hh",
+    ],
     copts = copts,
     visibility = ["//visibility:public"],
     deps = [
         "//:async",
         "//:core",
+        "//reference/async_reference/util:types",
     ],
 )
 

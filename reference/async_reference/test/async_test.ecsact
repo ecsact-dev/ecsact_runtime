@@ -1,0 +1,30 @@
+main package async_test;
+
+component ComponentAddRemove {
+	i32 value;
+}
+
+component ComponentUpdate {
+	i32 value_to_update;
+}
+
+component NeededComponent;
+
+action AddComponent {
+	include NeededComponent;
+	adds ComponentAddRemove;
+}
+
+action TryEntity {
+	include NeededComponent;
+	entity my_entity;
+	adds ComponentAddRemove;
+}
+
+action UpdateComponent {
+	readwrite ComponentAddRemove;
+}
+
+action RemoveComponent{
+	removes ComponentAddRemove;
+}

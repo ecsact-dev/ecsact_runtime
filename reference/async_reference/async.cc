@@ -14,6 +14,7 @@ ecsact_async_request_id ecsact_async_connect(const char* connection_string) {
 
 void ecsact_async_disconnect() {
 	async::reference->disconnect();
+	async::reference.reset();
 }
 
 void ecsact_async_flush_events(
@@ -21,6 +22,10 @@ void ecsact_async_flush_events(
 	const ecsact_async_events_collector*     async_events
 ) {
 	async::reference->flush_events(execution_events, async_events);
+}
+
+ecsact_entity_id ecsact_async_create_entity() {
+	return async::reference->create_entity();
 }
 
 ecsact_async_request_id ecsact_async_enqueue_execution_options(
