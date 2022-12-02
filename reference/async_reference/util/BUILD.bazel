@@ -1,25 +1,31 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("//bazel:copts.bzl", "copts")
 
-# cc_library(
-#     name = "util",
-#     srcs = ["util.cc"],
-#     hdrs = ["util.hh"],
-#     copts = copts,
-#     visibility = ["//visibility:public"],
-#     deps = [
-#         "//:core",
-#         "//reference/async_reference/util:types",
-#     ],
-# )
+cc_library(
+    name = "util",
+    srcs = ["util.cc"],
+    hdrs = ["util.hh"],
+    copts = copts,
+    local_defines = [
+        "ECSACT_CORE_API=",
+    ],
+    deps = [
+        "//:core",
+        "//reference/async_reference/util:types",
+    ],
+    visibility = ["//visibility:public"],
+)
 
 cc_library(
     name = "types",
     hdrs = ["types.hh"],
     copts = copts,
-    visibility = ["//visibility:public"],
+    local_defines = [
+        "ECSACT_CORE_API=",
+    ],
     deps = [
         "//:async",
         "//:core",
     ],
+    visibility = ["//visibility:public"],
 )

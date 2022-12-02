@@ -17,6 +17,11 @@ struct async_error {
 	int32_t            request_id;
 };
 
+struct notified_entities {
+	ecsact_async_request_id request_id;
+	ecsact_entity_id        entity_id;
+};
+
 struct cpp_execution_component {
 	ecsact_entity_id    entity_id;
 	ecsact_component_id _id;

@@ -31,6 +31,10 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 ecsact_async_request_id async_reference::enqueue_execution_options(
 	const ecsact_execution_options& options
 ) {
+	if(is_connected == false) {
+		// Need to return a request ID?
+	}
+
 	if(async_error.error == ECSACT_ASYNC_OK) {
 		std::unique_lock lk(execute_m, std::defer_lock);
 
@@ -38,9 +42,10 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 		async_error.error = util::validate_options(cpp_options);
 
 		if(async_error.error != ECSACT_ASYNC_OK) {
+			increment_request_id();
 			async_error.request_id = request_id;
 			disconnect();
-			return increment_request_id();
+			return convert_request_id(async_error.request_id);
 		}
 
 		if(lk.try_lock()) {
@@ -53,8 +58,9 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 				if(async_error.error == ECSACT_ASYNC_OK) {
 					merge_tick_options(existing_options, cpp_options);
 				} else {
+					increment_request_id();
 					async_error.request_id = request_id;
-					return increment_request_id();
+					return convert_request_id(async_error.request_id);
 				}
 			}
 		} else {
@@ -62,7 +68,7 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 		}
 		return increment_request_id();
 	} else {
-		return static_cast<ecsact_async_request_id>(async_error.request_id);
+		return convert_request_id(async_error.request_id);
 	}
 }
 
@@ -86,9 +92,8 @@ void async_reference::execute_systems() {
 			collector.update_callback_user_data = nullptr;
 			collector.remove_callback_user_data = nullptr;
 
-			// Make this a unique_ptr
 			std::unique_ptr<ecsact_execution_options> options = nullptr;
-			// Make another value type execution_options
+
 			if(cpp_options) {
 				options = std::make_unique<ecsact_execution_options>(
 					util::cpp_to_c_execution_options(*cpp_options, *registry_id)
@@ -98,19 +103,17 @@ void async_reference::execute_systems() {
 			auto systems_error =
 				ecsact_execute_systems(*registry_id, 1, options.get(), &collector);
 
-			if(systems_error == ECSACT_EXEC_SYS_ERR_ACTION_ENTITY_INVALID) {
+			if(systems_error != ECSACT_EXEC_SYS_OK) {
 				sys_error = systems_error;
-			}
-
-			if(systems_error == ECSACT_EXEC_SYS_ERR_ACTION_ENTITY_CONSTRAINT_BROKEN) {
-				sys_error = systems_error;
+				disconnect();
+				return;
 			}
 
 			lk.lock();
 			tick_map.erase(tick);
 			tick++;
-			lk.unlock();
 
+			// NOTE(Kelwan): NOT THREAD SAFE RIGHT NOW
 			for(auto& [key, val] : temp_tick_map) {
 				if(tick_map.contains(key)) {
 					auto& tick_options = tick_map.at(key);
@@ -121,6 +124,21 @@ void async_reference::execute_systems() {
 					tick_map.insert(std::pair(key, val));
 				}
 			}
+			lk.unlock();
+
+			std::unique_lock entity_lk(entity_m);
+			for(int i = 0; i < pending_entity_requests.size(); i++) {
+				auto entity_request_id = pending_entity_requests[i];
+
+				auto entity = ecsact_create_entity(*registry_id);
+
+				types::notified_entities notified_entity{
+					.request_id = entity_request_id,
+					.entity_id = entity};
+
+				created_entities.insert(created_entities.end(), notified_entity);
+			}
+			pending_entity_requests.clear();
 		}
 	});
 }
@@ -208,17 +226,33 @@ void async_reference::flush_events(
 			);
 		}
 	}
+
 	init_callbacks_info.clear();
 	update_callbacks_info.clear();
 	remove_callbacks_info.clear();
 	lk.unlock();
 
-	// Only send callback if there's an error except for OK
+	std::unique_lock entity_lk(entity_m);
+	for(auto& created_entity : created_entities) {
+		if(async_events->async_entity_callback != nullptr) {
+			async_events->async_entity_callback(
+				created_entity.entity_id,
+				created_entity.request_id,
+				async_events->async_entity_error_callback_user_data
+			);
+		}
+	}
+	created_entities.clear();
 }
 
-// NOTE(Kelwan): Remember to make async, give callbacks and flush that shit
-ecsact_entity_id async_reference::create_entity() {
-	return ecsact_create_entity(*registry_id);
+ecsact_async_request_id async_reference::create_entity_request() {
+	increment_request_id();
+	std::unique_lock lk(entity_m);
+	pending_entity_requests.insert(
+		pending_entity_requests.end(),
+		get_request_id()
+	);
+	return get_request_id();
 }
 
 void async_reference::init_callback(
@@ -318,4 +352,20 @@ void async_reference::merge_tick_options(
 			other_options.removes.end()
 		);
 	}
+}
+
+ecsact_async_request_id async_reference::increment_request_id() {
+	return static_cast<ecsact_async_request_id>(
+		request_id.fetch_add(1, std::memory_order_relaxed)
+	);
+}
+
+ecsact_async_request_id async_reference::get_request_id() {
+	return static_cast<ecsact_async_request_id>(
+		request_id.fetch_add(0, std::memory_order_relaxed)
+	);
+}
+
+ecsact_async_request_id async_reference::convert_request_id(int32_t id) {
+	return static_cast<ecsact_async_request_id>(id);
 }
