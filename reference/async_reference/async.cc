@@ -24,7 +24,7 @@ void ecsact_async_flush_events(
 	async::reference->flush_events(execution_events, async_events);
 }
 
-ecsact_async_request_id ecsact_async_request_entity() {
+ecsact_async_request_id ecsact_async_create_entity() {
 	return async::reference->create_entity_request();
 }
 

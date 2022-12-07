@@ -18,6 +18,9 @@ cc_library(
     deps = [
         "//:async",
         "//:core",
+        "//reference/async_reference/callbacks:async_callbacks",
+        "//reference/async_reference/callbacks:execution_callbacks",
+        "//reference/async_reference/tick_manager",
         "//reference/async_reference/util",
         "//reference/async_reference/util:types",
     ],

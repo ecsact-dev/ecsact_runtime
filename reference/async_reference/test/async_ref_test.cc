@@ -6,6 +6,11 @@
 #include "async_test.ecsact.hh"
 #include "async_test.ecsact.systems.hh"
 
+struct entity_cb_info {
+	ecsact_entity_id entity;
+	bool             wait;
+};
+
 void async_test::AddComponent::impl(context& ctx) {
 	ctx.add(async_test::ComponentAddRemove{
 		.value = 10,
@@ -37,6 +42,7 @@ TEST(AsyncRef, ConnectBad) {
 	async_evc.async_error_callback = async_err_cb;
 
 	ecsact_async_flush_events(nullptr, &async_evc);
+	ecsact_async_disconnect();
 }
 
 TEST(AsyncRef, Disconnect) {
@@ -49,12 +55,10 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	auto connect_req_id = ecsact_async_connect("good");
 
 	async_test::NeededComponent my_needed_component{};
-	auto                        needed_comp_id = async_test::NeededComponent::id;
-	const void*                 needed_component_data = &my_needed_component;
 
 	ecsact_component needed_component{
-		.component_id = needed_comp_id,
-		.component_data = needed_component_data,
+		.component_id = async_test::NeededComponent::id,
+		.component_data = &my_needed_component,
 	};
 
 	async_test::ComponentUpdate my_update_component{};
@@ -67,15 +71,9 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		.component_data = update_component_data,
 	};
 
-	auto entity_request = ecsact_async_request_entity();
+	auto entity_request = ecsact_async_create_entity();
 
-	bool             entity_wait = false;
-	ecsact_entity_id entity;
-
-	struct entity_cb_info {
-		ecsact_entity_id& entity;
-		bool&             wait;
-	};
+	entity_cb_info cb_info{};
 
 	auto entity_cb = //
 		[](
@@ -89,20 +87,24 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			entity_info.entity = entity_id;
 		};
 
-	entity_cb_info entity_info{.entity = entity, .wait = entity_wait};
-
 	ecsact_async_events_collector async_evc{};
 	async_evc.async_entity_callback = entity_cb;
-	async_evc.async_entity_error_callback_user_data = &entity_info;
+	async_evc.async_entity_error_callback_user_data = &cb_info;
 
-	while(entity_wait != true) {
+	int check_count = 0;
+
+	while(cb_info.wait != true) {
+		ASSERT_LT(++check_count, 10000);
 		ecsact_async_flush_events(nullptr, &async_evc);
 	}
 
-	std::array<ecsact_component, 2> components = {
+	std::array<ecsact_component, 2> components{
 		needed_component,
-		update_component};
-	std::array<ecsact_entity_id, 2> components_entities = {entity, entity};
+		update_component,
+	};
+	std::array<ecsact_entity_id, 2> components_entities = {
+		cb_info.entity,
+		cb_info.entity};
 
 	ecsact_execution_options add_options{};
 
@@ -162,15 +164,7 @@ TEST(AsyncRef, TryMergeFailure) {
 		.component_data = another_needed_component_data,
 	};
 
-	auto entity_request = ecsact_async_request_entity();
-
-	bool             entity_wait = false;
-	ecsact_entity_id entity;
-
-	struct entity_cb_info {
-		ecsact_entity_id& entity;
-		bool&             wait;
-	};
+	auto entity_request = ecsact_async_create_entity();
 
 	auto entity_cb = //
 		[](
@@ -184,13 +178,16 @@ TEST(AsyncRef, TryMergeFailure) {
 			entity_info.entity = entity_id;
 		};
 
-	entity_cb_info entity_info{.entity = entity, .wait = entity_wait};
+	entity_cb_info cb_info{};
 
 	ecsact_async_events_collector entity_async_evc{};
 	entity_async_evc.async_entity_callback = entity_cb;
-	entity_async_evc.async_entity_error_callback_user_data = &entity_info;
+	entity_async_evc.async_entity_error_callback_user_data = &cb_info;
 
-	while(entity_wait != true) {
+	int check_count = 0;
+
+	while(cb_info.wait != true) {
+		ASSERT_LT(++check_count, 10000);
 		ecsact_async_flush_events(nullptr, &entity_async_evc);
 	}
 
@@ -204,7 +201,7 @@ TEST(AsyncRef, TryMergeFailure) {
 	ecsact_async_events_collector async_evc{};
 	async_evc.async_error_callback = async_err_cb;
 
-	std::array<ecsact_entity_id, 2> entities{entity, entity};
+	std::array<ecsact_entity_id, 2> entities{cb_info.entity, cb_info.entity};
 	std::array<ecsact_component, 2> components{
 		needed_component,
 		another_needed_component};
@@ -225,7 +222,7 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 	auto connect_req_id = ecsact_async_connect("good");
 
 	for(int i = 0; i < 10; i++) {
-		ecsact_async_request_entity();
+		ecsact_async_create_entity();
 	}
 
 	int              counter = 0;
@@ -253,7 +250,10 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 	entity_async_evc.async_entity_callback = entity_cb;
 	entity_async_evc.async_entity_error_callback_user_data = &entity_info;
 
+	int check_count = 0;
+
 	while(counter < 10) {
+		ASSERT_LT(++check_count, 10000);
 		ecsact_async_flush_events(nullptr, &entity_async_evc);
 	}
 

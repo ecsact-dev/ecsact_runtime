@@ -8,6 +8,7 @@
 #include "ecsact/runtime/core.h"
 
 namespace util {
+
 auto component_to_component_id_view(auto components_view) {
 	return std::ranges::views::transform(
 		components_view,
@@ -57,6 +58,7 @@ bool check_entity_merge_duplicates(
 			std::views::filter(other_entities_view, [&entity_id](auto other_entity) {
 				return entity_id == other_entity;
 			});
+
 		int same_entity_count = 0;
 		for(auto itr = view.begin(); itr != view.end(); itr++) {
 			same_entity_count++;
@@ -81,6 +83,11 @@ ecsact_async_error validate_options(types::cpp_execution_options& options);
 
 ecsact_async_error validate_merge_options(
 	types::cpp_execution_options& options,
+	types::cpp_execution_options& other_options
+);
+
+void merge_options(
+	types::cpp_execution_options& tick_options,
 	types::cpp_execution_options& other_options
 );
 

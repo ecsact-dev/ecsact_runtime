@@ -32,6 +32,7 @@ ecsact_async_error validate_instructions(
 			}
 		}
 	}
+	return ECSACT_ASYNC_OK;
 }
 
 ecsact_async_error validate_merge_instructions(
@@ -184,6 +185,13 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 
 			update_component._id = options.update_components[i].component_id;
 			update_component.entity_id = options.update_components_entities[i];
+			ecsact_component comp_data = options.update_components[i];
+
+			// TODO: Serialize component data to store for later execute systems which
+			// will need to deserialize it.
+
+			comp_data.component_data;
+
 			cpp_options.updates.insert(cpp_options.updates.end(), update_component);
 		}
 	}
@@ -261,4 +269,43 @@ ecsact_async_error util::validate_merge_options(
 	}
 
 	return error;
+}
+
+void util::merge_options(
+	types::cpp_execution_options& tick_options,
+	types::cpp_execution_options& other_options
+) {
+	if(other_options.actions.size() > 0) {
+		tick_options.actions.insert(
+			tick_options.actions.end(),
+			other_options.actions.begin(),
+			other_options.actions.end()
+		);
+	}
+
+	auto range = std::ranges::views::all(tick_options.actions);
+
+	if(other_options.adds.size() > 0) {
+		tick_options.adds.insert(
+			tick_options.adds.end(),
+			other_options.adds.begin(),
+			other_options.adds.end()
+		);
+	}
+
+	if(other_options.updates.size() > 0) {
+		tick_options.updates.insert(
+			tick_options.updates.end(),
+			other_options.updates.begin(),
+			other_options.updates.end()
+		);
+	}
+
+	if(other_options.removes.size() > 0) {
+		tick_options.removes.insert(
+			tick_options.removes.end(),
+			other_options.removes.begin(),
+			other_options.removes.end()
+		);
+	}
 }
