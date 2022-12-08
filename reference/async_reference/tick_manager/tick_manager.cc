@@ -30,6 +30,7 @@ ecsact_async_error tick_manager::try_add_options(
 std::optional<types::cpp_execution_options> tick_manager::get_options_now() {
 	std::optional<types::cpp_execution_options> cpp_options;
 
+	// Consider pop and move
 	std::unique_lock lk(tick_m);
 	if(tick_map.contains(tick)) {
 		cpp_options = tick_map.at(tick);

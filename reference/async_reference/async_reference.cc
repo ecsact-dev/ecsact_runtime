@@ -14,7 +14,11 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 	// The good and bad strings simulate the outcome of connections
 	if(connect_str == "good") {
 		is_connected = true;
+
 		registry_id = ecsact_create_registry("async_reference_impl_reg");
+		pending_registry_id =
+			ecsact_create_registry("pending_async_reference_impl_reg");
+
 		execute_systems();
 	} else {
 		// Same thing that happens in enqueue? Callback next flush?
@@ -34,6 +38,14 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
 			.request_id = req_id};
 
+		// ecsact_add_component(
+		// 	*pending_registry_id,
+		// 	entity_id,
+		// 	component_id,
+
+		// )
+
+		// Could block here
 		async_callbacks.add(async_err);
 		return req_id;
 	}
@@ -47,16 +59,19 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 	};
 
 	if(error != ECSACT_ASYNC_OK) {
+		// Could block here
 		async_callbacks.add(async_err);
 
 		disconnect();
 		return req_id;
 	}
 
+	// Could block here
 	error = tick_manager.try_add_options(cpp_options);
 	async_err.error = error;
 
 	if(error != ECSACT_ASYNC_OK) {
+		// Could block here
 		async_callbacks.add(async_err);
 
 		disconnect();
@@ -68,6 +83,7 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 void async_reference::execute_systems() {
 	execution_thread = std::thread([this] {
 		while(is_connected == true) {
+			// Could block here
 			auto cpp_options = tick_manager.get_options_now();
 
 			ecsact_execution_events_collector collector;
@@ -96,10 +112,12 @@ void async_reference::execute_systems() {
 				return;
 			}
 
+			// Could block here
 			tick_manager.increment_and_merge_tick();
 
 			std::vector<ecsact_async_request_id> pending_entities;
 
+			// Could block here
 			std::unique_lock lk(pending_m);
 			pending_entities = std::move(pending_entity_requests);
 			pending_entity_requests.clear();
@@ -107,12 +125,13 @@ void async_reference::execute_systems() {
 
 			for(auto& entity_request_id : pending_entities) {
 				auto entity = ecsact_create_entity(*registry_id);
+				auto pended_entity = ecsact_create_entity(*pending_registry_id);
 
 				types::entity created_entity{
 					.entity_id = entity,
 					.request_id = entity_request_id,
 				};
-
+				// Could block here
 				async_callbacks.add(created_entity);
 			}
 		}
@@ -124,20 +143,25 @@ void async_reference::flush_events(
 	const ecsact_async_events_collector*     async_events
 ) {
 	if(async_events != nullptr) {
+		// Could block here
 		bool breaking_error = async_callbacks.invoke(*async_events);
 
 		if(breaking_error) {
+			// Just disconnect immediately
 			disconnect();
 			return;
 		}
 	}
 
 	if(execution_events != nullptr) {
+		// Could block here
 		exec_callbacks.invoke(*execution_events, *registry_id);
 	}
 }
 
 ecsact_async_request_id async_reference::create_entity_request() {
+	// NOTE: Add entity to both registries
+	// Consider ensure entity
 	auto req_id = next_request_id();
 	if(is_connected == false) {
 		types::async_error async_err{

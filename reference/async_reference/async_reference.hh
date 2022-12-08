@@ -48,8 +48,10 @@ public:
 	void disconnect();
 
 private:
-	std::atomic_int32_t               _last_request_id = 0;
+	std::atomic_int32_t _last_request_id = 0;
+
 	std::optional<ecsact_registry_id> registry_id;
+	std::optional<ecsact_registry_id> pending_registry_id;
 
 	tick_manager        tick_manager;
 	execution_callbacks exec_callbacks;

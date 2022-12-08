@@ -88,13 +88,14 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 	ecsact_execution_options c_options{};
 
 	if(options.actions.size() > 0) {
+		// Actions have data too!
 		c_options.actions = options.actions.data();
 		c_options.actions_length = options.actions.size();
 	}
 	if(options.adds.size() > 0) {
 		auto adds_range = std::ranges::views::all(options.adds);
+		auto entities = util::get_cpp_entities(adds_range);
 
-		auto                          entities = util::get_cpp_entities(adds_range);
 		std::vector<ecsact_entity_id> entity_list;
 		entity_list.insert(entity_list.end(), entities.begin(), entities.end());
 
@@ -103,11 +104,25 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 		for(int i = 0; i < options.adds.size(); i++) {
 			ecsact_component component;
 			auto             component_info = options.adds[i];
-			const void*      component_data = ecsact_get_component(
-        registry_id,
-        component_info.entity_id,
-        component_info._id
-      );
+
+			const void* component_data = ecsact_get_component(
+				pending_registry_id,
+				component_info.entity_id,
+				component_info._id
+			);
+
+			ecsact_add_component(
+				registry_id,
+				component_info.entity_id,
+				component_info._id,
+				component_data
+			);
+
+			ecsact_remove_component(
+				pending_registry_id,
+				component_info.entity_id,
+				component_info._id
+			);
 
 			component.component_id = component_info._id;
 			component.component_data = component_data;
@@ -173,8 +188,18 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 		for(int i = 0; i < options.add_components_length; i++) {
 			types::cpp_execution_component add_component;
 
-			add_component._id = options.add_components[i].component_id;
-			add_component.entity_id = options.add_components_entities[i];
+			auto component = options.add_components[i];
+			auto entity_id = options.add_components_entities[i];
+
+			ecsact_add_component(
+				pending_registry_id,
+				entity_id,
+				component.component_id,
+				component.component_data
+			);
+
+			add_component._id = component.component_id;
+			add_component.entity_id = entity_id;
 			cpp_options.adds.insert(cpp_options.adds.end(), add_component);
 		}
 	}
@@ -183,14 +208,18 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 		for(int i = 0; i < options.update_components_length; i++) {
 			types::cpp_execution_component update_component;
 
-			update_component._id = options.update_components[i].component_id;
-			update_component.entity_id = options.update_components_entities[i];
-			ecsact_component comp_data = options.update_components[i];
+			auto component = options.update_components[i];
+			auto entity_id = options.update_components_entities[i];
 
-			// TODO: Serialize component data to store for later execute systems which
-			// will need to deserialize it.
+			update_component._id = component.component_id;
+			update_component.entity_id = entity_id;
 
-			comp_data.component_data;
+			ecsact_add_component(
+				pending_registry_id,
+				entity_id,
+				component.component_id,
+				component.component_data
+			);
 
 			cpp_options.updates.insert(cpp_options.updates.end(), update_component);
 		}
