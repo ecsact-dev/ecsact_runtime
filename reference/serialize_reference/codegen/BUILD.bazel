@@ -1,0 +1,14 @@
+load("//bazel:copts.bzl", "copts")
+load("//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_ecsact_codegen_plugin(
+    name = "codegen",
+    srcs = ["serialize_reference_codegen.cc"],
+    copts = copts,
+    output_extension = "serialize_reference.cc",
+    deps = [
+        "@ecsact_lang_cpp//:support",
+    ],
+)

@@ -17,6 +17,22 @@
 			"cwd": "${workspaceFolder}",
 			"type": "lldb",
 			"preLaunchTask": "build //scripts:check_module_header"
+		},
+		{
+			"name": "test @ecsact_runtime_serialize_test//:serialize",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/serialize/bazel-bin/serialize",
+			"cwd": "${workspaceFolder}/tests/serialize",
+			"args": [],
+			"type": "cppdbg",
+			"windows": {
+				"type": "cppvsdbg",
+				"program": "${workspaceFolder}/tests/serialize/bazel-bin/serialize.exe",
+			},
+			"preLaunchTask": "build @ecsact_runtime_serialize_test//:serialize",
+			"sourceFileMap": {
+				"C:/users/austin/_bazel_austin/7knza6r5/execroot/ecsact_runtime_serialize_test": "${workspaceFolder}/tests/serialize"
+			}
 		}
 	]
 }

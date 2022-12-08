@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "serialize_reference",
+    srcs = ["serialize_reference.cc"],
+    copts = copts,
+    local_defines = ["ECSACT_SERIALIZE_API="],
+    deps = [
+        "//:common",
+        "//:serialize",
+    ],
+)
