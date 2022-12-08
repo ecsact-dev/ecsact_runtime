@@ -1,0 +1,10 @@
+package serialize_test;
+
+component ExampleComponent {
+	i32 num;
+}
+
+action ExampleAction {
+	i32 input;
+	readwrite ExampleComponent;
+}

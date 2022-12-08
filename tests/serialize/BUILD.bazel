@@ -1,0 +1,27 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_ecsact//ecsact:defs.bzl", "ecsact_codegen")
+load("//bazel:copts.bzl", "copts")
+
+ecsact_codegen(
+    name = "serialize_test_generated",
+    srcs = ["serialize_test.ecsact"],
+    plugins = [
+        "@ecsact//codegen_plugins:cpp_header",
+        # TODO add in the serialize plugin
+    ],
+)
+
+cc_test(
+    name = "serialize",
+    srcs = [
+        "serialize_test.cc",
+        ":serialize_test_generated",
+    ],
+    copts = copts,
+    deps = [
+        # "//:serialize",
+        "@ecsact_runtime//:common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
