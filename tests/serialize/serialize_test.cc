@@ -31,8 +31,26 @@ TEST(Serialize, Correctness) {
 TEST(ComponentSerialize, Cpp) {
 	using serialize_test::ExampleComponent;
 	auto serialized_comp = ecsact::serialize(ExampleComponent{.num = 42});
+
+	// There are 3 overloads for deserialize.
+	// (1) when you only care about the component and don't care about how much of
+	// the span you've read from.
 	auto comp = ecsact::deserialize<ExampleComponent>(serialized_comp);
 	EXPECT_EQ(comp.num, 42);
+
+	// (2) when you want the amount read from the span and you already have the
+	// integer allocated
+	int read_amount = 0;
+	comp = ecsact::deserialize<ExampleComponent>(serialized_comp, read_amount);
+	EXPECT_EQ(comp.num, 42);
+	EXPECT_GT(read_amount, 0);
+
+	// (3) when you want the amount read from the span and you already have the
+	// component allocated. Also better for template deduction (notice no angle
+	// brackets (<>)).
+	read_amount = ecsact::deserialize(serialized_comp, comp);
+	EXPECT_EQ(comp.num, 42);
+	EXPECT_GT(read_amount, 0);
 }
 
 TEST(ActionSerialize, Cpp) {
