@@ -16,6 +16,13 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
 
 http_archive(
+    name = "ecsact_lang_cpp",
+    sha256 = "2eb4456d0a706952bd46cff9cb6d1353a70d981e69eb42939da65b4c019ec610",
+    strip_prefix = "ecsact_lang_cpp-23cb4156fb69a3e7e54a1093a91cd63a87a8abb2",
+    url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/23cb4156fb69a3e7e54a1093a91cd63a87a8abb2.zip",
+)
+
+http_archive(
     name = "com_google_googletest",
     sha256 = "d4cb2430eb82495a49a24310a609b99726726bf126c2fbfa92fd04c14f6a3b31",
     strip_prefix = "googletest-d1a0039b97291dd1dc14f123b906bb7622ffe07c",
