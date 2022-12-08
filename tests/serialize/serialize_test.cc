@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <vector>
-// #include "ecsact/runtime/serialize.h"
+#include "ecsact/runtime/serialize.h"
 #include "serialize_test_generated/serialize_test.ecsact.hh"
 
 TEST(Serialize, Correctness) {
@@ -8,7 +8,7 @@ TEST(Serialize, Correctness) {
 	comp.num = 42;
 
 	std::vector<uint8_t> serialized_comp(
-		ecsact_serialize_component_size(serialize_test::ExampleComponent::id);
+		ecsact_serialize_component_size(serialize_test::ExampleComponent::id)
 	);
 
 	ecsact_serialize_component(

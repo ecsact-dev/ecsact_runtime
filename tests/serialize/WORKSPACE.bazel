@@ -21,6 +21,13 @@ local_repository(
 )
 
 http_archive(
+    name = "ecsact_lang_cpp",
+    sha256 = "2eb4456d0a706952bd46cff9cb6d1353a70d981e69eb42939da65b4c019ec610",
+    strip_prefix = "ecsact_lang_cpp-23cb4156fb69a3e7e54a1093a91cd63a87a8abb2",
+    url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/23cb4156fb69a3e7e54a1093a91cd63a87a8abb2.zip",
+)
+
+http_archive(
     name = "rules_ecsact",
     sha256 = "e6d888c63aa536b5b7c6af10d217cdb8ad98b2262fa9d02515a99edbd0d94eea",
     strip_prefix = "rules_ecsact-0.2.1",

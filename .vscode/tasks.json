@@ -20,6 +20,20 @@
 				"//scripts:check_module_header"
 			],
 			"group": "build"
+		},
+		{
+			"label": "build @ecsact_runtime_serialize_test//:serialize",
+			"command": "bazel",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/tests/serialize"
+			},
+			"args": [
+				"build",
+				"//:serialize"
+			],
+			"group": "build",
+			"problemMatcher": []
 		}
 	]
 }

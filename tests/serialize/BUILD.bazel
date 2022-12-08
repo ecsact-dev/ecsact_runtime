@@ -7,7 +7,7 @@ ecsact_codegen(
     srcs = ["serialize_test.ecsact"],
     plugins = [
         "@ecsact//codegen_plugins:cpp_header",
-        # TODO add in the serialize plugin
+        "@ecsact_runtime//reference/serialize_reference/codegen",
     ],
 )
 
@@ -18,10 +18,12 @@ cc_test(
         ":serialize_test_generated",
     ],
     copts = copts,
+    local_defines = ["ECSACT_SERIALIZE_API="],
     deps = [
-        # "//:serialize",
-        "@ecsact_runtime//:common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
+        "@ecsact_runtime//:common",
+        "@ecsact_runtime//:serialize",
+        "@ecsact_runtime//reference/serialize_reference",
     ],
 )
