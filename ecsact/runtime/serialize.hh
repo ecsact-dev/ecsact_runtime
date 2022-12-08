@@ -106,12 +106,13 @@ T deserialize(std::span<std::byte> serialized_component_or_action) {
  * @returns number of bytes read from the @p serialized_component_or_action
  */
 template<typename T>
-int deserialize(std::span<std::byte> serialized_component_or_action, T& out_component) {
+int deserialize(
+	std::span<std::byte> serialized_component_or_action,
+	T&                   out_component
+) {
 	int read_amount;
-	out_component = ::ecsact::deserialize<T>(
-		serialized_component_or_action,
-		read_amount
-	);
+	out_component =
+		::ecsact::deserialize<T>(serialized_component_or_action, read_amount);
 	return read_amount;
 }
 } // namespace ecsact
