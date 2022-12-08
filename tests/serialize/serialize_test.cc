@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <vector>
-#include "ecsact/runtime/serialize.h"
+#include "ecsact/runtime/serialize.hh"
 #include "serialize_test_generated/serialize_test.ecsact.hh"
 
 TEST(Serialize, Correctness) {
@@ -26,4 +26,18 @@ TEST(Serialize, Correctness) {
 	);
 
 	EXPECT_EQ(deserialized_comp.num, comp.num);
+}
+
+TEST(ComponentSerialize, Cpp) {
+	using serialize_test::ExampleComponent;
+	auto serialized_comp = ecsact::serialize(ExampleComponent{.num = 42});
+	auto comp = ecsact::deserialize<ExampleComponent>(serialized_comp);
+	EXPECT_EQ(comp.num, 42);
+}
+
+TEST(ActionSerialize, Cpp) {
+	using serialize_test::ExampleAction;
+	auto serialized_act = ecsact::serialize(ExampleAction{.input = 42});
+	auto act = ecsact::deserialize<ExampleAction>(serialized_act);
+	EXPECT_EQ(act.input, 42);
 }
