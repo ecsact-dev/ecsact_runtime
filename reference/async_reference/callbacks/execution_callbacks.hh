@@ -9,7 +9,7 @@
 class execution_callbacks {
 public:
 	void invoke(
-		const ecsact_execution_events_collector& execution_events,
+		const ecsact_execution_events_collector* execution_events,
 		ecsact_registry_id                       registry_id
 	);
 

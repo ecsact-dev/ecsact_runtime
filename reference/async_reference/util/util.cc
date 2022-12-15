@@ -1,5 +1,7 @@
 #include "util.hh"
 
+#include "ecsact/runtime/serialize.hh"
+
 ecsact_async_error validate_instructions(
 	std::vector<types::cpp_execution_component>& components
 ) {
@@ -83,14 +85,28 @@ ecsact_async_error validate_merge_instructions(
 
 ecsact_execution_options util::cpp_to_c_execution_options(
 	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id
+	const ecsact_registry_id&    registry_id,
+	const ecsact_registry_id&    pending_registry_id
 ) {
 	ecsact_execution_options c_options{};
 
 	if(options.actions.size() > 0) {
-		// Actions have data too!
-		c_options.actions = options.actions.data();
-		c_options.actions_length = options.actions.size();
+		std::vector<ecsact_action> deserialized_actions;
+		deserialized_actions.resize(options.actions.size());
+		for(auto& action_info : options.actions) {
+			ecsact_action action;
+
+			ecsact_deserialize_action(
+				action_info.action_id,
+				reinterpret_cast<uint8_t*>(action_info.serialized_data.data()),
+				&action
+			);
+
+			deserialized_actions.insert(deserialized_actions.end(), action);
+		}
+
+		c_options.actions = deserialized_actions.data();
+		c_options.actions_length = deserialized_actions.size();
 	}
 	if(options.adds.size() > 0) {
 		auto adds_range = std::ranges::views::all(options.adds);
@@ -151,6 +167,25 @@ ecsact_execution_options util::cpp_to_c_execution_options(
         component_info._id
       );
 
+			auto pending_component = ecsact_get_component(
+				pending_registry_id,
+				component_info.entity_id,
+				component_info._id
+			);
+
+			ecsact_update_component(
+				registry_id,
+				component_info.entity_id,
+				component_info._id,
+				pending_component
+			);
+
+			ecsact_remove_component(
+				pending_registry_id,
+				component_info.entity_id,
+				component_info._id
+			);
+
 			component.component_id = component_info._id;
 			component.component_data = component_data;
 			component_list.insert(component_list.end(), component);
@@ -180,9 +215,12 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 }
 
 types::cpp_execution_options util::c_to_cpp_execution_options(
-	const ecsact_execution_options options
+	const ecsact_execution_options options,
+	const ecsact_registry_id&      pending_registry_id
 ) {
 	types::cpp_execution_options cpp_options;
+
+	// Check if there's duplicates
 
 	if(options.add_components != nullptr) {
 		for(int i = 0; i < options.add_components_length; i++) {
@@ -190,6 +228,8 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 
 			auto component = options.add_components[i];
 			auto entity_id = options.add_components_entities[i];
+
+			ecsact_ensure_entity(pending_registry_id, entity_id);
 
 			ecsact_add_component(
 				pending_registry_id,
@@ -214,12 +254,29 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			update_component._id = component.component_id;
 			update_component.entity_id = entity_id;
 
-			ecsact_add_component(
+			// ecsact_ensure_entity(pending_registry_id, entity_id);
+
+			bool has_component = ecsact_has_component(
 				pending_registry_id,
 				entity_id,
-				component.component_id,
-				component.component_data
+				component.component_id
 			);
+
+			if(has_component) {
+				ecsact_update_component(
+					pending_registry_id,
+					entity_id,
+					component.component_id,
+					component.component_data
+				);
+			} else {
+				ecsact_add_component(
+					pending_registry_id,
+					entity_id,
+					component.component_id,
+					component.component_data
+				);
+			}
 
 			cpp_options.updates.insert(cpp_options.updates.end(), update_component);
 		}
@@ -229,18 +286,39 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 		for(int i = 0; i < options.remove_components_length; i++) {
 			types::cpp_execution_component remove_component;
 
-			remove_component._id = options.remove_components[i];
-			remove_component.entity_id = options.remove_components_entities[i];
+			auto component_id = options.remove_components[i];
+			auto entity_id = options.remove_components_entities[i];
+
+			bool has_component =
+				ecsact_has_component(pending_registry_id, entity_id, component_id);
+
+			if(has_component) {
+			}
+
+			remove_component._id = component_id;
+			remove_component.entity_id = entity_id;
 			cpp_options.removes.insert(cpp_options.removes.end(), remove_component);
 		}
 	}
 
 	if(options.actions != nullptr) {
-		cpp_options.actions.insert(
-			cpp_options.actions.end(),
-			options.actions,
-			options.actions + options.actions_length
-		);
+		for(int i = 0; i < options.actions_length; i++) {
+			auto action = options.actions[i];
+
+			types::action_info action_info;
+			action_info.action_id = action.action_id;
+
+			std::vector<std::byte> out_action;
+			ecsact_serialize_action(
+				action.action_id,
+				action.action_data,
+				reinterpret_cast<uint8_t*>(out_action.data())
+			);
+
+			action_info.serialized_data = out_action;
+
+			cpp_options.actions.insert(cpp_options.actions.begin(), action_info);
+		}
 	}
 	return cpp_options;
 }
@@ -250,6 +328,8 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 	ecsact_async_error error = ECSACT_ASYNC_OK;
 
 	if(options.adds.size() > 0) {
+		// NOTE: There's currently no tolerance for 2 users adding a component to an
+		// entity on the same tick
 		error = validate_instructions(options.adds);
 	}
 
@@ -258,6 +338,7 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 	}
 
 	if(options.updates.size() > 0) {
+		// NOTE: There's currently no tolerance for updates on the same tick
 		validate_instructions(options.updates);
 	}
 
@@ -312,8 +393,6 @@ void util::merge_options(
 		);
 	}
 
-	auto range = std::ranges::views::all(tick_options.actions);
-
 	if(other_options.adds.size() > 0) {
 		tick_options.adds.insert(
 			tick_options.adds.end(),
@@ -335,6 +414,43 @@ void util::merge_options(
 			tick_options.removes.end(),
 			other_options.removes.begin(),
 			other_options.removes.end()
+		);
+	}
+}
+
+void util::merge_options(
+	types::pending_execution_options& pending,
+	types::pending_execution_options& other_pending
+) {
+	if(other_pending.options.actions.size() > 0) {
+		pending.options.actions.insert(
+			pending.options.actions.end(),
+			other_pending.options.actions.begin(),
+			other_pending.options.actions.end()
+		);
+	}
+
+	if(other_pending.options.adds.size() > 0) {
+		pending.options.adds.insert(
+			pending.options.adds.end(),
+			other_pending.options.adds.begin(),
+			other_pending.options.adds.end()
+		);
+	}
+
+	if(other_pending.options.updates.size() > 0) {
+		pending.options.updates.insert(
+			pending.options.updates.end(),
+			other_pending.options.updates.begin(),
+			other_pending.options.updates.end()
+		);
+	}
+
+	if(other_pending.options.removes.size() > 0) {
+		pending.options.removes.insert(
+			pending.options.removes.end(),
+			other_pending.options.removes.begin(),
+			other_pending.options.removes.end()
 		);
 	}
 }

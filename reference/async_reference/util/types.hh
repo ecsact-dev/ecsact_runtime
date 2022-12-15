@@ -3,6 +3,7 @@
 #include <vector>
 #include <optional>
 #include <variant>
+#include <cstddef>
 
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/async.h"
@@ -16,8 +17,8 @@ struct callback_info {
 };
 
 struct async_error {
-	ecsact_async_error      error;
-	ecsact_async_request_id request_id;
+	ecsact_async_error                   error;
+	std::vector<ecsact_async_request_id> request_ids;
 };
 
 struct entity {
@@ -30,11 +31,21 @@ struct cpp_execution_component {
 	ecsact_component_id _id;
 };
 
+struct action_info {
+	ecsact_action_id       action_id;
+	std::vector<std::byte> serialized_data;
+};
+
 struct cpp_execution_options {
 	std::vector<cpp_execution_component> adds;
 	std::vector<cpp_execution_component> updates;
 	std::vector<cpp_execution_component> removes;
-	std::vector<ecsact_action>           actions;
+	std::vector<action_info>             actions;
+};
+
+struct pending_execution_options {
+	ecsact_async_request_id      request_id;
+	types::cpp_execution_options options;
 };
 
 using async_requests =

@@ -62,6 +62,7 @@ private:
 	std::thread      execution_thread;
 	std::mutex       pending_m;
 	std::atomic_bool is_connected = false;
+	std::atomic_bool is_connected_notified = false;
 
 	ecsact_async_request_id next_request_id();
 	ecsact_async_request_id convert_request_id(int32_t id);

@@ -2,12 +2,19 @@
 
 #include <algorithm>
 #include <ranges>
+#include <vector>
+#include <concepts>
 
 #include "types.hh"
 
 #include "ecsact/runtime/core.h"
 
 namespace util {
+
+// Create a function that:
+// Checks our 3 different lists of options (add, remove, update)
+// Check if they're happening on the same tick on the same entity
+// We should drop UPDATES if there's a REMOVE
 
 auto component_to_component_id_view(auto components_view) {
 	return std::ranges::views::transform(
@@ -72,11 +79,13 @@ bool check_entity_merge_duplicates(
 
 ecsact_execution_options cpp_to_c_execution_options(
 	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id
+	const ecsact_registry_id&    registry_id,
+	const ecsact_registry_id&    pending_registry_id
 );
 
 types::cpp_execution_options c_to_cpp_execution_options(
-	const ecsact_execution_options options
+	const ecsact_execution_options options,
+	const ecsact_registry_id&      pending_registry_id
 );
 
 ecsact_async_error validate_options(types::cpp_execution_options& options);
@@ -86,9 +95,16 @@ ecsact_async_error validate_merge_options(
 	types::cpp_execution_options& other_options
 );
 
+// Rename this to merge_maps
+
 void merge_options(
 	types::cpp_execution_options& tick_options,
 	types::cpp_execution_options& other_options
+);
+
+void merge_options(
+	types::pending_execution_options& tick_options,
+	types::pending_execution_options& other_options
 );
 
 } // namespace util

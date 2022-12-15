@@ -10,19 +10,20 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 ) {
 	std::string connect_str(connection_string);
 
+	registry_id = ecsact_create_registry("async_reference_impl_reg");
+	pending_registry_id =
+		ecsact_create_registry("pending_async_reference_impl_reg");
+
 	auto req_id = next_request_id();
 	// The good and bad strings simulate the outcome of connections
 	if(connect_str == "good") {
 		is_connected = true;
 
-		registry_id = ecsact_create_registry("async_reference_impl_reg");
-		pending_registry_id =
-			ecsact_create_registry("pending_async_reference_impl_reg");
-
 		execute_systems();
 	} else {
 		// Same thing that happens in enqueue? Callback next flush?
 		is_connected = false;
+		is_connected_notified = false;
 	}
 
 	return req_id;
@@ -33,50 +34,28 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 ) {
 	auto req_id = next_request_id();
 
-	if(is_connected == false) {
+	if(is_connected == false && is_connected_notified == false) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
-			.request_id = req_id};
+			.request_ids = {req_id},
+		};
 
-		// ecsact_add_component(
-		// 	*pending_registry_id,
-		// 	entity_id,
-		// 	component_id,
-
-		// )
-
+		is_connected_notified = true;
 		// Could block here
 		async_callbacks.add(async_err);
 		return req_id;
 	}
 
-	auto cpp_options = util::c_to_cpp_execution_options(options);
-	auto error = util::validate_options(cpp_options);
+	auto cpp_options =
+		util::c_to_cpp_execution_options(options, *pending_registry_id);
 
-	auto async_err = types::async_error{
-		.error = error,
+	types::pending_execution_options pending_options{
 		.request_id = req_id,
+		.options = cpp_options,
 	};
 
-	if(error != ECSACT_ASYNC_OK) {
-		// Could block here
-		async_callbacks.add(async_err);
-
-		disconnect();
-		return req_id;
-	}
-
 	// Could block here
-	error = tick_manager.try_add_options(cpp_options);
-	async_err.error = error;
-
-	if(error != ECSACT_ASYNC_OK) {
-		// Could block here
-		async_callbacks.add(async_err);
-
-		disconnect();
-		return req_id;
-	}
+	tick_manager.add_pending_options(pending_options);
 	return req_id;
 }
 
@@ -84,6 +63,14 @@ void async_reference::execute_systems() {
 	execution_thread = std::thread([this] {
 		while(is_connected == true) {
 			// Could block here
+			auto async_err = tick_manager.validate_pending_options();
+
+			if(async_err.error != ECSACT_ASYNC_OK) {
+				async_callbacks.add(async_err);
+
+				disconnect();
+			}
+
 			auto cpp_options = tick_manager.get_options_now();
 
 			ecsact_execution_events_collector collector;
@@ -99,21 +86,13 @@ void async_reference::execute_systems() {
 
 			if(cpp_options) {
 				options = std::make_unique<ecsact_execution_options>(
-					util::cpp_to_c_execution_options(*cpp_options, *registry_id)
+					util::cpp_to_c_execution_options(
+						*cpp_options,
+						*registry_id,
+						*pending_registry_id
+					)
 				);
 			}
-
-			auto systems_error =
-				ecsact_execute_systems(*registry_id, 1, options.get(), &collector);
-
-			if(systems_error != ECSACT_EXEC_SYS_OK) {
-				async_callbacks.add(systems_error);
-				disconnect();
-				return;
-			}
-
-			// Could block here
-			tick_manager.increment_and_merge_tick();
 
 			std::vector<ecsact_async_request_id> pending_entities;
 
@@ -134,6 +113,15 @@ void async_reference::execute_systems() {
 				// Could block here
 				async_callbacks.add(created_entity);
 			}
+
+			auto systems_error =
+				ecsact_execute_systems(*registry_id, 1, options.get(), &collector);
+
+			if(systems_error != ECSACT_EXEC_SYS_OK) {
+				async_callbacks.add(systems_error);
+				disconnect();
+				return;
+			}
 		}
 	});
 }
@@ -142,20 +130,9 @@ void async_reference::flush_events(
 	const ecsact_execution_events_collector* execution_events,
 	const ecsact_async_events_collector*     async_events
 ) {
-	if(async_events != nullptr) {
-		// Could block here
-		bool breaking_error = async_callbacks.invoke(*async_events);
-
-		if(breaking_error) {
-			// Just disconnect immediately
-			disconnect();
-			return;
-		}
-	}
-
-	if(execution_events != nullptr) {
-		// Could block here
-		exec_callbacks.invoke(*execution_events, *registry_id);
+	async_callbacks.invoke(async_events);
+	if(registry_id) {
+		exec_callbacks.invoke(execution_events, *registry_id);
 	}
 }
 
@@ -163,12 +140,14 @@ ecsact_async_request_id async_reference::create_entity_request() {
 	// NOTE: Add entity to both registries
 	// Consider ensure entity
 	auto req_id = next_request_id();
-	if(is_connected == false) {
+	if(is_connected == false && is_connected_notified == false) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
-			.request_id = req_id};
+			.request_ids = {req_id},
+		};
 
 		async_callbacks.add(async_err);
+		is_connected_notified = true;
 
 		return req_id;
 	}

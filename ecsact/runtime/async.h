@@ -77,9 +77,10 @@ typedef enum {
  */
 typedef void (*ecsact_async_error_callback)(
 	//
-	ecsact_async_error      async_err,
-	ecsact_async_request_id request_id,
-	void*                   callback_user_data
+	ecsact_async_error       async_err,
+	int                      request_ids_length,
+	ecsact_async_request_id* request_ids,
+	void*                    callback_user_data
 );
 
 /**

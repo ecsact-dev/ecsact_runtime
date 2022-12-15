@@ -9,7 +9,7 @@
 
 class async_callbacks {
 public:
-	bool invoke(const ecsact_async_events_collector& async_events);
+	void invoke(const ecsact_async_events_collector* async_events);
 	void add(const types::async_requests type);
 	void add_many(const std::vector<types::async_requests>& types);
 

@@ -9,9 +9,17 @@ std::vector<types::callback_info> execution_callbacks::remove_callbacks_info =
 std::mutex execution_callbacks::execution_m = {};
 
 void execution_callbacks::invoke(
-	const ecsact_execution_events_collector& execution_events,
+	const ecsact_execution_events_collector* execution_events,
 	ecsact_registry_id                       registry_id
 ) {
+	if(execution_events == nullptr) {
+		std::unique_lock lk(execution_m);
+		init_callbacks_info.clear();
+		update_callbacks_info.clear();
+		remove_callbacks_info.clear();
+		return;
+	}
+
 	std::vector<types::callback_info> init_callbacks;
 	std::vector<types::callback_info> update_callbacks;
 	std::vector<types::callback_info> remove_callbacks;
@@ -35,12 +43,12 @@ void execution_callbacks::invoke(
 			component_info.component_id
 		);
 
-		execution_events.init_callback(
+		execution_events->init_callback(
 			component_info.event,
 			component_info.entity_id,
 			component_info.component_id,
 			component_data,
-			execution_events.init_callback_user_data
+			execution_events->init_callback_user_data
 		);
 	}
 
@@ -51,12 +59,12 @@ void execution_callbacks::invoke(
 			component_info.component_id
 		);
 
-		execution_events.update_callback(
+		execution_events->update_callback(
 			component_info.event,
 			component_info.entity_id,
 			component_info.component_id,
 			component_data,
-			execution_events.update_callback_user_data
+			execution_events->update_callback_user_data
 		);
 	}
 
@@ -67,12 +75,12 @@ void execution_callbacks::invoke(
 			component_info.component_id
 		);
 
-		execution_events.remove_callback(
+		execution_events->remove_callback(
 			component_info.event,
 			component_info.entity_id,
 			component_info.component_id,
 			component_data,
-			execution_events.remove_callback_user_data
+			execution_events->remove_callback_user_data
 		);
 	}
 }

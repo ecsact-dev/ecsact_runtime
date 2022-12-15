@@ -1,4 +1,6 @@
 #include <array>
+#include <thread>
+#include <chrono>
 
 #include "gtest/gtest.h"
 
@@ -33,9 +35,10 @@ TEST(AsyncRef, ConnectBad) {
 
 	auto async_err_cb = //
 		[](
-			ecsact_async_error      async_err,
-			ecsact_async_request_id request_id,
-			void*                   callback_user_data
+			ecsact_async_error       async_err,
+			int                      request_ids_length,
+			ecsact_async_request_id* request_ids,
+			void*                    callback_user_data
 		) { ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_PERMISSION_DENIED); };
 
 	ecsact_async_events_collector async_evc{};
@@ -51,7 +54,101 @@ TEST(AsyncRef, Disconnect) {
 	ecsact_async_disconnect();
 }
 
-TEST(AsyncRef, AddUpdateAndRemove) {
+// TEST(AsyncRef, AddUpdateAndRemove) {
+// 	auto connect_req_id = ecsact_async_connect("good");
+
+// 	async_test::NeededComponent my_needed_component{};
+
+// 	ecsact_component needed_component{
+// 		.component_id = async_test::NeededComponent::id,
+// 		.component_data = &my_needed_component,
+// 	};
+
+// 	async_test::ComponentUpdate my_update_component{};
+// 	auto                        update_comp_id =
+// async_test::ComponentUpdate::id; 	my_update_component.value_to_update = 1;
+// 	const void* update_component_data = &my_update_component;
+
+// 	ecsact_component update_component{
+// 		.component_id = update_comp_id,
+// 		.component_data = update_component_data,
+// 	};
+
+// 	auto entity_request = ecsact_async_create_entity();
+
+// 	entity_cb_info cb_info{};
+
+// 	auto entity_cb = //
+// 		[](
+// 			ecsact_entity_id        entity_id,
+// 			ecsact_async_request_id request_id,
+// 			void*                   callback_user_data
+// 		) {
+// 			entity_cb_info& entity_info =
+// 				*static_cast<entity_cb_info*>(callback_user_data);
+// 			entity_info.wait = true;
+// 			entity_info.entity = entity_id;
+// 		};
+
+// 	ecsact_async_events_collector async_evc{};
+// 	async_evc.async_entity_callback = entity_cb;
+// 	async_evc.async_entity_error_callback_user_data = &cb_info;
+
+// 	int check_count = 0;
+
+// 	while(cb_info.wait != true) {
+// 		ASSERT_LT(++check_count, 10000);
+// 		ecsact_async_flush_events(nullptr, &async_evc);
+// 	}
+
+// 	std::array<ecsact_component, 2> components{
+// 		needed_component,
+// 		update_component,
+// 	};
+// 	std::array<ecsact_entity_id, 2> components_entities = {
+// 		cb_info.entity,
+// 		cb_info.entity};
+
+// 	ecsact_execution_options add_options{};
+
+// 	add_options.add_components_length = components.size();
+// 	add_options.add_components_entities = components_entities.data();
+// 	add_options.add_components = components.data();
+
+// 	ecsact_async_enqueue_execution_options(add_options);
+
+// 	ecsact_async_flush_events(nullptr, nullptr);
+
+// 	my_update_component.value_to_update += 5;
+
+// 	std::array<ecsact_component, 1> update_components = {update_component};
+
+// 	ecsact_execution_options update_options{};
+// 	update_options.update_components_length = update_components.size();
+// 	update_options.update_components_entities = components_entities.data();
+// 	update_options.update_components = update_components.data();
+
+// 	ecsact_async_enqueue_execution_options(update_options);
+
+// 	ecsact_async_flush_events(nullptr, nullptr);
+
+// 	std::array<ecsact_component_id, 1> remove_components = {update_comp_id};
+
+// 	ecsact_execution_options remove_options{};
+// 	remove_options.remove_components_length = 1;
+// 	remove_options.remove_components_entities = components_entities.data();
+// 	remove_options.remove_components = remove_components.data();
+
+// 	ecsact_async_enqueue_execution_options(remove_options);
+
+// 	ecsact_async_flush_events(nullptr, nullptr);
+
+// 	ecsact_async_disconnect();
+// }
+
+TEST(AsyncRef, AddUpdateAndRemoveDelayed) {
+	using namespace std::chrono_literals;
+
 	auto connect_req_id = ecsact_async_connect("good");
 
 	async_test::NeededComponent my_needed_component{};
@@ -87,15 +184,15 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			entity_info.entity = entity_id;
 		};
 
-	ecsact_async_events_collector async_evc{};
-	async_evc.async_entity_callback = entity_cb;
-	async_evc.async_entity_error_callback_user_data = &cb_info;
+	ecsact_async_events_collector entity_async_evc{};
+	entity_async_evc.async_entity_callback = entity_cb;
+	entity_async_evc.async_entity_error_callback_user_data = &cb_info;
 
 	int check_count = 0;
 
 	while(cb_info.wait != true) {
 		ASSERT_LT(++check_count, 10000);
-		ecsact_async_flush_events(nullptr, &async_evc);
+		ecsact_async_flush_events(nullptr, &entity_async_evc);
 	}
 
 	std::array<ecsact_component, 2> components{
@@ -116,6 +213,8 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	ecsact_async_flush_events(nullptr, nullptr);
 
+	std::this_thread::sleep_for(0.1s);
+
 	my_update_component.value_to_update += 5;
 
 	std::array<ecsact_component, 1> update_components = {update_component};
@@ -125,14 +224,18 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	update_options.update_components_entities = components_entities.data();
 	update_options.update_components = update_components.data();
 
-	ecsact_async_enqueue_execution_options(add_options);
+	ecsact_async_enqueue_execution_options(update_options);
+
+	ecsact_async_flush_events(nullptr, nullptr);
+
+	std::this_thread::sleep_for(0.1s);
 
 	ecsact_async_flush_events(nullptr, nullptr);
 
 	std::array<ecsact_component_id, 1> remove_components = {update_comp_id};
 
 	ecsact_execution_options remove_options{};
-	remove_options.remove_components_length = 1;
+	remove_options.remove_components_length = remove_components.size();
 	remove_options.remove_components_entities = components_entities.data();
 	remove_options.remove_components = remove_components.data();
 
@@ -193,9 +296,10 @@ TEST(AsyncRef, TryMergeFailure) {
 
 	auto async_err_cb = //
 		[](
-			ecsact_async_error      async_err,
-			ecsact_async_request_id request_id,
-			void*                   callback_user_data
+			ecsact_async_error       async_err,
+			int                      request_ids_length,
+			ecsact_async_request_id* request_ids,
+			void*                    callback_user_data
 		) { ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE); };
 
 	ecsact_async_events_collector async_evc{};
