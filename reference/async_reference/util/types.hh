@@ -27,8 +27,9 @@ struct entity {
 };
 
 struct cpp_execution_component {
-	ecsact_entity_id    entity_id;
-	ecsact_component_id _id;
+	ecsact_entity_id       entity_id;
+	ecsact_component_id    _id;
+	std::vector<std::byte> data;
 };
 
 struct action_info {

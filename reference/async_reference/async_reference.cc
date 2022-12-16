@@ -11,8 +11,6 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 	std::string connect_str(connection_string);
 
 	registry_id = ecsact_create_registry("async_reference_impl_reg");
-	pending_registry_id =
-		ecsact_create_registry("pending_async_reference_impl_reg");
 
 	auto req_id = next_request_id();
 	// The good and bad strings simulate the outcome of connections
@@ -46,8 +44,7 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 		return req_id;
 	}
 
-	auto cpp_options =
-		util::c_to_cpp_execution_options(options, *pending_registry_id);
+	auto cpp_options = util::c_to_cpp_execution_options(options);
 
 	types::pending_execution_options pending_options{
 		.request_id = req_id,
@@ -86,11 +83,7 @@ void async_reference::execute_systems() {
 
 			if(cpp_options) {
 				options = std::make_unique<ecsact_execution_options>(
-					util::cpp_to_c_execution_options(
-						*cpp_options,
-						*registry_id,
-						*pending_registry_id
-					)
+					util::cpp_to_c_execution_options(*cpp_options, *registry_id)
 				);
 			}
 
@@ -104,7 +97,6 @@ void async_reference::execute_systems() {
 
 			for(auto& entity_request_id : pending_entities) {
 				auto entity = ecsact_create_entity(*registry_id);
-				auto pended_entity = ecsact_create_entity(*pending_registry_id);
 
 				types::entity created_entity{
 					.entity_id = entity,

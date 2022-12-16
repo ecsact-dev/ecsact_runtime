@@ -18,16 +18,6 @@
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
-// Have one container to hold ALL requests
-// Use an std::variant to account for entity and other types
-// Separate classes, you are simulating global state by having so much
-// functionality that don't involve each other
-
-// Async possibilities:
-// 	Tick manager
-// 	Requests (Async callbacks)
-//
-
 class async_reference {
 public:
 	ecsact_async_request_id enqueue_execution_options(
@@ -51,7 +41,6 @@ private:
 	std::atomic_int32_t _last_request_id = 0;
 
 	std::optional<ecsact_registry_id> registry_id;
-	std::optional<ecsact_registry_id> pending_registry_id;
 
 	tick_manager        tick_manager;
 	execution_callbacks exec_callbacks;

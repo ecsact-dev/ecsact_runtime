@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "util.hh"
 
 #include "ecsact/runtime/serialize.hh"
@@ -85,8 +87,7 @@ ecsact_async_error validate_merge_instructions(
 
 ecsact_execution_options util::cpp_to_c_execution_options(
 	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id,
-	const ecsact_registry_id&    pending_registry_id
+	const ecsact_registry_id&    registry_id
 ) {
 	ecsact_execution_options c_options{};
 
@@ -119,29 +120,20 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 
 		for(int i = 0; i < options.adds.size(); i++) {
 			ecsact_component component;
-			auto             component_info = options.adds[i];
 
-			const void* component_data = ecsact_get_component(
-				pending_registry_id,
-				component_info.entity_id,
-				component_info._id
-			);
+			auto& component_info = options.adds[i];
 
-			ecsact_add_component(
-				registry_id,
-				component_info.entity_id,
+			std::vector<uint8_t> component_data;
+			component_data.resize(component_info.data.size());
+
+			ecsact_deserialize_component(
 				component_info._id,
-				component_data
-			);
-
-			ecsact_remove_component(
-				pending_registry_id,
-				component_info.entity_id,
-				component_info._id
+				reinterpret_cast<uint8_t*>(component_info.data.data()),
+				component_data.data()
 			);
 
 			component.component_id = component_info._id;
-			component.component_data = component_data;
+			component.component_data = component_data.data();
 			component_list.insert(component_list.end(), component);
 		}
 
@@ -160,34 +152,21 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 
 		for(int i = 0; i < options.updates.size(); i++) {
 			ecsact_component component;
-			auto             component_info = options.updates[i];
-			const void*      component_data = ecsact_get_component(
-        registry_id,
-        component_info.entity_id,
-        component_info._id
-      );
 
-			auto pending_component = ecsact_get_component(
-				pending_registry_id,
-				component_info.entity_id,
-				component_info._id
-			);
+			auto component_info = options.updates[i];
 
-			ecsact_update_component(
-				registry_id,
-				component_info.entity_id,
+			std::vector<uint8_t> component_data;
+
+			component_data.resize(component_info.data.size());
+
+			ecsact_deserialize_component(
 				component_info._id,
-				pending_component
-			);
-
-			ecsact_remove_component(
-				pending_registry_id,
-				component_info.entity_id,
-				component_info._id
+				reinterpret_cast<uint8_t*>(component_info.data.data()),
+				component_data.data()
 			);
 
 			component.component_id = component_info._id;
-			component.component_data = component_data;
+			component.component_data = component_data.data();
 			component_list.insert(component_list.end(), component);
 		}
 
@@ -215,12 +194,9 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 }
 
 types::cpp_execution_options util::c_to_cpp_execution_options(
-	const ecsact_execution_options options,
-	const ecsact_registry_id&      pending_registry_id
+	const ecsact_execution_options options
 ) {
 	types::cpp_execution_options cpp_options;
-
-	// Check if there's duplicates
 
 	if(options.add_components != nullptr) {
 		for(int i = 0; i < options.add_components_length; i++) {
@@ -229,17 +205,21 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			auto component = options.add_components[i];
 			auto entity_id = options.add_components_entities[i];
 
-			ecsact_ensure_entity(pending_registry_id, entity_id);
+			std::vector<std::byte> out_component;
+			out_component.resize(
+				ecsact_serialize_component_size(component.component_id)
+			);
 
-			ecsact_add_component(
-				pending_registry_id,
-				entity_id,
+			ecsact_serialize_component(
 				component.component_id,
-				component.component_data
+				component.component_data,
+				reinterpret_cast<uint8_t*>(out_component.data())
 			);
 
 			add_component._id = component.component_id;
 			add_component.entity_id = entity_id;
+			add_component.data = out_component;
+
 			cpp_options.adds.insert(cpp_options.adds.end(), add_component);
 		}
 	}
@@ -254,29 +234,18 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			update_component._id = component.component_id;
 			update_component.entity_id = entity_id;
 
-			// ecsact_ensure_entity(pending_registry_id, entity_id);
-
-			bool has_component = ecsact_has_component(
-				pending_registry_id,
-				entity_id,
-				component.component_id
+			std::vector<std::byte> out_component;
+			out_component.resize(
+				ecsact_serialize_component_size(component.component_id)
 			);
 
-			if(has_component) {
-				ecsact_update_component(
-					pending_registry_id,
-					entity_id,
-					component.component_id,
-					component.component_data
-				);
-			} else {
-				ecsact_add_component(
-					pending_registry_id,
-					entity_id,
-					component.component_id,
-					component.component_data
-				);
-			}
+			ecsact_serialize_component(
+				component.component_id,
+				component.component_data,
+				reinterpret_cast<uint8_t*>(out_component.data())
+			);
+
+			update_component.data = out_component;
 
 			cpp_options.updates.insert(cpp_options.updates.end(), update_component);
 		}
@@ -288,12 +257,6 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 
 			auto component_id = options.remove_components[i];
 			auto entity_id = options.remove_components_entities[i];
-
-			bool has_component =
-				ecsact_has_component(pending_registry_id, entity_id, component_id);
-
-			if(has_component) {
-			}
 
 			remove_component._id = component_id;
 			remove_component.entity_id = entity_id;
@@ -309,6 +272,8 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			action_info.action_id = action.action_id;
 
 			std::vector<std::byte> out_action;
+			out_action.resize(ecsact_serialize_action_size(action.action_id));
+
 			ecsact_serialize_action(
 				action.action_id,
 				action.action_data,

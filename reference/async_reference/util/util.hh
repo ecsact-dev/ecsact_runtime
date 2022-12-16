@@ -79,13 +79,11 @@ bool check_entity_merge_duplicates(
 
 ecsact_execution_options cpp_to_c_execution_options(
 	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id,
-	const ecsact_registry_id&    pending_registry_id
+	const ecsact_registry_id&    registry_id
 );
 
 types::cpp_execution_options c_to_cpp_execution_options(
-	const ecsact_execution_options options,
-	const ecsact_registry_id&      pending_registry_id
+	const ecsact_execution_options options
 );
 
 ecsact_async_error validate_options(types::cpp_execution_options& options);
@@ -94,8 +92,6 @@ ecsact_async_error validate_merge_options(
 	types::cpp_execution_options& options,
 	types::cpp_execution_options& other_options
 );
-
-// Rename this to merge_maps
 
 void merge_options(
 	types::cpp_execution_options& tick_options,

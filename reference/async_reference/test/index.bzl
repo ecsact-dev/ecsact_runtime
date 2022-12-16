@@ -13,6 +13,7 @@ def ecsact_reference_async_module_test(name = None, srcs = [], deps = [], **kwar
             "@ecsact//codegen_plugins:cpp_systems_header",
             "@ecsact//codegen_plugins:systems_header",
             "@ecsact//codegen_plugins:cpp_systems_source",
+            "@ecsact_runtime//reference/serialize_reference/codegen",
         ],
     )
 
@@ -31,6 +32,7 @@ def ecsact_reference_async_module_test(name = None, srcs = [], deps = [], **kwar
             "@ecsact_runtime//reference/async_reference:async",
             "@com_google_googletest//:gtest",
             "@com_google_googletest//:gtest_main",
+            "@ecsact_runtime//reference/serialize_reference",
         ],
         **kwargs
     )
