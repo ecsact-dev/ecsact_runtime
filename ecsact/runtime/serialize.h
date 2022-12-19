@@ -47,7 +47,7 @@
  */
 ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_action_size)
 ( //
-	ecsact_system_id action_id
+	ecsact_action_id action_id
 );
 
 /**
@@ -74,14 +74,14 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_component_size)
  */
 ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_action)
 ( //
-	ecsact_system_id action_id,
+	ecsact_action_id action_id,
 	const void*      in_action_data,
 	uint8_t*         out_bytes
 );
 
 ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_action)
 ( //
-	ecsact_system_id action_id,
+	ecsact_action_id action_id,
 	const uint8_t*   in_bytes,
 	void*            out_action_data
 );

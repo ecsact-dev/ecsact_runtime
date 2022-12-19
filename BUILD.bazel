@@ -10,8 +10,11 @@ exports_files([
     "ecsact/runtime/dynamic.h",
     "ecsact/runtime/meta.h",
     "ecsact/runtime/serialize.h",
+    "ecsact/runtime/serialize.hh",
     "ecsact/runtime/static.h",
     "ecsact/runtime.h",
+    "codegen_plugin.bzl",
+    "index.bzl",
 ])
 
 filegroup(
@@ -33,6 +36,18 @@ cc_library(
     hdrs = ["ecsact/runtime/definitions.h"],
     copts = copts,
     deps = [":common"],
+)
+
+cc_library(
+    name = "async",
+    hdrs = [
+        "ecsact/runtime/async.h",
+    ],
+    copts = copts,
+    deps = [
+        ":common",
+        ":core",
+    ],
 )
 
 cc_library(
@@ -76,7 +91,10 @@ cc_library(
 
 cc_library(
     name = "serialize",
-    hdrs = ["ecsact/runtime/serialize.h"],
+    hdrs = [
+        "ecsact/runtime/serialize.h",
+        "ecsact/runtime/serialize.hh",
+    ],
     copts = copts,
     deps = [":common"],
 )
