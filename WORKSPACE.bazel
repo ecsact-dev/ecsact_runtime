@@ -17,9 +17,9 @@ bazel_skylib_workspace()
 
 http_archive(
     name = "ecsact_lang_cpp",
-    sha256 = "c7aaf98fbd8dd8dea420c62df6c9adb3a1210b45580dca9f95e813c481ab283e",
-    strip_prefix = "ecsact_lang_cpp-938fe773b00d92939845315d3f206151e48b5029",
-    url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/938fe773b00d92939845315d3f206151e48b5029.zip",
+    sha256 = "ddefdf2ad7a7120b820132c52deb14d7eed61f4460f8cfab544a89196d67deb5",
+    strip_prefix = "ecsact_lang_cpp-ebaa71d7bd5b327ba793cbd8508fb6e74ec6558a",
+    url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/ebaa71d7bd5b327ba793cbd8508fb6e74ec6558a.zip",
 )
 
 http_archive(
