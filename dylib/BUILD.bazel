@@ -1,5 +1,7 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("//bazel:copts.bzl", "copts")
+load("//:index.bzl", "ecsact_runtime_modules")
+load(":index.bzl", "cc_ecsact_dylib")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,13 +13,9 @@ cc_library(
     copts = copts,
 )
 
-cc_library(
-    name = "meta",
-    srcs = ["meta-dylib.cc"],
+# Convenient targets
+[cc_ecsact_dylib(
+    name = m,
     copts = copts,
-    defines = ["ECSACT_META_API_LOAD_AT_RUNTIME"],
-    deps = [
-        ":util",
-        "//:meta",
-    ],
-)
+    ecsact_modules = [m],
+) for m in ecsact_runtime_modules]
