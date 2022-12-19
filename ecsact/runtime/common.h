@@ -107,7 +107,9 @@ ECSACT_CAST_ID_FN(ecsact_component_like_id, ecsact_component_like_id)
  */
 struct ecsact_system_execution_context;
 
-typedef void (*ecsact_system_execution_impl)(ecsact_system_execution_context*);
+typedef void (*ecsact_system_execution_impl)(//
+	struct ecsact_system_execution_context*
+);
 
 static const ecsact_system_id ecsact_invalid_system_id = (ecsact_system_id)-1;
 
