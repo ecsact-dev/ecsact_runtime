@@ -53,6 +53,10 @@ ECSACT_CORE_API_FN(ecsact_registry_id, ecsact_create_registry)
 	const char* registry_name
 );
 
+/**
+ * Effectively calls `ecsact_destroy_entity` on each entity in the registry. The
+ * registry ID is invalid after this call.
+ */
 ECSACT_CORE_API_FN(void, ecsact_destroy_registry)
 ( //
 	ecsact_registry_id registry
@@ -97,10 +101,14 @@ ECSACT_CORE_API_FN(bool, ecsact_entity_exists)
 	ecsact_entity_id
 );
 
+/**
+ * Destroys an entity. Effectively removes each component on the specified
+ * entity. The entity ID is invalid after this call, but may be re-used later.
+ */
 ECSACT_CORE_API_FN(void, ecsact_destroy_entity)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id
+	ecsact_registry_id registry_id,
+	ecsact_entity_id   entity_id
 );
 
 /**
@@ -122,28 +130,42 @@ ECSACT_CORE_API_FN(void, ecsact_get_entities)
 	int*               out_entities_count
 );
 
+/**
+ * Adds a component to the specified entity.
+ *
+ * @note This method should be avoided if possible. Adding a component in a
+ *       system or system execution options is preferred.
+ *       SEE: `ecsact_execute_systems`
+ */
 ECSACT_CORE_API_FN(ecsact_add_error, ecsact_add_component)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id,
-	ecsact_component_id,
-	const void* component_data
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity_id,
+	ecsact_component_id component_id,
+	const void*         component_data
 );
 
 ECSACT_CORE_API_FN(bool, ecsact_has_component)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id,
-	ecsact_component_id
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity_id,
+	ecsact_component_id component_id
 );
 
+/**
+ * @returns non-owning pointer of the component data
+ * @note This method should be avoided if possible.
+ */
 ECSACT_CORE_API_FN(const void*, ecsact_get_component)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id,
-	ecsact_component_id
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity_id,
+	ecsact_component_id component_id
 );
 
+/**
+ * @returns the number of components added to an entity
+ */
 ECSACT_CORE_API_FN(int, ecsact_count_components)
 ( //
 	ecsact_registry_id registry_id,
@@ -177,19 +199,33 @@ ECSACT_CORE_API_FN(void, ecsact_each_component)
 	void*                          callback_user_data
 );
 
+/**
+ * Update a component for the specified entity.
+ *
+ * @note This method should be avoided if possible. Updating a component in a
+ *       system or system execution options is preferred.
+ *       SEE: `ecsact_execute_systems`
+ */
 ECSACT_CORE_API_FN(ecsact_update_error, ecsact_update_component)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id,
-	ecsact_component_id,
-	const void* component_data
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity_id,
+	ecsact_component_id component_id,
+	const void*         component_data
 );
 
+/**
+ * Removes a component from the specified entity.
+ *
+ * @note This method should be avoided if possible. Removing a component in a
+ *       system or system execution options is preferred.
+ *       SEE: `ecsact_execute_systems`
+ */
 ECSACT_CORE_API_FN(void, ecsact_remove_component)
 ( //
-	ecsact_registry_id,
-	ecsact_entity_id,
-	ecsact_component_id
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity_id,
+	ecsact_component_id component_id
 );
 
 /**
