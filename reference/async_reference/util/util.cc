@@ -43,41 +43,43 @@ ecsact_async_error validate_merge_instructions(
 	std::vector<types::cpp_execution_component>& components,
 	std::vector<types::cpp_execution_component>& other_components
 ) {
-	if(other_components.size() > 0) {
-		auto components_range = std::ranges::views::all(components);
-		auto entities = util::get_cpp_entities(components_range);
+	if(components.empty() || other_components.empty()) {
+		return ECSACT_ASYNC_OK;
+	}
 
-		auto other_components_range = std::ranges::views::all(other_components);
-		auto other_entities = util::get_cpp_entities(other_components_range);
+	auto components_range = std::ranges::views::all(components);
+	auto entities = util::get_cpp_entities(components_range);
 
-		auto empty_view = std::ranges::empty_view<int>{};
+	auto other_components_range = std::ranges::views::all(other_components);
+	auto other_entities = util::get_cpp_entities(other_components_range);
 
-		auto has_duplicates =
-			util::check_entity_merge_duplicates(entities, other_entities);
+	auto empty_view = std::ranges::empty_view<int>{};
 
-		if(!has_duplicates) {
-			return ECSACT_ASYNC_OK;
-		}
+	auto has_duplicates =
+		util::check_entity_merge_duplicates(entities, other_entities);
 
-		for(auto& component : components) {
-			auto view = std::views::filter(
-				other_components_range,
-				[&other_components_range,
-				 &component](types::cpp_execution_component other_component) {
-					return component._id == other_component._id;
-				}
-			);
-			int same_component_count = 0;
-			int same_entity_count = 0;
-			for(auto itr = view.begin(); itr != view.end(); itr++) {
-				same_component_count++;
-				if(component.entity_id == itr->entity_id) {
-					same_entity_count++;
-				}
-				if(same_component_count > 0 && same_entity_count > 0) {
-					return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
-					break;
-				}
+	if(!has_duplicates) {
+		return ECSACT_ASYNC_OK;
+	}
+
+	for(auto& component : components) {
+		auto view = std::views::filter(
+			other_components_range,
+			[&other_components_range,
+			 &component](types::cpp_execution_component other_component) {
+				return component._id == other_component._id;
+			}
+		);
+		int same_component_count = 0;
+		int same_entity_count = 0;
+		for(auto itr = view.begin(); itr != view.end(); itr++) {
+			same_component_count++;
+			if(component.entity_id == itr->entity_id) {
+				same_entity_count++;
+			}
+			if(same_component_count > 0 && same_entity_count > 0) {
+				return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
+				break;
 			}
 		}
 	}
@@ -293,26 +295,24 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 	ecsact_async_error error = ECSACT_ASYNC_OK;
 
 	if(options.adds.size() > 0) {
-		// NOTE: There's currently no tolerance for 2 users adding a component to an
-		// entity on the same tick
 		error = validate_instructions(options.adds);
-	}
-
-	if(error != ECSACT_ASYNC_OK) {
-		return error;
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	if(options.updates.size() > 0) {
-		// NOTE: There's currently no tolerance for updates on the same tick
-		validate_instructions(options.updates);
-	}
-
-	if(error != ECSACT_ASYNC_OK) {
-		return error;
+		error = validate_instructions(options.updates);
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	if(options.removes.size() > 0) {
-		validate_instructions(options.removes);
+		error = validate_instructions(options.removes);
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	return error;
@@ -323,24 +323,26 @@ ecsact_async_error util::validate_merge_options(
 	types::cpp_execution_options& other_options
 ) {
 	ecsact_async_error error = ECSACT_ASYNC_OK;
-	if(other_options.adds.size() > 0) {
-		validate_merge_instructions(options.adds, other_options.adds);
-	}
 
-	if(error != ECSACT_ASYNC_OK) {
-		return error;
+	if(other_options.adds.size() > 0) {
+		error = validate_merge_instructions(options.adds, other_options.adds);
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	if(options.updates.size() > 0) {
-		validate_merge_instructions(options.updates, other_options.updates);
-	}
-
-	if(error != ECSACT_ASYNC_OK) {
-		return error;
+		error = validate_merge_instructions(options.updates, other_options.updates);
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	if(options.removes.size() > 0) {
-		validate_merge_instructions(options.removes, other_options.removes);
+		error = validate_merge_instructions(options.removes, other_options.removes);
+		if(error != ECSACT_ASYNC_OK) {
+			return error;
+		}
 	}
 
 	return error;

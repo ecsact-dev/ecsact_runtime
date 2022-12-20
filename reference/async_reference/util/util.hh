@@ -11,31 +11,33 @@
 
 namespace util {
 
-// Create a function that:
-// Checks our 3 different lists of options (add, remove, update)
-// Check if they're happening on the same tick on the same entity
-// We should drop UPDATES if there's a REMOVE
-
-auto component_to_component_id_view(auto components_view) {
+auto component_to_component_id_view(auto& components_view) {
 	return std::ranges::views::transform(
 		components_view,
-		[](ecsact_component component) { return component.component_id; }
+		[](ecsact_component& component) { return component.component_id; }
 	);
 }
 
-auto get_cpp_entities(auto components_range) {
+auto get_cpp_entities(auto& components_range) {
 	return std::ranges::views::transform(
 		components_range,
 		[](auto cpp_component) { return cpp_component.entity_id; }
 	);
 }
 
-auto get_cpp_component_ids(auto components_range) {
+auto get_cpp_component_ids(auto& components_range) {
 	return std::ranges::views::transform(
 		components_range,
-		[](types::cpp_execution_component cpp_component) {
+		[](types::cpp_execution_component& cpp_component) {
 			return cpp_component._id;
 		}
+	);
+}
+
+auto get_request_ids_from_pending_exec_options(auto& pending_exec_options) {
+	return std::ranges::views::transform(
+		pending_exec_options,
+		[](auto& exec_options) { return exec_options.request_id; }
 	);
 }
 
@@ -57,8 +59,8 @@ bool check_entity_duplicates(auto entities_view) {
 }
 
 bool check_entity_merge_duplicates(
-	auto entities_view,
-	auto other_entities_view
+	auto& entities_view,
+	auto& other_entities_view
 ) {
 	for(auto entity_id : entities_view) {
 		auto view =

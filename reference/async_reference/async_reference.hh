@@ -42,6 +42,8 @@ private:
 
 	std::optional<ecsact_registry_id> registry_id;
 
+	void process_entities();
+
 	tick_manager        tick_manager;
 	execution_callbacks exec_callbacks;
 	async_callbacks     async_callbacks;
@@ -52,6 +54,8 @@ private:
 	std::mutex       pending_m;
 	std::atomic_bool is_connected = false;
 	std::atomic_bool is_connected_notified = false;
+
+	std::chrono::milliseconds tick_rate = {};
 
 	ecsact_async_request_id next_request_id();
 	ecsact_async_request_id convert_request_id(int32_t id);

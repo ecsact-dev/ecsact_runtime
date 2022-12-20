@@ -9,7 +9,8 @@ void tick_manager::add_pending_options(types::pending_execution_options& pending
 	pending_tick_map[tick].emplace_back(pending);
 }
 
-std::optional<types::cpp_execution_options> tick_manager::get_options_now() {
+std::optional<types::cpp_execution_options>
+tick_manager::move_and_increment_tick() {
 	std::optional<types::cpp_execution_options> cpp_options;
 
 	if(validated_tick_map.contains(tick)) {
@@ -19,6 +20,7 @@ std::optional<types::cpp_execution_options> tick_manager::get_options_now() {
 		tick++;
 		return cpp_options;
 	}
+	tick++;
 	return std::nullopt;
 }
 
@@ -30,61 +32,55 @@ types::async_error tick_manager::validate_pending_options() {
 		pending_tick_map.clear();
 		lk.unlock();
 
-		auto  first_pending = pending_options.begin();
-		auto& initial_options = first_pending->second.begin()->options;
+		for(auto& [key, pending_list] : pending_options) {
+			types::cpp_execution_options merged_options{};
 
-		auto error = util::validate_options(initial_options);
+			for(int i = 0; i < pending_list.size(); i++) {
+				merged_options = {};
 
-		if(error != ECSACT_ASYNC_OK) {
-			auto& req_id = first_pending->second.begin()->request_id;
+				auto pending = pending_list[i];
 
-			return types::async_error{
-				.error = error,
-				.request_ids = {req_id},
-			};
-		}
+				auto error = util::validate_options(pending.options);
 
-		if(pending_tick_map.size() > 1) {
-			for(auto& [key, pending_list] : pending_options) {
-				for(int i = 1; i < pending_list.size(); i++) {
-					auto pending = pending_list[i];
-					auto error = util::validate_options(pending.options);
+				if(error != ECSACT_ASYNC_OK) {
+					return types::async_error{
+						.error = error,
+						.request_ids = {pending.request_id},
+					};
+				}
 
-					// A bit redundant, but distinctly different
-					if(error != ECSACT_ASYNC_OK) {
-						return types::async_error{
-							.error = error,
-							.request_ids = {pending.request_id},
-						};
-					}
+				error = util::validate_merge_options(merged_options, pending.options);
 
-					error =
-						util::validate_merge_options(initial_options, pending.options);
+				if(error != ECSACT_ASYNC_OK) {
+					return types::async_error{
+						.error = error,
+						.request_ids = {pending.request_id},
+					};
+				}
 
-					if(error != ECSACT_ASYNC_OK) {
-						return types::async_error{
-							.error = error,
-							.request_ids = {pending.request_id},
-						};
-					}
+				util::merge_options(merged_options, pending.options);
 
-					util::merge_options(initial_options, pending.options);
+				lk.lock();
+				error = upsert_validated_tick(merged_options, key);
+				lk.unlock();
+
+				if(error != ECSACT_ASYNC_OK) {
+					auto requests = util::get_request_ids_from_pending_exec_options(
+						pending_options.at(tick)
+					);
+
+					std::vector<ecsact_async_request_id> request_ids;
+					request_ids
+						.insert(request_ids.end(), requests.begin(), requests.end());
+
+					return types::async_error{
+						.error = error,
+						.request_ids = request_ids,
+					};
 				}
 			}
 		}
 
-		lk.lock();
-		error = upsert_validated_tick(initial_options);
-		lk.unlock();
-
-		if(error != ECSACT_ASYNC_OK) {
-			std::vector<ecsact_async_request_id> request_ids;
-			// Add all request ids from pending_options
-			return types::async_error{
-				.error = error,
-				.request_ids = request_ids,
-			};
-		}
 		return types::async_error{
 			.error = ECSACT_ASYNC_OK,
 			.request_ids = {},
@@ -97,17 +93,18 @@ types::async_error tick_manager::validate_pending_options() {
 }
 
 ecsact_async_error tick_manager::upsert_validated_tick(
-	types::cpp_execution_options& validated_options
+	types::cpp_execution_options& validated_options,
+	int32_t                       requested_tick
 ) {
-	if(validated_tick_map.contains(tick)) {
-		auto existing_options = validated_tick_map[tick];
+	if(validated_tick_map.contains(requested_tick)) {
+		auto existing_options = validated_tick_map[requested_tick];
 		auto error =
 			util::validate_merge_options(existing_options, validated_options);
 		if(error != ECSACT_ASYNC_OK) {
 			return error;
 		}
 	} else {
-		validated_tick_map.insert(std::pair(tick, validated_options));
+		validated_tick_map.insert(std::pair(requested_tick, validated_options));
 	}
 
 	return ECSACT_ASYNC_OK;

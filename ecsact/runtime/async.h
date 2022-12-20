@@ -54,6 +54,11 @@ typedef enum {
 	ECSACT_ASYNC_ERR_PERMISSION_DENIED,
 
 	/**
+	 * Client sent invalid connection options
+	 */
+	ECSACT_ASYNC_INVALID_CONNECTION_STRING,
+
+	/**
 	 * Connection to the client is closed
 	 */
 	ECSACT_ASYNC_ERR_CONNECTION_CLOSED,
@@ -70,7 +75,8 @@ typedef enum {
  * @param async_err when there is no async error this will be @ref
  * ECSACT_ASYNC_OK otherwise @see ecsact_async_error
 
- * @param request_id the request ID returned by an async request function that
+ * @param request_ids A list of request IDs returned by an async request
+ function that
  * was responsible for this error
  * @param callback_user_data the @ref
  * ecsact_async_events_collector::error_callback_user_data
@@ -120,7 +126,7 @@ typedef struct ecsact_async_events_collector {
 	ecsact_async_error_callback async_error_callback;
 
 	/**
-	 * `callback_user_data` passed to `error_callback`
+	 * `callback_user_data` passed to `async_error_callback`
 	 */
 	void* async_error_callback_user_data;
 
@@ -133,9 +139,9 @@ typedef struct ecsact_async_events_collector {
 	ecsact_async_create_entity_callback async_entity_callback;
 
 	/**
-	 * `callback_user_data` passed to `error_callback`
+	 * `callback_user_data` passed to `async_entity_callback`
 	 */
-	void* async_entity_error_callback_user_data;
+	void* async_entity_callback_user_data;
 
 	/**
 	 * invoked when a system execution error occurred.
