@@ -11,7 +11,7 @@ void tick_manager::add_pending_options(types::pending_execution_options& pending
 
 std::optional<types::cpp_execution_options>
 tick_manager::move_and_increment_tick() {
-	std::optional<types::cpp_execution_options> cpp_options;
+	auto cpp_options = std::optional<types::cpp_execution_options>{};
 
 	if(validated_tick_map.contains(tick)) {
 		std::unique_lock lk(tick_m);
@@ -33,7 +33,7 @@ types::async_error tick_manager::validate_pending_options() {
 		lk.unlock();
 
 		for(auto& [key, pending_list] : pending_options) {
-			types::cpp_execution_options merged_options{};
+			auto merged_options = types::cpp_execution_options{};
 
 			for(int i = 0; i < pending_list.size(); i++) {
 				merged_options = {};

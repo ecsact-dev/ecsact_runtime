@@ -175,7 +175,7 @@ void async_reference::execute_systems() {
 				);
 			}
 
-			process_entities();
+			entity_manager.process_entities(async_callbacks, *registry_id);
 
 			auto systems_error =
 				ecsact_execute_systems(*registry_id, 1, options.get(), &collector);
@@ -216,8 +216,7 @@ ecsact_async_request_id async_reference::create_entity_request() {
 		return req_id;
 	}
 
-	std::unique_lock lk(pending_m);
-	pending_entity_requests.insert(pending_entity_requests.end(), req_id);
+	entity_manager.request_entity(req_id);
 	return req_id;
 }
 
@@ -236,24 +235,4 @@ ecsact_async_request_id async_reference::next_request_id() {
 
 ecsact_async_request_id async_reference::convert_request_id(int32_t id) {
 	return static_cast<ecsact_async_request_id>(id);
-}
-
-void async_reference::process_entities() {
-	std::vector<ecsact_async_request_id> pending_entities;
-
-	std::unique_lock lk(pending_m);
-	pending_entities = std::move(pending_entity_requests);
-	pending_entity_requests.clear();
-	lk.unlock();
-
-	for(auto& entity_request_id : pending_entities) {
-		auto entity = ecsact_create_entity(*registry_id);
-
-		types::entity created_entity{
-			.entity_id = entity,
-			.request_id = entity_request_id,
-		};
-
-		async_callbacks.add(created_entity);
-	}
 }

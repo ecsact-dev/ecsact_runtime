@@ -14,6 +14,7 @@
 #include "reference/async_reference/tick_manager/tick_manager.hh"
 #include "reference/async_reference/callbacks/execution_callbacks.hh"
 #include "reference/async_reference/callbacks/async_callbacks.hh"
+#include "reference/async_reference/entity_manager/entity_manager.hh"
 
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
@@ -32,7 +33,6 @@ public:
 	);
 
 	ecsact_async_request_id create_entity_request();
-
 	ecsact_async_request_id connect(const char* connection_string);
 
 	void disconnect();
@@ -42,16 +42,13 @@ private:
 
 	std::optional<ecsact_registry_id> registry_id;
 
-	void process_entities();
-
 	tick_manager        tick_manager;
 	execution_callbacks exec_callbacks;
 	async_callbacks     async_callbacks;
+	entity_manager      entity_manager;
 
-	std::vector<ecsact_async_request_id> pending_entity_requests;
+	std::thread execution_thread;
 
-	std::thread      execution_thread;
-	std::mutex       pending_m;
 	std::atomic_bool is_connected = false;
 	std::atomic_bool is_connected_notified = false;
 

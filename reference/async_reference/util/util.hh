@@ -8,6 +8,7 @@
 #include "types.hh"
 
 #include "ecsact/runtime/core.h"
+#include "ecsact/runtime/serialize.hh"
 
 namespace util {
 
@@ -80,8 +81,8 @@ bool check_entity_merge_duplicates(
 }
 
 ecsact_execution_options cpp_to_c_execution_options(
-	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id
+	types::cpp_execution_options& options,
+	const ecsact_registry_id&     registry_id
 );
 
 types::cpp_execution_options c_to_cpp_execution_options(
@@ -91,18 +92,18 @@ types::cpp_execution_options c_to_cpp_execution_options(
 ecsact_async_error validate_options(types::cpp_execution_options& options);
 
 ecsact_async_error validate_merge_options(
-	types::cpp_execution_options& options,
-	types::cpp_execution_options& other_options
+	const types::cpp_execution_options& options,
+	const types::cpp_execution_options& other_options
 );
 
 void merge_options(
-	types::cpp_execution_options& tick_options,
-	types::cpp_execution_options& other_options
+	types::cpp_execution_options&       tick_options,
+	const types::cpp_execution_options& other_options
 );
 
 void merge_options(
-	types::pending_execution_options& tick_options,
-	types::pending_execution_options& other_options
+	types::pending_execution_options&       pending,
+	const types::pending_execution_options& other_pending
 );
 
 } // namespace util

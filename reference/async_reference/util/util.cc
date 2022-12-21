@@ -5,7 +5,7 @@
 #include "ecsact/runtime/serialize.hh"
 
 ecsact_async_error validate_instructions(
-	std::vector<types::cpp_execution_component>& components
+	const std::vector<types::cpp_execution_component>& components
 ) {
 	auto components_range = std::ranges::views::all(components);
 	auto entities = util::get_cpp_entities(components_range);
@@ -40,8 +40,8 @@ ecsact_async_error validate_instructions(
 }
 
 ecsact_async_error validate_merge_instructions(
-	std::vector<types::cpp_execution_component>& components,
-	std::vector<types::cpp_execution_component>& other_components
+	const std::vector<types::cpp_execution_component>& components,
+	const std::vector<types::cpp_execution_component>& other_components
 ) {
 	if(components.empty() || other_components.empty()) {
 		return ECSACT_ASYNC_OK;
@@ -88,24 +88,19 @@ ecsact_async_error validate_merge_instructions(
 }
 
 ecsact_execution_options util::cpp_to_c_execution_options(
-	types::cpp_execution_options options,
-	const ecsact_registry_id&    registry_id
+	types::cpp_execution_options& options,
+	const ecsact_registry_id&     registry_id
 ) {
-	ecsact_execution_options c_options{};
+	auto c_options = ecsact_execution_options{};
 
 	if(options.actions.size() > 0) {
 		std::vector<ecsact_action> deserialized_actions;
 		deserialized_actions.resize(options.actions.size());
 		for(auto& action_info : options.actions) {
-			ecsact_action action;
+			auto action =
+				ecsact::deserialize(action_info.action_id, action_info.serialized_data);
 
-			ecsact_deserialize_action(
-				action_info.action_id,
-				reinterpret_cast<uint8_t*>(action_info.serialized_data.data()),
-				&action
-			);
-
-			deserialized_actions.insert(deserialized_actions.end(), action);
+			deserialized_actions.push_back(action);
 		}
 
 		c_options.actions = deserialized_actions.data();
@@ -113,75 +108,51 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 	}
 	if(options.adds.size() > 0) {
 		auto adds_range = std::ranges::views::all(options.adds);
-		auto entities = util::get_cpp_entities(adds_range);
+		auto entities_view = util::get_cpp_entities(adds_range);
 
-		std::vector<ecsact_entity_id> entity_list;
-		entity_list.insert(entity_list.end(), entities.begin(), entities.end());
+		std::vector entities(entities_view.begin(), entities_view.end());
 
 		std::vector<ecsact_component> component_list;
 
 		for(int i = 0; i < options.adds.size(); i++) {
-			ecsact_component component;
-
 			auto& component_info = options.adds[i];
 
-			std::vector<uint8_t> component_data;
-			component_data.resize(component_info.data.size());
+			auto component =
+				ecsact::deserialize(component_info._id, component_info.data);
 
-			ecsact_deserialize_component(
-				component_info._id,
-				reinterpret_cast<uint8_t*>(component_info.data.data()),
-				component_data.data()
-			);
-
-			component.component_id = component_info._id;
-			component.component_data = component_data.data();
-			component_list.insert(component_list.end(), component);
+			component_list.push_back(component);
 		}
 
 		c_options.add_components = component_list.data();
-		c_options.add_components_entities = entity_list.data();
+		c_options.add_components_entities = entities.data();
 		c_options.add_components_length = options.adds.size();
 	}
 	if(options.updates.size() > 0) {
 		auto updates_range = std::ranges::views::all(options.updates);
+		auto entities_view = util::get_cpp_entities(updates_range);
 
-		std::vector<ecsact_entity_id> entity_list;
-		auto entities = util::get_cpp_entities(updates_range);
-		entity_list.insert(entity_list.end(), entities.begin(), entities.end());
+		std::vector entities(entities_view.begin(), entities_view.end());
 
 		std::vector<ecsact_component> component_list;
 
 		for(int i = 0; i < options.updates.size(); i++) {
-			ecsact_component component;
-
 			auto component_info = options.updates[i];
 
-			std::vector<uint8_t> component_data;
+			auto component =
+				ecsact::deserialize(component_info._id, component_info.data);
 
-			component_data.resize(component_info.data.size());
-
-			ecsact_deserialize_component(
-				component_info._id,
-				reinterpret_cast<uint8_t*>(component_info.data.data()),
-				component_data.data()
-			);
-
-			component.component_id = component_info._id;
-			component.component_data = component_data.data();
-			component_list.insert(component_list.end(), component);
+			component_list.push_back(component);
 		}
 
 		c_options.add_components = component_list.data();
-		c_options.add_components_entities = entity_list.data();
+		c_options.add_components_entities = entities.data();
 		c_options.add_components_length = options.updates.size();
 	}
 	if(options.removes.size() > 0) {
 		auto removes_range = std::ranges::views::all(options.removes);
 
-		auto entities = util::get_cpp_entities(removes_range);
-		std::vector<ecsact_entity_id> entity_list;
-		entity_list.insert(entity_list.end(), entities.begin(), entities.end());
+		auto        entities_view = util::get_cpp_entities(removes_range);
+		std::vector entities(entities_view.begin(), entities_view.end());
 
 		auto component_ids = util::get_cpp_component_ids(removes_range);
 		std::vector<ecsact_component_id> component_list;
@@ -189,7 +160,7 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 			.insert(component_list.end(), component_ids.begin(), component_ids.end());
 
 		c_options.remove_components = component_list.data();
-		c_options.remove_components_entities = entity_list.data();
+		c_options.remove_components_entities = entities.data();
 		c_options.remove_components_length = options.removes.size();
 	}
 	return c_options;
@@ -198,37 +169,28 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 types::cpp_execution_options util::c_to_cpp_execution_options(
 	const ecsact_execution_options options
 ) {
-	types::cpp_execution_options cpp_options;
+	auto cpp_options = types::cpp_execution_options{};
 
 	if(options.add_components != nullptr) {
 		for(int i = 0; i < options.add_components_length; i++) {
-			types::cpp_execution_component add_component;
+			auto add_component = types::cpp_execution_component{};
 
 			auto component = options.add_components[i];
 			auto entity_id = options.add_components_entities[i];
 
-			std::vector<std::byte> out_component;
-			out_component.resize(
-				ecsact_serialize_component_size(component.component_id)
-			);
-
-			ecsact_serialize_component(
-				component.component_id,
-				component.component_data,
-				reinterpret_cast<uint8_t*>(out_component.data())
-			);
+			auto serialized_component = ecsact::serialize(component);
 
 			add_component._id = component.component_id;
 			add_component.entity_id = entity_id;
-			add_component.data = out_component;
+			add_component.data = serialized_component;
 
-			cpp_options.adds.insert(cpp_options.adds.end(), add_component);
+			cpp_options.adds.push_back(add_component);
 		}
 	}
 
 	if(options.update_components != nullptr) {
 		for(int i = 0; i < options.update_components_length; i++) {
-			types::cpp_execution_component update_component;
+			auto update_component = types::cpp_execution_component{};
 
 			auto component = options.update_components[i];
 			auto entity_id = options.update_components_entities[i];
@@ -236,33 +198,24 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			update_component._id = component.component_id;
 			update_component.entity_id = entity_id;
 
-			std::vector<std::byte> out_component;
-			out_component.resize(
-				ecsact_serialize_component_size(component.component_id)
-			);
+			auto serialized_component = ecsact::serialize(component);
 
-			ecsact_serialize_component(
-				component.component_id,
-				component.component_data,
-				reinterpret_cast<uint8_t*>(out_component.data())
-			);
+			update_component.data = serialized_component;
 
-			update_component.data = out_component;
-
-			cpp_options.updates.insert(cpp_options.updates.end(), update_component);
+			cpp_options.updates.push_back(update_component);
 		}
 	}
 
 	if(options.remove_components != nullptr) {
 		for(int i = 0; i < options.remove_components_length; i++) {
-			types::cpp_execution_component remove_component;
+			auto remove_component = types::cpp_execution_component{};
 
 			auto component_id = options.remove_components[i];
 			auto entity_id = options.remove_components_entities[i];
 
 			remove_component._id = component_id;
 			remove_component.entity_id = entity_id;
-			cpp_options.removes.insert(cpp_options.removes.end(), remove_component);
+			cpp_options.removes.push_back(remove_component);
 		}
 	}
 
@@ -270,21 +223,14 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 		for(int i = 0; i < options.actions_length; i++) {
 			auto action = options.actions[i];
 
-			types::action_info action_info;
+			auto action_info = types::action_info{};
 			action_info.action_id = action.action_id;
 
-			std::vector<std::byte> out_action;
-			out_action.resize(ecsact_serialize_action_size(action.action_id));
+			auto serialized_action = ecsact::serialize(action);
 
-			ecsact_serialize_action(
-				action.action_id,
-				action.action_data,
-				reinterpret_cast<uint8_t*>(out_action.data())
-			);
+			action_info.serialized_data = serialized_action;
 
-			action_info.serialized_data = out_action;
-
-			cpp_options.actions.insert(cpp_options.actions.begin(), action_info);
+			cpp_options.actions.push_back(action_info);
 		}
 	}
 	return cpp_options;
@@ -319,8 +265,8 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 }
 
 ecsact_async_error util::validate_merge_options(
-	types::cpp_execution_options& options,
-	types::cpp_execution_options& other_options
+	const types::cpp_execution_options& options,
+	const types::cpp_execution_options& other_options
 ) {
 	ecsact_async_error error = ECSACT_ASYNC_OK;
 
@@ -349,8 +295,8 @@ ecsact_async_error util::validate_merge_options(
 }
 
 void util::merge_options(
-	types::cpp_execution_options& tick_options,
-	types::cpp_execution_options& other_options
+	types::cpp_execution_options&       tick_options,
+	const types::cpp_execution_options& other_options
 ) {
 	if(other_options.actions.size() > 0) {
 		tick_options.actions.insert(
@@ -386,8 +332,8 @@ void util::merge_options(
 }
 
 void util::merge_options(
-	types::pending_execution_options& pending,
-	types::pending_execution_options& other_pending
+	types::pending_execution_options&       pending,
+	const types::pending_execution_options& other_pending
 ) {
 	if(other_pending.options.actions.size() > 0) {
 		pending.options.actions.insert(

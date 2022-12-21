@@ -46,6 +46,32 @@ std::vector<std::byte> serialize(const T& component_or_action) {
 	return bytes;
 }
 
+inline std::vector<std::byte> serialize(const ecsact_component& component) {
+	std::vector<std::byte> out_component;
+	out_component.resize(ecsact_serialize_component_size(component.component_id));
+
+	ecsact_serialize_component(
+		component.component_id,
+		component.component_data,
+		reinterpret_cast<uint8_t*>(out_component.data())
+	);
+	return out_component;
+}
+
+inline std::vector<std::byte> serialize(const ecsact_action& action) {
+	std::vector<std::byte> out_action;
+	out_action.resize(ecsact_serialize_action_size(action.action_id));
+
+	ecsact_serialize_action(
+		action.action_id,
+		action.action_data,
+		reinterpret_cast<uint8_t*>(out_action.data())
+	);
+	return out_action;
+}
+
+// NOTE: Add the wrapper for serialize/derserialize here
+
 /**
  * Calls `ecsact_deserialize_action` or `ecsact_deserialize_component` based on
  * the type of @tp T.
@@ -115,4 +141,40 @@ int deserialize(
 		::ecsact::deserialize<T>(serialized_component_or_action, read_amount);
 	return read_amount;
 }
+
+inline ecsact_action deserialize(
+	const ecsact_action_id& id,
+	std::vector<std::byte>& serialized_action
+) {
+	auto action = ecsact_action{};
+
+	ecsact_deserialize_action(
+		id,
+		reinterpret_cast<uint8_t*>(serialized_action.data()),
+		&action
+	);
+	return action;
+}
+
+inline ecsact_component deserialize(
+	const ecsact_component_id& id,
+	std::vector<std::byte>&    serialized_component
+) {
+	auto component = ecsact_component{};
+
+	std::vector<uint8_t> component_data;
+	component_data.resize(serialized_component.size());
+
+	ecsact_deserialize_component(
+		id,
+		reinterpret_cast<uint8_t*>(serialized_component.data()),
+		component_data.data()
+	);
+
+	component.component_id = id;
+	component.component_data = component_data.data();
+
+	return component;
+}
+
 } // namespace ecsact
