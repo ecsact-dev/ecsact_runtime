@@ -158,14 +158,7 @@ void async_reference::execute_systems() {
 			// TODO(Kelwan): Add done callbacks so we can resolve all requests
 			// https://github.com/ecsact-dev/ecsact_runtime/issues/102
 
-			ecsact_execution_events_collector collector;
-			collector.init_callback = &execution_callbacks::init_callback;
-			collector.update_callback = &execution_callbacks::update_callback;
-			collector.remove_callback = &execution_callbacks::remove_callback;
-
-			collector.init_callback_user_data = nullptr;
-			collector.update_callback_user_data = nullptr;
-			collector.remove_callback_user_data = nullptr;
+			auto collector = exec_callbacks.get_collector();
 
 			std::unique_ptr<ecsact_execution_options> options = nullptr;
 
@@ -178,7 +171,7 @@ void async_reference::execute_systems() {
 			entity_manager.process_entities(async_callbacks, *registry_id);
 
 			auto systems_error =
-				ecsact_execute_systems(*registry_id, 1, options.get(), &collector);
+				ecsact_execute_systems(*registry_id, 1, options.get(), collector);
 
 			auto end = clock::now();
 			execution_duration = duration_cast<nanoseconds>(end - start);

@@ -8,10 +8,22 @@
 
 class execution_callbacks {
 public:
+	execution_callbacks();
+
 	void invoke(
 		const ecsact_execution_events_collector* execution_events,
 		ecsact_registry_id                       registry_id
 	);
+
+	ecsact_execution_events_collector* get_collector();
+
+private:
+	ecsact_execution_events_collector collector;
+	std::mutex                        execution_m;
+
+	std::vector<types::callback_info> init_callbacks_info;
+	std::vector<types::callback_info> update_callbacks_info;
+	std::vector<types::callback_info> remove_callbacks_info;
 
 	static void init_callback(
 		ecsact_event        event,
@@ -36,11 +48,4 @@ public:
 		const void*         component_data,
 		void*               callback_user_data
 	);
-
-private:
-	static std::mutex execution_m;
-
-	static std::vector<types::callback_info> init_callbacks_info;
-	static std::vector<types::callback_info> update_callbacks_info;
-	static std::vector<types::callback_info> remove_callbacks_info;
 };
