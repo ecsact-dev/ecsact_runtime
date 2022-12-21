@@ -170,8 +170,10 @@ void async_reference::execute_systems() {
 
 			entity_manager.process_entities(async_callbacks, *registry_id);
 
+			auto exec_lk = exec_callbacks.lock();
 			auto systems_error =
 				ecsact_execute_systems(*registry_id, 1, options.get(), collector);
+			exec_lk.unlock();
 
 			auto end = clock::now();
 			execution_duration = duration_cast<nanoseconds>(end - start);

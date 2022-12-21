@@ -17,6 +17,10 @@ public:
 
 	ecsact_execution_events_collector* get_collector();
 
+	inline auto lock() -> std::unique_lock<std::mutex> {
+		return std::unique_lock(execution_m);
+	}
+
 private:
 	ecsact_execution_events_collector collector;
 	std::mutex                        execution_m;
