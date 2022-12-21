@@ -47,11 +47,8 @@ ecsact_async_error validate_merge_instructions(
 		return ECSACT_ASYNC_OK;
 	}
 
-	auto components_range = std::ranges::views::all(components);
-	auto entities = util::get_cpp_entities(components_range);
-
-	auto other_components_range = std::ranges::views::all(other_components);
-	auto other_entities = util::get_cpp_entities(other_components_range);
+	auto entities = util::get_cpp_entities(components);
+	auto other_entities = util::get_cpp_entities(other_components);
 
 	auto empty_view = std::ranges::empty_view<int>{};
 
@@ -63,23 +60,23 @@ ecsact_async_error validate_merge_instructions(
 	}
 
 	for(auto& component : components) {
-		auto view = std::views::filter(
-			other_components_range,
-			[&other_components_range,
+		auto component_view = std::views::filter(
+			other_components,
+			[&other_components,
 			 &component](types::cpp_execution_component other_component) {
 				return component._id == other_component._id;
 			}
 		);
+
 		int same_component_count = 0;
 		int same_entity_count = 0;
-		for(auto itr = view.begin(); itr != view.end(); itr++) {
+		for(auto& other_component : component_view) {
 			same_component_count++;
-			if(component.entity_id == itr->entity_id) {
+			if(component.entity_id == other_component.entity_id) {
 				same_entity_count++;
 			}
 			if(same_component_count > 0 && same_entity_count > 0) {
 				return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
-				break;
 			}
 		}
 	}
@@ -95,7 +92,7 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 
 	if(options.actions.size() > 0) {
 		std::vector<ecsact_action> deserialized_actions;
-		deserialized_actions.resize(options.actions.size());
+		deserialized_actions.reserve(options.actions.size());
 		for(auto& action_info : options.actions) {
 			auto action =
 				ecsact::deserialize(action_info.action_id, action_info.serialized_data);
@@ -107,12 +104,13 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 		c_options.actions_length = deserialized_actions.size();
 	}
 	if(options.adds.size() > 0) {
-		auto adds_range = std::ranges::views::all(options.adds);
-		auto entities_view = util::get_cpp_entities(adds_range);
+		auto entities_view = util::get_cpp_entities(options.adds);
 
 		std::vector entities(entities_view.begin(), entities_view.end());
 
 		std::vector<ecsact_component> component_list;
+		// NOTE: Don't resize and push back
+		component_list.reserve(options.adds.size());
 
 		for(int i = 0; i < options.adds.size(); i++) {
 			auto& component_info = options.adds[i];
@@ -128,12 +126,12 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 		c_options.add_components_length = options.adds.size();
 	}
 	if(options.updates.size() > 0) {
-		auto updates_range = std::ranges::views::all(options.updates);
-		auto entities_view = util::get_cpp_entities(updates_range);
+		auto entities_view = util::get_cpp_entities(options.updates);
 
 		std::vector entities(entities_view.begin(), entities_view.end());
 
 		std::vector<ecsact_component> component_list;
+		component_list.reserve(options.updates.size());
 
 		for(int i = 0; i < options.updates.size(); i++) {
 			auto component_info = options.updates[i];
@@ -149,17 +147,16 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 		c_options.add_components_length = options.updates.size();
 	}
 	if(options.removes.size() > 0) {
-		auto removes_range = std::ranges::views::all(options.removes);
-
-		auto        entities_view = util::get_cpp_entities(removes_range);
+		auto        entities_view = util::get_cpp_entities(options.removes);
 		std::vector entities(entities_view.begin(), entities_view.end());
 
-		auto component_ids = util::get_cpp_component_ids(removes_range);
-		std::vector<ecsact_component_id> component_list;
-		component_list
-			.insert(component_list.end(), component_ids.begin(), component_ids.end());
+		auto component_ids_view = util::get_cpp_component_ids(options.removes);
+		std::vector component_ids(
+			component_ids_view.begin(),
+			component_ids_view.end()
+		);
 
-		c_options.remove_components = component_list.data();
+		c_options.remove_components = component_ids.data();
 		c_options.remove_components_entities = entities.data();
 		c_options.remove_components_length = options.removes.size();
 	}
@@ -170,6 +167,10 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 	const ecsact_execution_options options
 ) {
 	auto cpp_options = types::cpp_execution_options{};
+	cpp_options.adds.reserve(options.add_components_length);
+	cpp_options.updates.reserve(options.update_components_length);
+	cpp_options.removes.reserve(options.remove_components_length);
+	cpp_options.actions.reserve(options.actions_length);
 
 	if(options.add_components != nullptr) {
 		for(int i = 0; i < options.add_components_length; i++) {

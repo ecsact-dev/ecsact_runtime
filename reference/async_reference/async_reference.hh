@@ -8,6 +8,8 @@
 #include <atomic>
 #include <optional>
 #include <variant>
+#include "ecsact/runtime/core.hh"
+#include "ecsact/runtime/async.h"
 
 #include "reference/async_reference/util/types.hh"
 #include "reference/async_reference/util/util.hh"
@@ -15,9 +17,6 @@
 #include "reference/async_reference/callbacks/execution_callbacks.hh"
 #include "reference/async_reference/callbacks/async_callbacks.hh"
 #include "reference/async_reference/entity_manager/entity_manager.hh"
-
-#include "ecsact/runtime/core.hh"
-#include "ecsact/runtime/async.h"
 
 class async_reference {
 public:
@@ -48,6 +47,7 @@ private:
 	entity_manager      entity_manager;
 
 	std::thread execution_thread;
+	std::mutex  execution_m;
 
 	std::atomic_bool is_connected = false;
 	std::atomic_bool is_connected_notified = false;

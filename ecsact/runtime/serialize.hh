@@ -70,8 +70,6 @@ inline std::vector<std::byte> serialize(const ecsact_action& action) {
 	return out_action;
 }
 
-// NOTE: Add the wrapper for serialize/derserialize here
-
 /**
  * Calls `ecsact_deserialize_action` or `ecsact_deserialize_component` based on
  * the type of @tp T.
@@ -142,6 +140,7 @@ int deserialize(
 	return read_amount;
 }
 
+// NOTE: Document functions
 inline ecsact_action deserialize(
 	const ecsact_action_id& id,
 	std::vector<std::byte>& serialized_action
