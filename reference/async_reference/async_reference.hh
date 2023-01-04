@@ -11,6 +11,7 @@
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
+#include "reference/async_reference/detail/c_execution_options/c_execution_options.hh"
 #include "reference/async_reference/util/types.hh"
 #include "reference/async_reference/util/util.hh"
 #include "reference/async_reference/tick_manager/tick_manager.hh"
@@ -55,5 +56,4 @@ private:
 	std::chrono::milliseconds tick_rate = {};
 
 	ecsact_async_request_id next_request_id();
-	ecsact_async_request_id convert_request_id(int32_t id);
 };

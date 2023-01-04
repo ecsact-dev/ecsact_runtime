@@ -103,7 +103,6 @@ void execution_callbacks::init_callback(
 	info.event = event;
 	info.entity_id = entity_id;
 	info.component_id = component_id;
-	std::unique_lock lk(self->execution_m);
 	self->init_callbacks_info.push_back(info);
 }
 
@@ -120,7 +119,6 @@ void execution_callbacks::update_callback(
 	info.event = event;
 	info.entity_id = entity_id;
 	info.component_id = component_id;
-	std::unique_lock lk(self->execution_m);
 	self->update_callbacks_info.push_back(info);
 }
 
@@ -133,16 +131,13 @@ void execution_callbacks::remove_callback(
 ) {
 	auto self = static_cast<execution_callbacks*>(callback_user_data);
 
-	std::unique_lock lk(self->execution_m);
 	std::erase_if(self->init_callbacks_info, [&](auto& init_cb_info) {
 		return init_cb_info.component_id == component_id;
 	});
-	lk.unlock();
 
 	auto info = types::callback_info{};
 	info.event = event;
 	info.entity_id = entity_id;
 	info.component_id = component_id;
-	lk.lock();
 	self->remove_callbacks_info.push_back(info);
 }

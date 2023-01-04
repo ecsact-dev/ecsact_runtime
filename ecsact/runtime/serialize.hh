@@ -46,6 +46,10 @@ std::vector<std::byte> serialize(const T& component_or_action) {
 	return bytes;
 }
 
+/**
+ * Serializes an ecsact_component when the type is unknown.
+ * @returns serialized action bytes
+ */
 inline std::vector<std::byte> serialize(const ecsact_component& component) {
 	std::vector<std::byte> out_component;
 	out_component.resize(ecsact_serialize_component_size(component.component_id));
@@ -58,6 +62,10 @@ inline std::vector<std::byte> serialize(const ecsact_component& component) {
 	return out_component;
 }
 
+/**
+ * Serializes an ecsact_action when the type is unknown.
+ * @returns serialized component bytes
+ */
 inline std::vector<std::byte> serialize(const ecsact_action& action) {
 	std::vector<std::byte> out_action;
 	out_action.resize(ecsact_serialize_action_size(action.action_id));
@@ -140,28 +148,34 @@ int deserialize(
 	return read_amount;
 }
 
-// NOTE: Document functions
-inline ecsact_action deserialize(
+/**
+ * Deserializes an ecsact_component when the type is unknown.
+ * @returns an ecsact_action
+ */
+inline std::vector<std::byte> deserialize(
 	const ecsact_action_id& id,
 	std::vector<std::byte>& serialized_action
 ) {
-	auto action = ecsact_action{};
+	std::vector<std::byte> action_data;
+	action_data.resize(serialized_action.size());
 
 	ecsact_deserialize_action(
 		id,
 		reinterpret_cast<uint8_t*>(serialized_action.data()),
-		&action
+		action_data.data()
 	);
-	return action;
+	return action_data;
 }
 
-inline ecsact_component deserialize(
+/**
+ * Deserializes an ecsact_component when the type is unknown.
+ * @returns an ecsact_component_id
+ */
+inline std::vector<std::byte> deserialize(
 	const ecsact_component_id& id,
 	std::vector<std::byte>&    serialized_component
 ) {
-	auto component = ecsact_component{};
-
-	std::vector<uint8_t> component_data;
+	std::vector<std::byte> component_data;
 	component_data.resize(serialized_component.size());
 
 	ecsact_deserialize_component(
@@ -169,11 +183,7 @@ inline ecsact_component deserialize(
 		reinterpret_cast<uint8_t*>(serialized_component.data()),
 		component_data.data()
 	);
-
-	component.component_id = id;
-	component.component_data = component_data.data();
-
-	return component;
+	return component_data;
 }
 
 } // namespace ecsact

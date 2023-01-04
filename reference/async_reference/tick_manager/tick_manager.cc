@@ -3,7 +3,8 @@
 
 #include "tick_manager.hh"
 
-void tick_manager::add_pending_options(types::pending_execution_options& pending
+void tick_manager::add_pending_options(
+	const types::pending_execution_options& pending
 ) {
 	std::unique_lock lk(tick_m);
 	pending_tick_map[tick].emplace_back(pending);
@@ -14,7 +15,6 @@ tick_manager::move_and_increment_tick() {
 	auto cpp_options = std::optional<types::cpp_execution_options>{};
 
 	if(validated_tick_map.contains(tick)) {
-		std::unique_lock lk(tick_m);
 		cpp_options = std::move(validated_tick_map.at(tick));
 		validated_tick_map.erase(tick);
 		tick++;

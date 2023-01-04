@@ -84,68 +84,64 @@ ecsact_async_error validate_merge_instructions(
 	return ECSACT_ASYNC_OK;
 }
 
-ecsact_execution_options util::cpp_to_c_execution_options(
+void util::cpp_to_c_execution_options(
+	detail::c_execution_options&  out_c_execution_options,
 	types::cpp_execution_options& options,
 	const ecsact_registry_id&     registry_id
 ) {
-	auto c_options = ecsact_execution_options{};
+	// out_c_execution_options.actions_info.resize(options.actions.size());
+	// out_c_execution_options.adds_info.resize(options.adds.size());
+	// out_c_execution_options.updates_info.resize(options.updates.size());
+	// out_c_execution_options.remove_ids.resize(options.removes.size());
 
 	if(options.actions.size() > 0) {
-		std::vector<ecsact_action> deserialized_actions;
-		deserialized_actions.reserve(options.actions.size());
 		for(auto& action_info : options.actions) {
-			auto action =
-				ecsact::deserialize(action_info.action_id, action_info.serialized_data);
-
-			deserialized_actions.push_back(action);
+			out_c_execution_options.actions_info.push_back(
+				detail::data_info<ecsact_action_id>{
+					.id = action_info.action_id,
+					.data = ecsact::deserialize(
+						action_info.action_id,
+						action_info.serialized_data
+					),
+				}
+			);
 		}
-
-		c_options.actions = deserialized_actions.data();
-		c_options.actions_length = deserialized_actions.size();
 	}
+
 	if(options.adds.size() > 0) {
-		auto entities_view = util::get_cpp_entities(options.adds);
-
+		auto        entities_view = util::get_cpp_entities(options.adds);
 		std::vector entities(entities_view.begin(), entities_view.end());
-
-		std::vector<ecsact_component> component_list;
-		// NOTE: Don't resize and push back
-		component_list.reserve(options.adds.size());
 
 		for(int i = 0; i < options.adds.size(); i++) {
 			auto& component_info = options.adds[i];
 
-			auto component =
-				ecsact::deserialize(component_info._id, component_info.data);
-
-			component_list.push_back(component);
+			out_c_execution_options.adds_info.push_back(
+				detail::data_info<ecsact_component_id>{
+					.id = component_info._id,
+					.data = ecsact::deserialize(component_info._id, component_info.data),
+				}
+			);
 		}
-
-		c_options.add_components = component_list.data();
-		c_options.add_components_entities = entities.data();
-		c_options.add_components_length = options.adds.size();
+		out_c_execution_options.adds_entities = entities;
 	}
+
 	if(options.updates.size() > 0) {
-		auto entities_view = util::get_cpp_entities(options.updates);
-
+		auto        entities_view = util::get_cpp_entities(options.updates);
 		std::vector entities(entities_view.begin(), entities_view.end());
-
-		std::vector<ecsact_component> component_list;
-		component_list.reserve(options.updates.size());
 
 		for(int i = 0; i < options.updates.size(); i++) {
 			auto component_info = options.updates[i];
 
-			auto component =
-				ecsact::deserialize(component_info._id, component_info.data);
-
-			component_list.push_back(component);
+			out_c_execution_options.updates_info.push_back(
+				detail::data_info<ecsact_component_id>{
+					.id = component_info._id,
+					.data = ecsact::deserialize(component_info._id, component_info.data),
+				}
+			);
 		}
-
-		c_options.add_components = component_list.data();
-		c_options.add_components_entities = entities.data();
-		c_options.add_components_length = options.updates.size();
+		out_c_execution_options.updates_entities = entities;
 	}
+
 	if(options.removes.size() > 0) {
 		auto        entities_view = util::get_cpp_entities(options.removes);
 		std::vector entities(entities_view.begin(), entities_view.end());
@@ -156,15 +152,18 @@ ecsact_execution_options util::cpp_to_c_execution_options(
 			component_ids_view.end()
 		);
 
-		c_options.remove_components = component_ids.data();
-		c_options.remove_components_entities = entities.data();
-		c_options.remove_components_length = options.removes.size();
+		out_c_execution_options.remove_ids.insert(
+			out_c_execution_options.remove_ids.begin(),
+			component_ids.begin(),
+			component_ids.end()
+		);
+
+		out_c_execution_options.removes_entities = entities;
 	}
-	return c_options;
 }
 
 types::cpp_execution_options util::c_to_cpp_execution_options(
-	const ecsact_execution_options options
+	const ecsact_execution_options& options
 ) {
 	auto cpp_options = types::cpp_execution_options{};
 	cpp_options.adds.reserve(options.add_components_length);

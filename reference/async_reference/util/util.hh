@@ -9,6 +9,7 @@
 
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/serialize.hh"
+#include "reference/async_reference/detail/c_execution_options/c_execution_options.hh"
 
 namespace util {
 
@@ -44,12 +45,12 @@ auto get_request_ids_from_pending_exec_options(auto& pending_exec_options) {
 
 bool check_entity_duplicates(auto entities_view) {
 	for(auto entity_id : entities_view) {
-		auto view =
+		auto duplicate_view =
 			std::views::filter(entities_view, [&entity_id](auto other_entity) {
 				return entity_id == other_entity;
 			});
 		int same_entity_count = 0;
-		for(auto itr = view.begin(); itr != view.end(); itr++) {
+		for(auto count : duplicate_view) {
 			same_entity_count++;
 			if(same_entity_count > 1) {
 				return true;
@@ -64,13 +65,13 @@ bool check_entity_merge_duplicates(
 	auto& other_entities_view
 ) {
 	for(auto entity_id : entities_view) {
-		auto view =
+		auto duplicate_view =
 			std::views::filter(other_entities_view, [&entity_id](auto other_entity) {
 				return entity_id == other_entity;
 			});
 
 		int same_entity_count = 0;
-		for(auto itr = view.begin(); itr != view.end(); itr++) {
+		for(auto count : duplicate_view) {
 			same_entity_count++;
 			if(same_entity_count > 0) {
 				return true;
@@ -80,13 +81,14 @@ bool check_entity_merge_duplicates(
 	return false;
 }
 
-ecsact_execution_options cpp_to_c_execution_options(
+void cpp_to_c_execution_options(
+	detail::c_execution_options&  out_c_execution_options,
 	types::cpp_execution_options& options,
 	const ecsact_registry_id&     registry_id
 );
 
 types::cpp_execution_options c_to_cpp_execution_options(
-	const ecsact_execution_options options
+	const ecsact_execution_options& options
 );
 
 ecsact_async_error validate_options(types::cpp_execution_options& options);

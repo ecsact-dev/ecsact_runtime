@@ -10,7 +10,7 @@
 
 class tick_manager {
 public:
-	void add_pending_options(types::pending_execution_options& options);
+	void add_pending_options(const types::pending_execution_options& options);
 	std::optional<types::cpp_execution_options> move_and_increment_tick();
 
 	types::async_error validate_pending_options();

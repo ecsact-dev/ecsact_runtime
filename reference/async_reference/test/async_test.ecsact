@@ -17,11 +17,12 @@ action AddComponent {
 
 action TryEntity {
 	include NeededComponent;
+	readwrite ComponentUpdate;
 	entity my_entity;
 	adds ComponentAddRemove;
 }
 
-action UpdateComponent {
+system UpdateComponent {
 	readwrite ComponentAddRemove;
 }
 

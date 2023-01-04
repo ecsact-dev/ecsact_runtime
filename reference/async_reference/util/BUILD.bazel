@@ -14,6 +14,7 @@ cc_library(
     deps = [
         "//:core",
         "//:serialize",
+        "//reference/async_reference/detail/c_execution_options",
         "//reference/async_reference/util:types",
         "//reference/serialize_reference",
     ],

@@ -160,19 +160,21 @@ void async_reference::execute_systems() {
 
 			auto collector = exec_callbacks.get_collector();
 
-			std::unique_ptr<ecsact_execution_options> options = nullptr;
+			detail::c_execution_options c_exec_options;
 
 			if(cpp_options) {
-				options = std::make_unique<ecsact_execution_options>(
-					util::cpp_to_c_execution_options(*cpp_options, *registry_id)
+				util::cpp_to_c_execution_options(
+					c_exec_options,
+					*cpp_options,
+					*registry_id
 				);
 			}
-
+			auto options = c_exec_options.c();
 			entity_manager.process_entities(async_callbacks, *registry_id);
 
 			auto exec_lk = exec_callbacks.lock();
 			auto systems_error =
-				ecsact_execute_systems(*registry_id, 1, options.get(), collector);
+				ecsact_execute_systems(*registry_id, 1, &options, collector);
 			exec_lk.unlock();
 
 			auto end = clock::now();
@@ -226,8 +228,4 @@ ecsact_async_request_id async_reference::next_request_id() {
 	return static_cast<ecsact_async_request_id>(
 		_last_request_id.fetch_add(1, std::memory_order_relaxed)
 	);
-}
-
-ecsact_async_request_id async_reference::convert_request_id(int32_t id) {
-	return static_cast<ecsact_async_request_id>(id);
 }

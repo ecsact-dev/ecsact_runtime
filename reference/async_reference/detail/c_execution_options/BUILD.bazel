@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+cc_library(
+    name = "c_execution_options",
+    srcs = ["c_execution_options.cc"],
+    hdrs = ["c_execution_options.hh"],
+    copts = copts,
+    local_defines = [
+        "ECSACT_CORE_API=",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:async",
+        "//:core",
+    ],
+)

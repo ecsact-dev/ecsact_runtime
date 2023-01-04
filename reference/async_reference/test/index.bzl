@@ -29,6 +29,7 @@ def ecsact_reference_async_module_test(name = None, srcs = [], deps = [], **kwar
         deps = deps + [
             "@ecsact_runtime//:core",
             "@ecsact_runtime//:async",
+            "@ecsact_runtime//:dynamic",
             "@ecsact_runtime//reference/async_reference:async",
             "@com_google_googletest//:gtest",
             "@com_google_googletest//:gtest_main",
