@@ -237,6 +237,8 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	}
 
 	ecsact_async_disconnect();
+
+	// NOTE: Maybe merging enqueues is affecting the callbacks?
 }
 
 TEST(AsyncRef, TryMergeFailure) {
