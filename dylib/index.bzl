@@ -17,19 +17,16 @@ def cc_ecsact_dylib(name = None, srcs = [], ecsact_modules = [], deps = [], defi
         defines: Passed to underlying cc_library
         **kwargs: Passed to underlying cc_library
     """
-    srcs.append("@ecsact_runtime//dylib:dylib.cc")
-    deps.append("@ecsact_runtime//:dylib")
 
     for ecsact_module in ecsact_modules:
         if not ecsact_module in ecsact_runtime_modules:
             fail("Invalid ecsact module '{}'\nAllowed values: {}".format(ecsact_module, ",".join(ecsact_runtime_modules)))
 
-        deps.append("@ecsact_runtime//dylib:{}".format(ecsact_module))
-        defines.append("ECSACT_{}_API_LOAD_AT_RUNTIME".format(ecsact_module.upper()))
-
     cc_library(
         name = name,
-        deps = deps,
-        defines = defines,
+        deps = deps + ["@ecsact_runtime//:dylib", "@ecsact_runtime//dylib:util"] + ["@ecsact_runtime//:{}".format(m) for m in ecsact_modules],
+        srcs = srcs + ["@ecsact_runtime//dylib:dylib.cc"],
+        defines = defines +
+                  ["ECSACT_{}_API_LOAD_AT_RUNTIME".format(m.upper()) for m in ecsact_modules],
         **kwargs
     )

@@ -1,7 +1,8 @@
 #ifndef ECSACT_RUNTIME_DYNAMIC_H
 #define ECSACT_RUNTIME_DYNAMIC_H
 
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #include "ecsact/runtime/common.h"
 #include "ecsact/runtime/definitions.h"
@@ -51,8 +52,8 @@
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_action)
 ( //
-	ecsact_system_execution_context* context,
-	void*                            out_action_data
+	struct ecsact_system_execution_context* context,
+	void*                                   out_action_data
 );
 
 /**
@@ -63,9 +64,9 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_action)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_component_like_id         component_id,
-	const void*                      component_data
+	struct ecsact_system_execution_context* context,
+	ecsact_component_like_id                component_id,
+	const void*                             component_data
 );
 
 /**
@@ -77,8 +78,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_component_like_id         component_id
+	struct ecsact_system_execution_context* context,
+	ecsact_component_like_id                component_id
 );
 
 /**
@@ -96,9 +97,9 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_component_like_id         component_id,
-	void*                            out_component_data
+	struct ecsact_system_execution_context* context,
+	ecsact_component_like_id                component_id,
+	void*                                   out_component_data
 );
 
 /**
@@ -110,9 +111,9 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_component_like_id         component_id,
-	const void*                      component_data
+	struct ecsact_system_execution_context* context,
+	ecsact_component_like_id                component_id,
+	const void*                             component_data
 );
 
 /**
@@ -126,8 +127,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_component_like_id         component_id
+	struct ecsact_system_execution_context* context,
+	ecsact_component_like_id                component_id
 );
 
 /**
@@ -143,10 +144,10 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_generate)
 ( //
-	ecsact_system_execution_context* context,
-	int                              component_count,
-	ecsact_component_id*             component_ids,
-	const void**                     components_data
+	struct ecsact_system_execution_context* context,
+	int                                     component_count,
+	ecsact_component_id*                    component_ids,
+	const void**                            components_data
 );
 
 /**
@@ -155,11 +156,11 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_generate)
  * Only available if the currently executing system is a nested system.
  */
 ECSACT_DYNAMIC_API_FN(
-	const ecsact_system_execution_context*,
+	const struct ecsact_system_execution_context*,
 	ecsact_system_execution_context_parent
 )
 ( //
-	ecsact_system_execution_context* context
+	struct ecsact_system_execution_context* context
 );
 
 /**
@@ -171,8 +172,8 @@ ECSACT_DYNAMIC_API_FN(
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_same)
 ( //
-	const ecsact_system_execution_context*,
-	const ecsact_system_execution_context*
+	const struct ecsact_system_execution_context*,
+	const struct ecsact_system_execution_context*
 );
 
 /**
@@ -184,12 +185,12 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_same)
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
  */
 ECSACT_DYNAMIC_API_FN(
-	ecsact_system_execution_context*,
+	struct ecsact_system_execution_context*,
 	ecsact_system_execution_context_other
 )
 ( //
-	ecsact_system_execution_context* context,
-	ecsact_entity_id                 entity_id
+	struct ecsact_system_execution_context* context,
+	ecsact_entity_id                        entity_id
 );
 
 /**
@@ -197,7 +198,7 @@ ECSACT_DYNAMIC_API_FN(
  */
 ECSACT_DYNAMIC_API_FN(ecsact_entity_id, ecsact_system_execution_context_entity)
 ( //
-	const ecsact_system_execution_context* context
+	const struct ecsact_system_execution_context* context
 );
 
 /**
@@ -205,7 +206,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_entity_id, ecsact_system_execution_context_entity)
  */
 ECSACT_DYNAMIC_API_FN(ecsact_system_like_id, ecsact_system_execution_context_id)
 ( //
-	ecsact_system_execution_context* context
+	struct ecsact_system_execution_context* context
 );
 
 ECSACT_DYNAMIC_API_FN(ecsact_package_id, ecsact_create_package)
