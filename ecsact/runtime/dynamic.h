@@ -307,7 +307,7 @@ ECSACT_DYNAMIC_API_FN(ecsact_component_id, ecsact_create_component)
  * @returns unique transient ID for newly created transient
  */
 ECSACT_DYNAMIC_API_FN(ecsact_transient_id, ecsact_create_transient)
-( // dynamic
+( //
 	ecsact_package_id owner,
 	const char*       transient_name,
 	int32_t           transient_name_len
