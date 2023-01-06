@@ -19,3 +19,9 @@ cc_library(
     copts = copts,
     ecsact_modules = [m],
 ) for m in ecsact_runtime_modules]
+
+cc_ecsact_dylib(
+    name = "full",
+    copts = copts,
+    ecsact_modules = ecsact_runtime_modules,
+)
