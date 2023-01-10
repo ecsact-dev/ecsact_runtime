@@ -75,6 +75,7 @@ llvm_toolchain(
     name = "llvm_toolchain",
     cxx_standard = {"linux": "c++20"},
     distribution = "clang+llvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04.tar.xz",
+    llvm_version = "15.0.6",
 )
 
 load("@llvm_toolchain//:toolchains.bzl", "llvm_register_toolchains")
