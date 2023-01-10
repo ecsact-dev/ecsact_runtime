@@ -47,6 +47,38 @@ std::vector<std::byte> serialize(const T& component_or_action) {
 }
 
 /**
+ * Serializes an ecsact_component when the type is unknown.
+ * @returns serialized action bytes
+ */
+inline std::vector<std::byte> serialize(const ecsact_component& component) {
+	std::vector<std::byte> out_component;
+	out_component.resize(ecsact_serialize_component_size(component.component_id));
+
+	ecsact_serialize_component(
+		component.component_id,
+		component.component_data,
+		reinterpret_cast<uint8_t*>(out_component.data())
+	);
+	return out_component;
+}
+
+/**
+ * Serializes an ecsact_action when the type is unknown.
+ * @returns serialized component bytes
+ */
+inline std::vector<std::byte> serialize(const ecsact_action& action) {
+	std::vector<std::byte> out_action;
+	out_action.resize(ecsact_serialize_action_size(action.action_id));
+
+	ecsact_serialize_action(
+		action.action_id,
+		action.action_data,
+		reinterpret_cast<uint8_t*>(out_action.data())
+	);
+	return out_action;
+}
+
+/**
  * Calls `ecsact_deserialize_action` or `ecsact_deserialize_component` based on
  * the type of @tp T.
  * @returns the deserialized action or component
@@ -115,4 +147,43 @@ int deserialize(
 		::ecsact::deserialize<T>(serialized_component_or_action, read_amount);
 	return read_amount;
 }
+
+/**
+ * Deserializes an ecsact_component when the type is unknown.
+ * @returns an ecsact_action
+ */
+inline std::vector<std::byte> deserialize(
+	const ecsact_action_id& id,
+	std::vector<std::byte>& serialized_action
+) {
+	std::vector<std::byte> action_data;
+	action_data.resize(serialized_action.size());
+
+	ecsact_deserialize_action(
+		id,
+		reinterpret_cast<uint8_t*>(serialized_action.data()),
+		action_data.data()
+	);
+	return action_data;
+}
+
+/**
+ * Deserializes an ecsact_component when the type is unknown.
+ * @returns an ecsact_component_id
+ */
+inline std::vector<std::byte> deserialize(
+	const ecsact_component_id& id,
+	std::vector<std::byte>&    serialized_component
+) {
+	std::vector<std::byte> component_data;
+	component_data.resize(serialized_component.size());
+
+	ecsact_deserialize_component(
+		id,
+		reinterpret_cast<uint8_t*>(serialized_component.data()),
+		component_data.data()
+	);
+	return component_data;
+}
+
 } // namespace ecsact

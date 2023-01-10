@@ -1,0 +1,7 @@
+package(default_visibility = ["//visibility:public"])
+
+# exported to be used for macro in ./index.bzl
+exports_files([
+    "async_ref_test.cc",
+    "async_test.ecsact",
+])

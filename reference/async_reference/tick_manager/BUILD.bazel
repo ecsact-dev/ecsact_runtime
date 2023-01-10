@@ -1,0 +1,14 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+cc_library(
+    name = "tick_manager",
+    srcs = ["tick_manager.cc"],
+    hdrs = ["tick_manager.hh"],
+    copts = copts,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//reference/async_reference/util",
+        "//reference/async_reference/util:types",
+    ],
+)

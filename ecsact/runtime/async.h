@@ -54,35 +54,67 @@ typedef enum {
 	ECSACT_ASYNC_ERR_PERMISSION_DENIED,
 
 	/**
+	 * Client sent invalid connection options
+	 */
+	ECSACT_ASYNC_INVALID_CONNECTION_STRING,
+
+	/**
 	 * Connection to the client is closed
 	 */
 	ECSACT_ASYNC_ERR_CONNECTION_CLOSED,
 
 	/**
-	 * ExecutionOptions failed to merge
+	 * ExecutionOptions failed to merge, and upon failure the connection is closed
 	 */
 	ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE,
 } ecsact_async_error;
 
 /**
- * When an error occurs due to an async request this callback is invoked, only
- * either @p async_err or @p execute_err will have a non-ok value.
+ * When an error occurs due to an async request this callback is invoked.
  *
  * @param async_err when there is no async error this will be @ref
  * ECSACT_ASYNC_OK otherwise @see ecsact_async_error
- * @param execute_err when there is no system execution error, this will be @ref
- * ECSACT_EXEC_SYS_OK other @see ecsact_execute_systems_error
- * @param request_id the request ID returned by an async request function that
+
+ * @param request_ids A list of request IDs returned by an async request
+ function that
  * was responsible for this error
  * @param callback_user_data the @ref
  * ecsact_async_events_collector::error_callback_user_data
  */
 typedef void (*ecsact_async_error_callback)(
 	//
-	ecsact_async_error           async_err,
+	ecsact_async_error       async_err,
+	int                      request_ids_length,
+	ecsact_async_request_id* request_ids,
+	void*                    callback_user_data
+);
+
+/**
+ * When an occurs from the system execution this callback is invoked.
+ *
+ * @param execute_err when there is no system execution error, this will be
+ * @ref ECSACT_EXEC_SYS_OK other @see ecsact_execute_systems_error
+ */
+typedef void (*ecsact_execute_sys_error_callback)(
+	//
 	ecsact_execute_systems_error execute_err,
-	ecsact_async_request_id      request_id,
 	void*                        callback_user_data
+);
+
+/**
+ * When an entity is sucessfully created this callback is
+ * invoked.
+ *
+ * @param entity_id the entity id of the created entity
+ * @param request_id the request ID returned by the create entity callback
+ * @param callback_user_data the @ref
+ * ecsact_async_events_collector::error_callback_user_data
+ */
+typedef void (*ecsact_async_create_entity_callback)(
+	//
+	ecsact_entity_id        entity_id,
+	ecsact_async_request_id request_id,
+	void*                   callback_user_data
 );
 
 typedef struct ecsact_async_events_collector {
@@ -90,14 +122,38 @@ typedef struct ecsact_async_events_collector {
 	 * invoked when an async request failed.
 	 * @see ecsact_async_error_callback
 	 * @see ecsact_async_error
+	 */
+	ecsact_async_error_callback async_error_callback;
+
+	/**
+	 * `callback_user_data` passed to `async_error_callback`
+	 */
+	void* async_error_callback_user_data;
+
+	/**
+	 * Invoked when a create entity request succeeds.
+	 * @see ecsact_async_create_entity_callback
+	 * @see ecsact_entity_id
+	 * @see ecsact_async_error
+	 */
+	ecsact_async_create_entity_callback async_entity_callback;
+
+	/**
+	 * `callback_user_data` passed to `async_entity_callback`
+	 */
+	void* async_entity_callback_user_data;
+
+	/**
+	 * invoked when a system execution error occurred.
+	 * @see ecsact_execute_sys_error_callback
 	 * @see ecsact_execute_systems_error
 	 */
-	ecsact_async_error_callback error_callback;
+	ecsact_execute_sys_error_callback system_error_callback;
 
 	/**
 	 * `callback_user_data` passed to `error_callback`
 	 */
-	void* error_callback_user_data;
+	void* system_error_callback_user_data;
 } ecsact_async_events_collector;
 
 /**
@@ -117,33 +173,9 @@ ECSACT_ASYNC_API_FN(
 );
 
 /**
- * Enqueues system execution options at the specified ticks. If multiple
- * invocations of `ecsact_async_enqueue_execution_options_at` happen for the
- * same tick(s) the execution options will be _merged_.
- *
- * @param list_length the length of @p tick_list and @p options_list
- * @param tick_list a sequential list of ticks the execution options in @p
- * options_list will be used during system exeuction. Length is determined by @p
- * list_length
- * @param options_list a sequential list of execution options. Length is
- * determined by @p list_length
- * @returns a request ID representing this async request. Later used in @ref
- * ecsact_async_error_callback if an error occurs
- */
-
-ECSACT_ASYNC_API_FN(
-	ecsact_async_request_id,
-	ecsact_async_enqueue_execution_options_at
-)
-( //
-	int                             list_length,
-	const int*                      tick_list,
-	const ecsact_execution_options* options_list
-);
-
-/**
  * Invokes the various callbacks in `execution_events` and `async_events` that
- * have been pending.
+ * have been pending. If either a system or async error occurs it's treated
+ * as a call to ecscact_async_disconnect
  */
 ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
 ( //
@@ -171,12 +203,17 @@ ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
  */
 ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
 
-#define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)                 \
-	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__);    \
-	fn(ecsact_async_enqueue_execution_options_at, __VA_ARGS__); \
-	fn(ecsact_async_flush_events, __VA_ARGS__);                 \
-	fn(ecsact_async_connect, __VA_ARGS__);                      \
-	fn(ecsact_async_disconnect, __VA_ARGS__);
+/**
+ * Returns an entity
+ */
+ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_create_entity)(void);
+
+#define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
+	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
+	fn(ecsact_async_flush_events, __VA_ARGS__);              \
+	fn(ecsact_async_connect, __VA_ARGS__);                   \
+	fn(ecsact_async_disconnect, __VA_ARGS__);                \
+	fn(ecsact_async_create_entity, __VA_ARGS__);
 
 #undef ECSACT_ASYNC_API
 #undef ECSACT_ASYNC_API_FN
