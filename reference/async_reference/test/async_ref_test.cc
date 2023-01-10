@@ -543,4 +543,6 @@ TEST(AsyncRef, TryAction) {
 		std::this_thread::sleep_for(25ms);
 		ASSERT_LT(++check_count, 100);
 	}
+
+	ecsact_async_disconnect();
 }
