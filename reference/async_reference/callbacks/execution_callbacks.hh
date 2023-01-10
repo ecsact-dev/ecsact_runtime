@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <mutex>
+#include <map>
 
 #include "ecsact/runtime/core.hh"
+#include "ecsact/runtime/serialize.hh"
 #include "reference/async_reference/util/types.hh"
 
 class execution_callbacks {
@@ -24,6 +26,8 @@ public:
 private:
 	ecsact_execution_events_collector collector;
 	std::mutex                        execution_m;
+
+	std::vector<types::cpp_execution_component> removed_execute_components;
 
 	std::vector<types::callback_info> init_callbacks_info;
 	std::vector<types::callback_info> update_callbacks_info;

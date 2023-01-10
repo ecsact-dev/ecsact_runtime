@@ -162,12 +162,74 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	};
 	auto component_update_entities = std::array{cb_info.entity};
 
+	// Prepare the events collector for the flush to make sure we got all the
+	// events we expected.
+	auto evc = ecsact_execution_events_collector{};
+	evc.init_callback_user_data = &cb_info;
+	evc.init_callback = //
+		[](
+			ecsact_event        event,
+			ecsact_entity_id    entity_id,
+			ecsact_component_id component_id,
+			const void*         component_data,
+			void*               callback_user_data
+		) {
+			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
+			cb_info.init_happened = true;
+
+			if(component_id == async_test::ComponentUpdate::id) {
+				auto comp =
+					static_cast<const async_test::ComponentUpdate*>(component_data);
+
+				ASSERT_EQ(comp->value_to_update, 1);
+			}
+		};
+
+	check_count = 0;
+	while(!cb_info.init_happened) {
+		ASSERT_LT(++check_count, 100);
+		ecsact_async_flush_events(&evc, nullptr);
+		std::this_thread::sleep_for(25ms);
+	}
+
+	evc.init_callback = {};
+	evc.init_callback_user_data = nullptr;
+	evc.update_callback_user_data = &cb_info;
+	evc.update_callback = //
+		[](
+			ecsact_event        event,
+			ecsact_entity_id    entity_id,
+			ecsact_component_id component_id,
+			const void*         component_data,
+			void*               callback_user_data
+		) {
+			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
+			cb_info.update_happened = true;
+
+			ASSERT_EQ(component_id, async_test::ComponentUpdate::id);
+
+			auto comp =
+				static_cast<const async_test::ComponentUpdate*>(component_data);
+
+			ASSERT_EQ(comp->value_to_update, 6);
+		};
+
 	// Update components
 	ecsact_execution_options update_options{};
 	update_options.update_components_length = update_components.size();
 	update_options.update_components_entities = component_update_entities.data();
 	update_options.update_components = update_components.data();
 	ecsact_async_enqueue_execution_options(update_options);
+
+	check_count = 0;
+	while(!cb_info.update_happened) {
+		ASSERT_LT(++check_count, 100);
+		ecsact_async_flush_events(&evc, nullptr);
+		std::this_thread::sleep_for(25ms);
+	}
+
+	evc.update_callback = {};
+	evc.update_callback_user_data = nullptr;
 
 	// Prepare remove component data
 	auto remove_components = std::array{async_test::ComponentUpdate::id};
@@ -180,36 +242,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	remove_options.remove_components = remove_components.data();
 	ecsact_async_enqueue_execution_options(remove_options);
 
-	// Prepare the events collector for the flush to make sure we got all the
-	// events we expected.
-	auto evc = ecsact_execution_events_collector{};
-	evc.init_callback_user_data = &cb_info;
-	evc.update_callback_user_data = &cb_info;
 	evc.remove_callback_user_data = &cb_info;
-	evc.init_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
-			cb_info.init_happened = true;
-		};
-	evc.update_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
-			cb_info.update_happened = true;
-
-			EXPECT_EQ(component_id, async_test::ComponentUpdate::id);
-		};
 	evc.remove_callback = //
 		[](
 			ecsact_event        event,
@@ -221,7 +254,12 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
 			cb_info.remove_happened = true;
 
-			EXPECT_EQ(component_id, async_test::ComponentUpdate::id);
+			ASSERT_EQ(component_id, async_test::ComponentUpdate::id);
+
+			auto comp =
+				static_cast<const async_test::ComponentUpdate*>(component_data);
+
+			ASSERT_EQ(comp->value_to_update, 6);
 		};
 
 	// Flush until we hit a maximum or get all our events we expect.
@@ -237,8 +275,6 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	}
 
 	ecsact_async_disconnect();
-
-	// NOTE: Maybe merging enqueues is affecting the callbacks?
 }
 
 TEST(AsyncRef, TryMergeFailure) {
@@ -388,34 +424,11 @@ TEST(AsyncRef, TryAction) {
 	using namespace std::chrono_literals;
 	static std::atomic_bool reached_system = false;
 
-	ecsact_set_system_execution_impl(
-		ecsact_id_cast<ecsact_system_like_id>(async_test::TryEntity::id),
-		[](ecsact_system_execution_context* context) { reached_system = true; }
-	);
-
 	ecsact_async_connect("good?tick_rate=25");
-
-	async_test::NeededComponent my_needed_component{};
-
-	ecsact_component needed_component{
-		.component_id = async_test::NeededComponent::id,
-		.component_data = &my_needed_component,
-	};
-
-	async_test::ComponentUpdate my_update_component{};
-
-	auto update_comp_id = async_test::ComponentUpdate::id;
-	my_update_component.value_to_update = 1;
-	const void* update_component_data = &my_update_component;
-
-	ecsact_component update_component{
-		.component_id = update_comp_id,
-		.component_data = update_component_data,
-	};
 
 	auto entity_request = ecsact_async_create_entity();
 
-	entity_cb_info cb_info{};
+	static entity_cb_info cb_info;
 
 	auto entity_cb = //
 		[](
@@ -440,9 +453,75 @@ TEST(AsyncRef, TryAction) {
 		ecsact_async_flush_events(nullptr, &entity_async_evc);
 	}
 
+	bool wait = false;
+
+	// Prepare the events collector for the flush to make sure we got all the
+	// events we expected.
+	auto evc = ecsact_execution_events_collector{};
+	evc.init_callback_user_data = &wait;
+	evc.init_callback = //
+		[](
+			ecsact_event        event,
+			ecsact_entity_id    entity_id,
+			ecsact_component_id component_id,
+			const void*         component_data,
+			void*               callback_user_data
+		) {
+			auto& wait = *static_cast<bool*>(callback_user_data);
+			wait = true;
+		};
+
+	// Declare components required for the action
+	async_test::NeededComponent my_needed_component{};
+
+	async_test::ComponentUpdate my_update_component{};
+	my_update_component.value_to_update = 1;
+
+	std::array add_component_entities{cb_info.entity, cb_info.entity};
+
+	// Add components to an array
+	std::array add_components{
+		ecsact_component{
+			.component_id = async_test::NeededComponent::id,
+			.component_data = &my_needed_component,
+		},
+		ecsact_component{
+			.component_id = async_test::ComponentUpdate::id,
+			.component_data = &my_update_component,
+		},
+	};
+
+	ASSERT_EQ(add_component_entities.size(), add_components.size());
+
+	ecsact_execution_options options{};
+
+	options.add_components_length = add_components.size();
+	options.add_components_entities = add_component_entities.data();
+	options.add_components = add_components.data();
+
+	ecsact_async_enqueue_execution_options(options);
+
+	check_count = 0;
+	while(!wait) {
+		ASSERT_LT(++check_count, 100);
+		ecsact_async_flush_events(&evc, nullptr);
+		std::this_thread::sleep_for(25ms);
+	}
+
 	async_test::TryEntity my_try_entity;
 
 	my_try_entity.my_entity = cb_info.entity;
+
+	// Declare an action, add a check to see it's running
+	ecsact_set_system_execution_impl(
+		ecsact_id_cast<ecsact_system_like_id>(async_test::TryEntity::id),
+		[](ecsact_system_execution_context* context) {
+			async_test::TryEntity system_action{};
+			ecsact_system_execution_context_action(context, &system_action);
+			ASSERT_EQ(cb_info.entity, system_action.my_entity);
+			reached_system = true;
+		}
+	);
 
 	std::vector<ecsact_action> actions{};
 
@@ -452,10 +531,7 @@ TEST(AsyncRef, TryAction) {
 	};
 
 	actions.push_back(my_action);
-
-	ecsact_async_events_collector async_evc{};
-
-	ecsact_execution_options options{};
+	options = {};
 
 	options.actions = actions.data();
 	options.actions_length = actions.size();
@@ -463,7 +539,6 @@ TEST(AsyncRef, TryAction) {
 	auto options_request = ecsact_async_enqueue_execution_options(options);
 
 	check_count = 0;
-
 	while(reached_system != true) {
 		std::this_thread::sleep_for(25ms);
 		ASSERT_LT(++check_count, 100);

@@ -8,11 +8,13 @@ cc_library(
     copts = copts,
     local_defines = [
         "ECSACT_CORE_API=",
+        "ECSACT_SERIALIZE_API=",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//:core",
         "//reference/async_reference/util:types",
+        "//reference/serialize_reference",
     ],
 )
 
