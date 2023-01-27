@@ -9,6 +9,9 @@
 
 namespace ecsact::core {
 
+/**
+ * Lightweight view of a `ecsact_execution_options` struct.
+ */
 class execution_options_view {
 	ecsact_execution_options& _c_exec_opts;
 
