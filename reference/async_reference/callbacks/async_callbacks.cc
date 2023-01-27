@@ -19,7 +19,6 @@ void async_callbacks::invoke(const ecsact_async_events_collector* async_events
 
 	std::vector<types::async_requests> pending_requests;
 
-	// Does it have no value? Don't lock!
 	std::unique_lock lk(async_m);
 	pending_requests = std::move(requests);
 	requests.clear();
