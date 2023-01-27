@@ -69,6 +69,17 @@ public:
 		);
 	}
 
+	/**
+	 * @returns `true` when all lengths are `0`
+	 */
+	inline auto empty() const noexcept -> bool {
+		return //
+			_c_exec_opts.actions_length == 0 &&
+			_c_exec_opts.add_components_length == 0 &&
+			_c_exec_opts.update_components_length == 0 &&
+			_c_exec_opts.remove_components_length == 0;
+	}
+
 #ifdef __cpp_lib_ranges_zip
 	inline auto add_components_zip() {
 		return std::views::zip(add_components_entities(), add_components());
