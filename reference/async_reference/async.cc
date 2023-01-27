@@ -13,8 +13,10 @@ ecsact_async_request_id ecsact_async_connect(const char* connection_string) {
 }
 
 void ecsact_async_disconnect() {
-	async::reference->disconnect();
-	async::reference.reset();
+	if(async::reference) {
+		async::reference->disconnect();
+		async::reference.reset();
+	}
 }
 
 void ecsact_async_flush_events(
@@ -32,4 +34,8 @@ ecsact_async_request_id ecsact_async_enqueue_execution_options(
 	const ecsact_execution_options options
 ) {
 	return async::reference->enqueue_execution_options(options);
+}
+
+int32_t ecsact_async_get_current_tick() {
+	return async::reference->get_current_tick();
 }

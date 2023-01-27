@@ -7,6 +7,10 @@ void async_callbacks::add(const types::async_requests type) {
 
 void async_callbacks::invoke(const ecsact_async_events_collector* async_events
 ) {
+	if(requests.empty()) {
+		return;
+	}
+
 	if(async_events == nullptr) {
 		std::unique_lock lk(async_m);
 		requests.clear();

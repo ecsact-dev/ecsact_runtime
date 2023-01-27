@@ -208,12 +208,18 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
  */
 ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_create_entity)(void);
 
+/**
+ * Gets the current tick
+ */
+ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
+
 #define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
 	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
 	fn(ecsact_async_flush_events, __VA_ARGS__);              \
 	fn(ecsact_async_connect, __VA_ARGS__);                   \
 	fn(ecsact_async_disconnect, __VA_ARGS__);                \
-	fn(ecsact_async_create_entity, __VA_ARGS__);
+	fn(ecsact_async_create_entity, __VA_ARGS__);             \
+	fn(ecsact_async_get_current_tick, __VA_ARGS__);
 
 #undef ECSACT_ASYNC_API
 #undef ECSACT_ASYNC_API_FN

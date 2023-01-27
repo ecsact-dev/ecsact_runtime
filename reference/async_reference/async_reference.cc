@@ -217,6 +217,10 @@ ecsact_async_request_id async_reference::create_entity_request() {
 	return req_id;
 }
 
+int32_t async_reference::get_current_tick() {
+	return tick_manager.get_current_tick();
+}
+
 void async_reference::disconnect() {
 	is_connected = false;
 	if(execution_thread.joinable()) {

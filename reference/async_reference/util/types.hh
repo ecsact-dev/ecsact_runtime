@@ -43,6 +43,22 @@ struct cpp_execution_options {
 	std::vector<cpp_execution_component> updates;
 	std::vector<cpp_execution_component> removes;
 	std::vector<action_info>             actions;
+
+	bool has_value() {
+		if(adds.size() > 0) {
+			return true;
+		}
+		if(updates.size() > 0) {
+			return true;
+		}
+		if(removes.size() > 0) {
+			return true;
+		}
+		if(actions.size() > 0) {
+			return true;
+		}
+		return false;
+	}
 };
 
 struct pending_execution_options {

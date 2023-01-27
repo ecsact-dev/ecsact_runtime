@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <variant>
+#include <condition_variable>
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
@@ -33,6 +34,9 @@ public:
 	);
 
 	ecsact_async_request_id create_entity_request();
+
+	int32_t get_current_tick();
+
 	ecsact_async_request_id connect(const char* connection_string);
 
 	void disconnect();
