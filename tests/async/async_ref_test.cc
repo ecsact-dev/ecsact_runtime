@@ -606,3 +606,7 @@ TEST(AsyncRef, TryAction) {
 
 	ecsact_async_disconnect();
 }
+
+Test(AsyncRef, FlushNoEventsOrConnect) {
+	ecsact_async_flush_events(nullptr, nullptr);
+}

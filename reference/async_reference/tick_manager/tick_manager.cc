@@ -3,6 +3,8 @@
 
 #include "tick_manager.hh"
 
+using namespace ecsact::async_reference::detail;
+
 void tick_manager::add_pending_options(
 	const types::pending_execution_options& pending
 ) {

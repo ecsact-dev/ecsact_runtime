@@ -8,7 +8,7 @@
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/async.h"
 
-namespace types {
+namespace ecsact::async_reference::detail::types {
 
 struct callback_info {
 	ecsact_event        event;
@@ -69,4 +69,4 @@ struct pending_execution_options {
 using async_requests =
 	std::variant<ecsact_execute_systems_error, async_error, entity>;
 
-} // namespace types
+} // namespace ecsact::async_reference::detail::types

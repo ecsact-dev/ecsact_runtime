@@ -7,6 +7,8 @@
 
 #include "async_reference.hh"
 
+using namespace ecsact::async_reference::detail;
+
 struct parsed_connection_string {
 	std::string                        host;
 	std::map<std::string, std::string> options;
@@ -54,10 +56,10 @@ static auto parse_connection_string(std::string_view str)
 	return result;
 }
 
-ecsact_async_request_id async_reference::connect(const char* connection_string
+void async_reference::connect(
+	ecsact_async_request_id req_id,
+	const char*             connection_string
 ) {
-	auto req_id = next_request_id();
-
 	std::string connect_str(connection_string);
 
 	auto result = parse_connection_string(connect_str);
@@ -74,7 +76,7 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 	if(result.host != "good") {
 		is_connected = false;
 		is_connected_notified = false;
-		return req_id;
+		return;
 	}
 
 	if(tick_rate.count() == 0) {
@@ -84,21 +86,18 @@ ecsact_async_request_id async_reference::connect(const char* connection_string
 		};
 
 		async_callbacks.add(async_err);
-		return req_id;
+		return;
 	}
 
 	registry_id = ecsact_create_registry("async_reference_impl_reg");
 	is_connected = true;
 	execute_systems();
-
-	return req_id;
 }
 
-ecsact_async_request_id async_reference::enqueue_execution_options(
+void async_reference::enqueue_execution_options(
+	ecsact_async_request_id         req_id,
 	const ecsact_execution_options& options
 ) {
-	auto req_id = next_request_id();
-
 	if(is_connected == false && is_connected_notified == false) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
@@ -107,7 +106,7 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 
 		is_connected_notified = true;
 		async_callbacks.add(async_err);
-		return req_id;
+		return;
 	}
 
 	auto cpp_options = util::c_to_cpp_execution_options(options);
@@ -118,7 +117,7 @@ ecsact_async_request_id async_reference::enqueue_execution_options(
 	};
 
 	tick_manager.add_pending_options(pending_options);
-	return req_id;
+	return;
 }
 
 void async_reference::execute_systems() {
@@ -189,18 +188,15 @@ void async_reference::execute_systems() {
 	});
 }
 
-void async_reference::flush_events(
-	const ecsact_execution_events_collector* execution_events,
-	const ecsact_async_events_collector*     async_events
+void async_reference::invoke_execution_events(
+	const ecsact_execution_events_collector* execution_evc
 ) {
-	async_callbacks.invoke(async_events);
 	if(registry_id) {
-		exec_callbacks.invoke(execution_events, *registry_id);
+		exec_callbacks.invoke(execution_evc, *registry_id);
 	}
 }
 
-ecsact_async_request_id async_reference::create_entity_request() {
-	auto req_id = next_request_id();
+void async_reference::create_entity_request(ecsact_async_request_id req_id) {
 	if(is_connected == false && is_connected_notified == false) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
@@ -210,11 +206,10 @@ ecsact_async_request_id async_reference::create_entity_request() {
 		async_callbacks.add(async_err);
 		is_connected_notified = true;
 
-		return req_id;
+		return;
 	}
 
 	entity_manager.request_entity(req_id);
-	return req_id;
 }
 
 int32_t async_reference::get_current_tick() {
@@ -226,10 +221,4 @@ void async_reference::disconnect() {
 	if(execution_thread.joinable()) {
 		execution_thread.join();
 	}
-}
-
-ecsact_async_request_id async_reference::next_request_id() {
-	return static_cast<ecsact_async_request_id>(
-		_last_request_id.fetch_add(1, std::memory_order_relaxed)
-	);
 }

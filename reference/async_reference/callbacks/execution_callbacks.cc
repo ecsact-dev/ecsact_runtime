@@ -1,5 +1,7 @@
 #include "execution_callbacks.hh"
 
+using namespace ecsact::async_reference::detail;
+
 execution_callbacks::execution_callbacks() {
 	collector.init_callback = &execution_callbacks::init_callback;
 	collector.update_callback = &execution_callbacks::update_callback;
@@ -158,7 +160,7 @@ void execution_callbacks::init_callback(
 		}
 	}
 
-	auto info = types::callback_info{};
+	auto info = detail::types::callback_info{};
 
 	info.event = event;
 	info.entity_id = entity_id;
@@ -175,7 +177,7 @@ void execution_callbacks::update_callback(
 ) {
 	auto self = static_cast<execution_callbacks*>(callback_user_data);
 
-	auto info = types::callback_info{};
+	auto info = detail::types::callback_info{};
 
 	info.event = event;
 	info.entity_id = entity_id;
