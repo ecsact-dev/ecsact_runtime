@@ -340,7 +340,8 @@ typedef struct ecsact_execution_options {
 	int create_entities_length;
 
 	/**
-	 * Sequential list of lengths for each entity in `create_entities_components`.
+	 * Sequential list of component lengths for each entity in
+	 * `create_entities_components`.
 	 */
 	int* create_entities_components_length;
 
