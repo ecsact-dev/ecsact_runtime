@@ -1,9 +1,85 @@
 #pragma once
 
 #include <type_traits>
+#include <span>
+#if __has_include(<ranges>)
+#	include <ranges>
+#endif
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
+
+class execution_options_view {
+	ecsact_execution_options& _c_exec_opts;
+
+public:
+	inline execution_options_view(ecsact_execution_options& options)
+		: _c_exec_opts(options) {
+	}
+
+	inline auto add_components() -> std::span<ecsact_component> {
+		return std::span(
+			_c_exec_opts.add_components,
+			static_cast<size_t>(_c_exec_opts.add_components_length)
+		);
+	}
+
+	inline auto add_components_entities() -> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.add_components_entities,
+			static_cast<size_t>(_c_exec_opts.add_components_length)
+		);
+	}
+
+	inline auto update_components() -> std::span<ecsact_component> {
+		return std::span(
+			_c_exec_opts.update_components,
+			static_cast<size_t>(_c_exec_opts.update_components_length)
+		);
+	}
+
+	inline auto update_components_entities() -> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.update_components_entities,
+			static_cast<size_t>(_c_exec_opts.update_components_length)
+		);
+	}
+
+	inline auto remove_components() -> std::span<ecsact_component_id> {
+		return std::span(
+			_c_exec_opts.remove_components,
+			static_cast<size_t>(_c_exec_opts.remove_components_length)
+		);
+	}
+
+	inline auto remove_components_entities() -> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.remove_components_entities,
+			static_cast<size_t>(_c_exec_opts.remove_components_length)
+		);
+	}
+
+	inline auto actions() -> std::span<ecsact_action> {
+		return std::span(
+			_c_exec_opts.actions,
+			static_cast<size_t>(_c_exec_opts.actions_length)
+		);
+	}
+
+#ifdef __cpp_lib_ranges_zip
+	inline auto add_components_zip() {
+		return std::views::zip(add_components_entities(), add_components());
+	}
+
+	inline auto update_components_zip() {
+		return std::views::zip(update_components_entities(), update_components());
+	}
+
+	inline auto remove_components_zip() {
+		return std::views::zip(remove_components_entities(), remove_components());
+	}
+#endif
+};
 
 class registry {
 	ecsact_registry_id _id;
