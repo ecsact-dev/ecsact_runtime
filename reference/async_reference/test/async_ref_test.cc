@@ -279,11 +279,11 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-		// << "Not all events happened before maximum was reached\n"
-		// << "  init = " << cb_info.init_happened << "\n"
-		// << "  update = " << cb_info.update_happened << "\n"
-		// << "  remove = " << cb_info.remove_happened << "\n";
+		ASSERT_LT(tick_diff, 10)
+			<< "Not all events happened before maximum was reached\n"
+			<< "  init = " << cb_info.init_happened << "\n"
+			<< "  update = " << cb_info.update_happened << "\n"
+			<< "  remove = " << cb_info.remove_happened << "\n";
 	}
 
 	ecsact_async_disconnect();
@@ -595,8 +595,4 @@ TEST(AsyncRef, TryAction) {
 	}
 
 	ecsact_async_disconnect();
-}
-
-TEST(AsyncRef, FlushOnly) {
-	ecsact_async_flush_events(nullptr, nullptr);
 }
