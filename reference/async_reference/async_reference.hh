@@ -19,17 +19,13 @@
 #include "reference/async_reference/callbacks/execution_callbacks.hh"
 #include "reference/async_reference/callbacks/async_callbacks.hh"
 #include "reference/async_reference/entity_manager/entity_manager.hh"
-#include "reference/async_reference/request_id_factory/request_id_factory.hh"
 #include "request_id_factory/request_id_factory.hh"
 
 namespace ecsact::async_reference::detail {
 class async_reference {
 public:
-	inline async_reference(
-		request_id_factory& request_id_factory,
-		async_callbacks&    async_callbacks
-	)
-		: request_id_factory(request_id_factory), async_callbacks(async_callbacks) {
+	inline async_reference(async_callbacks& async_callbacks)
+		: async_callbacks(async_callbacks) {
 	}
 
 	inline ~async_reference() {
@@ -58,12 +54,10 @@ private:
 
 	std::optional<ecsact_registry_id> registry_id;
 
-	tick_manager        tick_manager;
-	execution_callbacks exec_callbacks;
-	entity_manager      entity_manager;
-
-	detail::request_id_factory& request_id_factory;
-	detail::async_callbacks&    async_callbacks;
+	tick_manager             tick_manager;
+	execution_callbacks      exec_callbacks;
+	entity_manager           entity_manager;
+	detail::async_callbacks& async_callbacks;
 
 	std::thread execution_thread;
 	std::mutex  execution_m;

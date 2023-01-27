@@ -16,7 +16,7 @@ static auto reference = std::optional<detail::async_reference>{};
 
 ecsact_async_request_id ecsact_async_connect(const char* connection_string) {
 	auto req_id = request_id_factory.next_id();
-	reference.emplace(request_id_factory, async_callbacks);
+	reference.emplace(async_callbacks);
 	reference->connect(req_id, connection_string);
 	return req_id;
 }
