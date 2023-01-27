@@ -17,11 +17,17 @@ void execution_callbacks::invoke(
 	const ecsact_execution_events_collector* execution_events,
 	ecsact_registry_id                       registry_id
 ) {
+	if(!has_callbacks()) {
+		return;
+	}
+
 	if(execution_events == nullptr) {
-		std::unique_lock lk(execution_m);
-		init_callbacks_info.clear();
-		update_callbacks_info.clear();
-		remove_callbacks_info.clear();
+		if(has_callbacks()) {
+			std::unique_lock lk(execution_m);
+			init_callbacks_info.clear();
+			update_callbacks_info.clear();
+			remove_callbacks_info.clear();
+		}
 		return;
 	}
 
@@ -103,6 +109,22 @@ void execution_callbacks::invoke(
 			}
 		}
 	}
+}
+
+bool execution_callbacks::has_callbacks() {
+	if(init_callbacks_info.size() > 0) {
+		return true;
+	}
+
+	if(update_callbacks_info.size() > 0) {
+		return true;
+	}
+
+	if(remove_callbacks_info.size() > 0) {
+		return true;
+	}
+
+	return false;
 }
 
 void execution_callbacks::init_callback(

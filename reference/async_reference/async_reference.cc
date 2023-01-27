@@ -135,6 +135,9 @@ void async_reference::execute_systems() {
 		while(is_connected == true) {
 			auto async_err = tick_manager.validate_pending_options();
 
+			// TESTING WITHOUT OPTIMIZATION
+			// std::this_thread::sleep_for(tick_rate);
+
 			const auto sleep_duration = tick_rate - execution_duration;
 
 			auto wait_start = clock::now();
@@ -215,6 +218,10 @@ ecsact_async_request_id async_reference::create_entity_request() {
 
 	entity_manager.request_entity(req_id);
 	return req_id;
+}
+
+int32_t async_reference::get_current_tick() {
+	return tick_manager.get_current_tick();
 }
 
 void async_reference::disconnect() {
