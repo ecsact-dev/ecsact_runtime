@@ -211,7 +211,7 @@ ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_create_entity)(void);
 /**
  * Gets the current tick
  */
-ECSACT_ASYNC_API_FN(int, ecsact_async_get_current_tick)(void);
+ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
 
 #define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
 	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
