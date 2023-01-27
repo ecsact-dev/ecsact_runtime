@@ -135,9 +135,6 @@ void async_reference::execute_systems() {
 		while(is_connected == true) {
 			auto async_err = tick_manager.validate_pending_options();
 
-			// TESTING WITHOUT OPTIMIZATION
-			// std::this_thread::sleep_for(tick_rate);
-
 			const auto sleep_duration = tick_rate - execution_duration;
 
 			auto wait_start = clock::now();
