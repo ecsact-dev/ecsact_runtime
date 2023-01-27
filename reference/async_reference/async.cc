@@ -69,5 +69,8 @@ ecsact_async_request_id ecsact_async_enqueue_execution_options(
 }
 
 int32_t ecsact_async_get_current_tick() {
-	return async::reference->get_current_tick();
+	if(reference) {
+		return reference->get_current_tick();
+	}
+	return 0;
 }
