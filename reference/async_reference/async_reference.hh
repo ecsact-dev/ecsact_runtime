@@ -57,10 +57,6 @@ private:
 	std::atomic_bool is_connected = false;
 	std::atomic_bool is_connected_notified = false;
 
-	std::condition_variable execute_cv;
-
-	std::atomic_bool has_executed = false;
-
 	std::chrono::milliseconds tick_rate = {};
 
 	ecsact_async_request_id next_request_id();
