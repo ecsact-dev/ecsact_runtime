@@ -333,6 +333,36 @@ typedef struct ecsact_execution_options {
 	 * Sequential list of actions to be executed.
 	 */
 	ecsact_action* actions;
+
+	/**
+	 * Length of entities to be created.
+	 */
+	int create_entities_length;
+
+	/**
+	 * Sequential list of lengths for each entity in `create_entities_components`.
+	 */
+	int* create_entities_components_length;
+
+	/**
+	 * A sequential 2D list that represents a set of entities with a list of
+	 * components. Entity length is determined by `create_entities_length`. The
+	 * length of components for each entity is determined by
+	 * `create_entities_components_length`.
+	 */
+	ecsact_component** create_entities_components;
+
+	/**
+	 * Length of `destroy_entities` sequential list.
+	 */
+	int destroy_entities_length;
+
+	/**
+	 * A sequentual list of entity IDs that will be destroyed along with its
+	 * components. Length is determined by `destroy_entities_length`.
+	 */
+	ecsact_entity_id* destroy_entities;
+
 } ecsact_execution_options;
 
 typedef enum {
