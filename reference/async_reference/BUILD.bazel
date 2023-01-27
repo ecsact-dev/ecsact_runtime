@@ -39,3 +39,19 @@ cc_library(
         "//:async",
     ],
 )
+
+filegroup(
+    name = "sources",
+    srcs = glob([
+        "**/*.cc",
+        "**/*.hh",
+    ]) + [
+        "//reference/async_reference/callbacks:callback_source",
+        "//reference/async_reference/detail/c_execution_options:c_execution_source",
+        "//reference/async_reference/entity_manager:entity_source",
+        "//reference/async_reference/tick_manager:tick_source",
+        "//reference/async_reference/util:util_source",
+        "//reference/serialize_reference:serialize_source",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -12,3 +12,14 @@ cc_library(
         "//reference/async_reference/util:types",
     ],
 )
+
+filegroup(
+    name = "tick_source",
+    srcs = glob([
+        "**/*.hh",
+        "**/*.cc",
+    ]),
+    visibility = [
+        "//reference/async_reference:__pkg__",
+    ],
+)

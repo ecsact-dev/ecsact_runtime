@@ -33,3 +33,14 @@ cc_library(
         "//:core",
     ],
 )
+
+filegroup(
+    name = "util_source",
+    srcs = glob([
+        "**/*.hh",
+        "**/*.cc",
+    ]),
+    visibility = [
+        "//reference/async_reference:__pkg__",
+    ],
+)
