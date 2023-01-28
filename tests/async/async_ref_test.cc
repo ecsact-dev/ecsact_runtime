@@ -607,11 +607,11 @@ TEST(AsyncRef, TryAction) {
 	ecsact_async_disconnect();
 }
 
-Test(AsyncRef, FlushNoEventsOrConnect) {
+TEST(AsyncRef, FlushNoEventsOrConnect) {
 	ecsact_async_flush_events(nullptr, nullptr);
 }
 
-Test(AsyncRef, EnqueueErrorBeforeConnect) {
+TEST(AsyncRef, EnqueueErrorBeforeConnect) {
 	// It doesn't matter what is in our options. We should get an error regardless
 	// of it's content if we aren't connected.
 	auto        options = ecsact_execution_options{};
