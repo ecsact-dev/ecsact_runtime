@@ -22,15 +22,29 @@
 			"group": "build"
 		},
 		{
-			"label": "build @ecsact_runtime_serialize_test//:serialize",
+			"label": "build @ecsact_runtime_tests//serialize",
 			"command": "bazel",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/tests/serialize"
+				"cwd": "${workspaceFolder}/tests"
 			},
 			"args": [
 				"build",
-				"//:serialize"
+				"//serialize"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "build @ecsact_runtime_tests//async",
+			"command": "bazel",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/tests"
+			},
+			"args": [
+				"build",
+				"//async"
 			],
 			"group": "build",
 			"problemMatcher": []
