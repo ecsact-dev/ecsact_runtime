@@ -1,5 +1,7 @@
 #include "async_callbacks.hh"
 
+using namespace ecsact::async_reference::detail;
+
 void async_callbacks::add(const types::async_requests type) {
 	std::unique_lock lk(async_m);
 	requests.push_back(type);

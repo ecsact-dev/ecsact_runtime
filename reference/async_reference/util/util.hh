@@ -11,7 +11,7 @@
 #include "ecsact/runtime/serialize.hh"
 #include "reference/async_reference/detail/c_execution_options/c_execution_options.hh"
 
-namespace util {
+namespace ecsact::async_reference::detail::util {
 
 auto component_to_component_id_view(auto& components_view) {
 	return std::ranges::views::transform(
@@ -108,4 +108,4 @@ void merge_options(
 	const types::pending_execution_options& other_pending
 );
 
-} // namespace util
+} // namespace ecsact::async_reference::detail::util

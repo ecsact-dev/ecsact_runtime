@@ -8,6 +8,8 @@
 #include "reference/async_reference/util/types.hh"
 #include "reference/async_reference/util/util.hh"
 
+namespace ecsact::async_reference::detail {
+
 class tick_manager {
 public:
 	void add_pending_options(const types::pending_execution_options& options);
@@ -28,3 +30,5 @@ private:
 		types::cpp_execution_options& validated_options
 	);
 };
+
+} // namespace ecsact::async_reference::detail

@@ -621,3 +621,35 @@ TEST(AsyncRef, TryAction) {
 
 	ecsact_async_disconnect();
 }
+
+TEST(AsyncRef, FlushNoEventsOrConnect) {
+	ecsact_async_flush_events(nullptr, nullptr);
+}
+
+TEST(AsyncRef, EnqueueErrorBeforeConnect) {
+	// It doesn't matter what is in our options. We should get an error regardless
+	// of it's content if we aren't connected.
+	auto        options = ecsact_execution_options{};
+	static auto req_id = ecsact_async_enqueue_execution_options(options);
+	static auto async_error_happened = false;
+
+	auto async_evc = ecsact_async_events_collector{};
+	async_evc.async_error_callback = //
+		[](
+			ecsact_async_error       async_err,
+			int                      request_ids_length,
+			ecsact_async_request_id* request_ids,
+			void*                    callback_user_data
+		) {
+			async_error_happened = true;
+			ASSERT_EQ(request_ids_length, 1);
+			ASSERT_EQ(request_ids[0], req_id);
+			ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
+			ASSERT_EQ(callback_user_data, nullptr);
+		};
+
+	// The reference implementation gives an error right away if not connected
+	// but a different implementation of the async API may delay the error.
+	ecsact_async_flush_events(nullptr, &async_evc);
+	ASSERT_TRUE(async_error_happened);
+}
