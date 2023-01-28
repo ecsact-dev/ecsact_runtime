@@ -1,2 +1,2 @@
-import %workspace%/../../.bazelrc
+import %workspace%/../.bazelrc
 try-import %workspace%/user.bazelrc
