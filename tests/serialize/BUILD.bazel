@@ -1,6 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@rules_ecsact//ecsact:defs.bzl", "ecsact_codegen")
-load("//bazel:copts.bzl", "copts")
+load("@ecsact_runtime//bazel:copts.bzl", "copts")
 
 ecsact_codegen(
     name = "serialize_test_generated",

@@ -5,10 +5,10 @@ build --incompatible_enable_cc_toolchain_resolution
 build --incompatible_strict_action_env
 build --enable_runfiles
 
-build:windows --platforms=//bazel/platforms:windows
-build:windows --host_platform=//bazel/platforms:windows
+build:windows --platforms=@ecsact_runtime//bazel/platforms:windows
+build:windows --host_platform=@ecsact_runtime//bazel/platforms:windows
 
-build:linux --platforms=//bazel/platforms:linux
+build:linux --platforms=@ecsact_runtime//bazel/platforms:linux
 build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
 
 common:ci --announce_rc

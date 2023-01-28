@@ -8,7 +8,7 @@
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/async.h"
 
-namespace types {
+namespace ecsact::async_reference::detail::types {
 
 struct callback_info {
 	ecsact_event        event;
@@ -43,6 +43,22 @@ struct cpp_execution_options {
 	std::vector<cpp_execution_component> updates;
 	std::vector<cpp_execution_component> removes;
 	std::vector<action_info>             actions;
+
+	bool has_value() {
+		if(adds.size() > 0) {
+			return true;
+		}
+		if(updates.size() > 0) {
+			return true;
+		}
+		if(removes.size() > 0) {
+			return true;
+		}
+		if(actions.size() > 0) {
+			return true;
+		}
+		return false;
+	}
 };
 
 struct pending_execution_options {
@@ -53,4 +69,4 @@ struct pending_execution_options {
 using async_requests =
 	std::variant<ecsact_execute_systems_error, async_error, entity>;
 
-} // namespace types
+} // namespace ecsact::async_reference::detail::types

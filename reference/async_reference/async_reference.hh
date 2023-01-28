@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <variant>
+#include <condition_variable>
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
@@ -18,22 +19,33 @@
 #include "reference/async_reference/callbacks/execution_callbacks.hh"
 #include "reference/async_reference/callbacks/async_callbacks.hh"
 #include "reference/async_reference/entity_manager/entity_manager.hh"
+#include "request_id_factory/request_id_factory.hh"
 
+namespace ecsact::async_reference::detail {
 class async_reference {
 public:
-	ecsact_async_request_id enqueue_execution_options(
+	inline async_reference(async_callbacks& async_callbacks)
+		: async_callbacks(async_callbacks) {
+	}
+
+	inline ~async_reference() {
+	}
+
+	void enqueue_execution_options(
+		ecsact_async_request_id         req_id,
 		const ecsact_execution_options& options
 	);
 
 	void execute_systems();
 
-	void flush_events(
-		const ecsact_execution_events_collector* execution_events,
-		const ecsact_async_events_collector*     async_events
+	void invoke_execution_events(
+		const ecsact_execution_events_collector* execution_evc
 	);
 
-	ecsact_async_request_id create_entity_request();
-	ecsact_async_request_id connect(const char* connection_string);
+	int32_t get_current_tick();
+
+	void create_entity_request(ecsact_async_request_id req_id);
+	void connect(ecsact_async_request_id req_id, const char* connection_string);
 
 	void disconnect();
 
@@ -42,10 +54,10 @@ private:
 
 	std::optional<ecsact_registry_id> registry_id;
 
-	tick_manager        tick_manager;
-	execution_callbacks exec_callbacks;
-	async_callbacks     async_callbacks;
-	entity_manager      entity_manager;
+	tick_manager             tick_manager;
+	execution_callbacks      exec_callbacks;
+	entity_manager           entity_manager;
+	detail::async_callbacks& async_callbacks;
 
 	std::thread execution_thread;
 	std::mutex  execution_m;
@@ -54,6 +66,5 @@ private:
 	std::atomic_bool is_connected_notified = false;
 
 	std::chrono::milliseconds tick_rate = {};
-
-	ecsact_async_request_id next_request_id();
 };
+}; // namespace ecsact::async_reference::detail

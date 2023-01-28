@@ -14,6 +14,7 @@ exports_files([
     "ecsact/runtime/static.h",
     "ecsact/runtime.h",
     "codegen_plugin.bzl",
+    "ecsact/codegen/ecsact_codegen_plugin_test.cc",
     "index.bzl",
 ])
 
@@ -96,7 +97,7 @@ cc_library(
         "ecsact/runtime/serialize.hh",
     ],
     copts = copts,
-    deps = [":common"],
+    deps = [":common", ":core"],
 )
 
 cc_library(

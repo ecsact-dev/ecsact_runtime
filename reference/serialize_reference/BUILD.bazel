@@ -13,3 +13,14 @@ cc_library(
         "//:serialize",
     ],
 )
+
+filegroup(
+    name = "serialize_source",
+    srcs = glob([
+        "**/*.cc",
+        "**/*.hh",
+    ]),
+    visibility = [
+        "//reference/async_reference:__pkg__",
+    ],
+)

@@ -6,7 +6,7 @@
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/async.h"
 
-namespace detail {
+namespace ecsact::async_reference::detail {
 
 template<typename T>
 struct data_info {
@@ -37,4 +37,5 @@ private:
 	std::vector<ecsact_component> adds;
 	std::vector<ecsact_component> updates;
 };
-} // namespace detail
+
+} // namespace ecsact::async_reference::detail

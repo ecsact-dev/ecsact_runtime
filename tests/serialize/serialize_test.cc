@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include <vector>
 #include "ecsact/runtime/serialize.hh"
-#include "serialize_test_generated/serialize_test.ecsact.hh"
+#include "serialize/serialize_test_generated/serialize_test.ecsact.hh"
 
 TEST(Serialize, Correctness) {
 	auto comp = serialize_test::ExampleComponent{};

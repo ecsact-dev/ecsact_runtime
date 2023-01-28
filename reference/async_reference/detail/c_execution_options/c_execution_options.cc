@@ -1,6 +1,8 @@
 #include "c_execution_options.hh"
 
-ecsact_execution_options detail::c_execution_options::c() {
+using namespace ecsact::async_reference::detail;
+
+ecsact_execution_options c_execution_options::c() {
 	for(auto& action_info : actions_info) {
 		ecsact_action action;
 		action.action_data = action_info.data.data();

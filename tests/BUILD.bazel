@@ -1,11 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//bazel:copts.bzl", "copts")
-load("//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
-
-exports_files(
-    ["ecsact_codegen_plugin_test.cc"],
-    visibility = ["//visibility:public"],
-)
+load("@ecsact_runtime//bazel:copts.bzl", "copts")
+load("@ecsact_runtime//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
 
 cc_ecsact_codegen_plugin(
     name = "empty_codegen_plugin",
@@ -19,7 +14,7 @@ cc_test(
     srcs = ["test.cc"],
     copts = copts,
     deps = [
-        "//:ecsact_runtime",
+        "@ecsact_runtime",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],

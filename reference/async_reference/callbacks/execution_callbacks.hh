@@ -8,6 +8,7 @@
 #include "ecsact/runtime/serialize.hh"
 #include "reference/async_reference/util/types.hh"
 
+namespace ecsact::async_reference::detail {
 class execution_callbacks {
 public:
 	execution_callbacks();
@@ -33,6 +34,8 @@ private:
 	std::vector<types::callback_info> update_callbacks_info;
 	std::vector<types::callback_info> remove_callbacks_info;
 
+	bool has_callbacks();
+
 	static void init_callback(
 		ecsact_event        event,
 		ecsact_entity_id    entity_id,
@@ -57,3 +60,4 @@ private:
 		void*               callback_user_data
 	);
 };
+} // namespace ecsact::async_reference::detail

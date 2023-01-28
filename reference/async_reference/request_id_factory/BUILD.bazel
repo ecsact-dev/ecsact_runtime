@@ -1,0 +1,9 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
+
+cc_library(
+    name = "request_id_factory",
+    hdrs = ["request_id_factory.hh"],
+    copts = copts,
+    visibility = ["//visibility:public"],
+)
