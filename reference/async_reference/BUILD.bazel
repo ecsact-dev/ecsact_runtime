@@ -14,6 +14,7 @@ cc_library(
     srcs = ["async_reference.cc"],
     hdrs = ["async_reference.hh"],
     copts = copts,
+    linkstatic = True,
     visibility = ["//visibility:public"],
     deps = [
         "//:async",

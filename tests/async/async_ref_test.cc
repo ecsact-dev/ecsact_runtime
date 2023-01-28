@@ -38,6 +38,15 @@ void assert_time_past(
 	ASSERT_LT(time, time_to_assert);
 }
 
+void assert_never_error(
+	ecsact_async_error       async_err,
+	int                      request_ids_length,
+	ecsact_async_request_id* request_ids,
+	void*                    callback_user_data
+) {
+	ASSERT_TRUE(false) << "Unexpected Ecsact Async Error";
+}
+
 TEST(AsyncRef, ConnectBad) {
 	auto connect_req_id = ecsact_async_connect("bad");
 
@@ -486,6 +495,7 @@ TEST(AsyncRef, TryAction) {
 	ecsact_async_events_collector entity_async_evc{};
 	entity_async_evc.async_entity_callback = entity_cb;
 	entity_async_evc.async_entity_callback_user_data = &cb_info;
+	entity_async_evc.async_error_callback = &assert_never_error;
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
