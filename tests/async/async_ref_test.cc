@@ -1,14 +1,14 @@
 #include <array>
-#include <thread>
-#include <chrono>
 #include <atomic>
+#include <chrono>
+#include <thread>
 
 #include "gtest/gtest.h"
 
-#include "ecsact/runtime/async.h"
-#include "ecsact/runtime/dynamic.h"
 #include "async_test.ecsact.hh"
 #include "async_test.ecsact.systems.hh"
+#include "ecsact/runtime/async.h"
+#include "ecsact/runtime/dynamic.h"
 
 using namespace std::chrono_literals;
 using std::chrono::duration_cast;
@@ -38,14 +38,40 @@ void assert_time_past(
 	ASSERT_LT(time, time_to_assert);
 }
 
-void assert_never_error(
+static bool _error_happened = false;
+
+void assert_never_async_error(
 	ecsact_async_error       async_err,
 	int                      request_ids_length,
 	ecsact_async_request_id* request_ids,
 	void*                    callback_user_data
 ) {
-	ASSERT_TRUE(false) << "Unexpected Ecsact Async Error";
+	_error_happened = true;
+	EXPECT_EQ(async_err, ECSACT_ASYNC_OK) //
+		<< "Unexpected Ecsact Async Error";
 }
+
+void assert_never_system_error(
+	ecsact_execute_systems_error execute_err,
+	void*                        callback_user_data
+) {
+	_error_happened = true;
+	EXPECT_EQ(execute_err, ECSACT_EXEC_SYS_OK) //
+		<< "Unexpected Ecsact System Error";
+}
+
+void flush_events_never_error(const ecsact_execution_events_collector* exec_evc
+) {
+	_error_happened = false;
+	auto async_evc = ecsact_async_events_collector{};
+	async_evc.async_error_callback = &assert_never_async_error;
+	async_evc.system_error_callback = &assert_never_system_error;
+	ecsact_async_flush_events(exec_evc, &async_evc);
+}
+
+#define FLUSH_EVENTS_NEVER_ERROR(exec_evc) \
+	flush_events_never_error(exec_evc);      \
+	ASSERT_FALSE(_error_happened)
 
 TEST(AsyncRef, ConnectBad) {
 	auto connect_req_id = ecsact_async_connect("bad");
@@ -495,7 +521,7 @@ TEST(AsyncRef, TryAction) {
 	ecsact_async_events_collector entity_async_evc{};
 	entity_async_evc.async_entity_callback = entity_cb;
 	entity_async_evc.async_entity_callback_user_data = &cb_info;
-	entity_async_evc.async_error_callback = &assert_never_error;
+	entity_async_evc.async_error_callback = &assert_never_async_error;
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
@@ -560,8 +586,8 @@ TEST(AsyncRef, TryAction) {
 	ecsact_async_enqueue_execution_options(options);
 
 	start_tick = ecsact_async_get_current_tick();
-	while(!cb_info.wait) {
-		ecsact_async_flush_events(&evc, nullptr);
+	while(!init_cb_info.wait) {
+		FLUSH_EVENTS_NEVER_ERROR(&evc);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
 		ASSERT_LT(tick_diff, 10);
@@ -572,6 +598,7 @@ TEST(AsyncRef, TryAction) {
 	my_try_entity.my_entity = cb_info.entity;
 
 	// Declare an action, add a check to see it's running
+	reached_system = false;
 	ecsact_set_system_execution_impl(
 		ecsact_id_cast<ecsact_system_like_id>(async_test::TryEntity::id),
 		[](ecsact_system_execution_context* context) {
@@ -599,6 +626,7 @@ TEST(AsyncRef, TryAction) {
 
 	start_tick = ecsact_async_get_current_tick();
 	while(reached_system != true) {
+		FLUSH_EVENTS_NEVER_ERROR(nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
 		ASSERT_LT(tick_diff, 10);

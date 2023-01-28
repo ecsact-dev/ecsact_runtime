@@ -19,19 +19,35 @@
 			"preLaunchTask": "build //scripts:check_module_header"
 		},
 		{
-			"name": "test @ecsact_runtime_serialize_test//:serialize",
+			"name": "test @ecsact_runtime_tests//serialize",
 			"request": "launch",
-			"program": "${workspaceFolder}/tests/serialize/bazel-bin/serialize",
-			"cwd": "${workspaceFolder}/tests/serialize",
+			"program": "${workspaceFolder}/tests/bazel-bin/serialize/serialize",
+			"cwd": "${workspaceFolder}/tests",
 			"args": [],
 			"type": "cppdbg",
 			"windows": {
 				"type": "cppvsdbg",
-				"program": "${workspaceFolder}/tests/serialize/bazel-bin/serialize.exe",
+				"program": "${workspaceFolder}/tests/bazel-bin/serialize/serialize.exe",
 			},
-			"preLaunchTask": "build @ecsact_runtime_serialize_test//:serialize",
+			"preLaunchTask": "build @ecsact_runtime_tests//serialize",
 			"sourceFileMap": {
-				"C:/users/austin/_bazel_austin/7knza6r5/execroot/ecsact_runtime_serialize_test": "${workspaceFolder}/tests/serialize"
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}/tests"
+			}
+		},
+		{
+			"name": "test @ecsact_runtime_tests//async",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/bazel-bin/async/async",
+			"cwd": "${workspaceFolder}/tests",
+			"args": [],
+			"type": "cppdbg",
+			"windows": {
+				"type": "cppvsdbg",
+				"program": "${workspaceFolder}/tests/bazel-bin/async/async.exe",
+			},
+			"preLaunchTask": "build @ecsact_runtime_tests//async",
+			"sourceFileMap": {
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}/tests"
 			}
 		}
 	]
