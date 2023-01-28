@@ -5,6 +5,7 @@
 #include <vector>
 #include <type_traits>
 #include "ecsact/runtime/serialize.h"
+#include "ecsact/runtime/core.h"
 
 namespace ecsact {
 

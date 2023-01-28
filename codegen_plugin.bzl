@@ -130,7 +130,7 @@ def cc_ecsact_codegen_plugin(name = None, srcs = [], deps = [], defines = [], no
     if not no_validate_test:
         cc_test(
             name = "{}__validate".format(name),
-            srcs = ["@ecsact_runtime//tests:ecsact_codegen_plugin_test.cc"],
+            srcs = ["@ecsact_runtime//:ecsact/codegen/ecsact_codegen_plugin_test.cc"],
             args = ["$(rootpath :{}_bin)".format(name)],
             copts = _copts,
             data = [":{}_bin".format(name)],
