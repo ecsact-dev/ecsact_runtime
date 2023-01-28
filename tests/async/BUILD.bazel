@@ -25,22 +25,22 @@ ecsact_codegen(
 
 cc_test(
     name = "async",
-    copts = copts,
     srcs = [
         "async_ref_test.cc",
         ":async_test_support_generated_headers",
+        "@ecsact_runtime//reference/async_reference:async.cc",
         "@ecsact_runtime//reference/async_reference:async_reference.cc",
         "@ecsact_runtime//reference/async_reference:async_reference.hh",
-        "@ecsact_runtime//reference/async_reference:async.cc",
     ],
+    copts = copts,
     deps = [
         ":async_test_core_module_runtime",
-        "@ecsact_runtime//:core",
-        "@ecsact_runtime//:async",
-        "@ecsact_runtime//:dynamic",
-        "@ecsact_runtime//reference/async_reference:async",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
+        "@ecsact_runtime//:async",
+        "@ecsact_runtime//:core",
+        "@ecsact_runtime//:dynamic",
+        "@ecsact_runtime//reference/async_reference:async",
         "@ecsact_runtime//reference/serialize_reference",
     ],
 )

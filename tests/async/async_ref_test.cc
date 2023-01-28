@@ -497,7 +497,7 @@ TEST(AsyncRef, TryAction) {
 
 	ecsact_async_connect("good?tick_rate=25");
 
-	auto entity_request = ecsact_async_create_entity();
+	static auto entity_request = ecsact_async_create_entity();
 
 	struct entity_cb_info {
 		ecsact_entity_id entity;
@@ -512,15 +512,13 @@ TEST(AsyncRef, TryAction) {
 			ecsact_async_request_id request_id,
 			void*                   callback_user_data
 		) {
-			auto& entity_info = *static_cast<entity_cb_info*>(callback_user_data);
-
-			entity_info.wait = true;
-			entity_info.entity = entity_id;
+			cb_info.wait = true;
+			cb_info.entity = entity_id;
+			ASSERT_EQ(entity_request, request_id);
 		};
 
 	ecsact_async_events_collector entity_async_evc{};
 	entity_async_evc.async_entity_callback = entity_cb;
-	entity_async_evc.async_entity_callback_user_data = &cb_info;
 	entity_async_evc.async_error_callback = &assert_never_async_error;
 
 	auto start_tick = ecsact_async_get_current_tick();
@@ -531,16 +529,10 @@ TEST(AsyncRef, TryAction) {
 		ASSERT_LT(tick_diff, 10);
 	}
 
-	struct callback_info {
-		bool wait = false;
-	};
-
-	callback_info init_cb_info{};
-
 	// Prepare the events collector for the flush to make sure we got all the
 	// events we expected.
+	cb_info.wait = false;
 	auto evc = ecsact_execution_events_collector{};
-	evc.init_callback_user_data = &init_cb_info;
 	evc.init_callback = //
 		[](
 			ecsact_event        event,
@@ -548,12 +540,7 @@ TEST(AsyncRef, TryAction) {
 			ecsact_component_id component_id,
 			const void*         component_data,
 			void*               callback_user_data
-		) {
-			auto  wait_end = clock::now();
-			auto& info = *static_cast<callback_info*>(callback_user_data);
-
-			info.wait = true;
-		};
+		) { cb_info.wait = true; };
 
 	// Declare components required for the action
 	async_test::NeededComponent my_needed_component{};
@@ -586,7 +573,7 @@ TEST(AsyncRef, TryAction) {
 	ecsact_async_enqueue_execution_options(options);
 
 	start_tick = ecsact_async_get_current_tick();
-	while(!init_cb_info.wait) {
+	while(!cb_info.wait) {
 		FLUSH_EVENTS_NEVER_ERROR(&evc);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -622,7 +609,7 @@ TEST(AsyncRef, TryAction) {
 	options.actions = actions.data();
 	options.actions_length = actions.size();
 
-	auto options_request = ecsact_async_enqueue_execution_options(options);
+	ecsact_async_enqueue_execution_options(options);
 
 	start_tick = ecsact_async_get_current_tick();
 	while(reached_system != true) {

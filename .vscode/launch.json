@@ -23,7 +23,9 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/tests/bazel-bin/serialize/serialize",
 			"cwd": "${workspaceFolder}/tests",
-			"args": [],
+			"args": [
+				"--gtest_break_on_failure"
+			],
 			"type": "cppdbg",
 			"windows": {
 				"type": "cppvsdbg",
@@ -31,7 +33,8 @@
 			},
 			"preLaunchTask": "build @ecsact_runtime_tests//serialize",
 			"sourceFileMap": {
-				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}/tests"
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime_tests": "${workspaceFolder}/tests",
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}"
 			}
 		},
 		{
@@ -39,7 +42,9 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/tests/bazel-bin/async/async",
 			"cwd": "${workspaceFolder}/tests",
-			"args": [],
+			"args": [
+				"--gtest_break_on_failure"
+			],
 			"type": "cppdbg",
 			"windows": {
 				"type": "cppvsdbg",
@@ -47,7 +52,8 @@
 			},
 			"preLaunchTask": "build @ecsact_runtime_tests//async",
 			"sourceFileMap": {
-				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}/tests"
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime_tests": "${workspaceFolder}/tests",
+				"E:/.cache/bazel/output_base/execroot/ecsact_runtime": "${workspaceFolder}"
 			}
 		}
 	]
