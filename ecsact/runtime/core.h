@@ -333,6 +333,37 @@ typedef struct ecsact_execution_options {
 	 * Sequential list of actions to be executed.
 	 */
 	ecsact_action* actions;
+
+	/**
+	 * Length of entities to be created.
+	 */
+	int create_entities_length;
+
+	/**
+	 * Sequential list of component lengths for each entity in
+	 * `create_entities_components`.
+	 */
+	int* create_entities_components_length;
+
+	/**
+	 * A sequential 2D list that represents a set of entities with a list of
+	 * components. Entity length is determined by `create_entities_length`. The
+	 * length of components for each entity is determined by
+	 * `create_entities_components_length`.
+	 */
+	ecsact_component** create_entities_components;
+
+	/**
+	 * Length of `destroy_entities` sequential list.
+	 */
+	int destroy_entities_length;
+
+	/**
+	 * A sequentual list of entity IDs that will be destroyed along with its
+	 * components. Length is determined by `destroy_entities_length`.
+	 */
+	ecsact_entity_id* destroy_entities;
+
 } ecsact_execution_options;
 
 typedef enum {
@@ -363,6 +394,24 @@ typedef enum {
 	 * when at the end of the execution call the component is removed.
 	 */
 	ECSACT_EVENT_REMOVE_COMPONENT = 2,
+
+	/**
+	 * Create entity - Entity has been created during execution.
+	 *
+	 * Happens on entity creation and before any `INIT_COMPONENT`
+	 * events. It will also be triggered by any generated entities. Returns the
+	 * entity ID associated with the created entity
+	 */
+	ECSACT_EVENT_CREATE_ENTITY = 3,
+
+	/**
+	 * Destroy entity - Entity has been destroyed during execution.
+	 *
+	 * Invoked when an entity is destroyed. Any components associated with the
+	 * entity will also be destroyed. Returns the entity ID associated with the
+	 * destroyed entity
+	 */
+	ECSACT_EVENT_DESTROY_ENTITY = 4,
 } ecsact_event;
 
 /**
@@ -376,12 +425,15 @@ typedef void (*ecsact_component_event_callback)( //
 	void*               callback_user_data
 );
 
+typedef void (*ecsact_entity_event_callback
+)(ecsact_event event, ecsact_entity_id entity_id, void* callback_user_data);
+
 /**
  * Holds event handler callbacks and their user data
  */
 typedef struct ecsact_execution_events_collector {
 	/**
-	 * invoked after system executions are finished for every component that is
+	 * Invoked after system executions are finished for every component that is
 	 * new. The component_data is the last value given for the component, not the
 	 * first. Invocation happens in the calling thread. `event` will always be
 	 * `ECSACT_EVENT_INIT_COMPONENT`
@@ -394,7 +446,7 @@ typedef struct ecsact_execution_events_collector {
 	void* init_callback_user_data;
 
 	/**
-	 * invoked after system executions are finished for every changed component.
+	 * Invoked after system executions are finished for every changed component.
 	 * Invocation happens in the calling thread. `event` will always be
 	 * `ECSACT_EVENT_UPDATE_COMPONENT`
 	 */
@@ -406,8 +458,8 @@ typedef struct ecsact_execution_events_collector {
 	void* update_callback_user_data;
 
 	/**
-	 * invoked after system executions are finished for every removed component.
-	 * Invocation happens in the calling thread. `event` will will always be
+	 * Invoked after system executions are finished for every removed component.
+	 * Invocation happens in the calling thread. `event` will always be
 	 * `ECSACT_EVENT_REMOVE_COMPONENT`.
 	 */
 	ecsact_component_event_callback remove_callback;
@@ -416,6 +468,31 @@ typedef struct ecsact_execution_events_collector {
 	 * `callback_user_data` passed to `remove_callback`
 	 */
 	void* remove_callback_user_data;
+
+	/**
+	 * Invoked after system executions are finished for every created entity.
+	 * Invocation happens in the calling thread. `event` will will always be
+	 * `ECSACT_EVENT_CREATE_ENTITY`.
+	 */
+	ecsact_entity_event_callback entity_created_callback;
+
+	/**
+	 * `callback_user_data` passed to `entity_created_callback`
+	 */
+	void* entity_created_callback_user_data;
+
+	/**
+	 * Invoked after system executions are finished for every removed component.
+	 * Invocation happens in the calling thread. `event` will will always be
+	 * `ECSACT_EVENT_DESTROY_COMPONENT`.
+	 */
+	ecsact_entity_event_callback entity_destroyed_callback;
+
+	/**
+	 * `callback_user_data` passed to `entity_destroyed_callback`
+	 */
+	void* entity_destroyed_callback_user_data;
+
 } ecsact_execution_events_collector;
 
 /**
