@@ -4,7 +4,9 @@
 
 #include "ecsact/runtime/serialize.hh"
 
-ecsact_async_error validate_instructions(
+using namespace ecsact::async_reference::detail;
+
+static ecsact_async_error validate_instructions(
 	const std::vector<types::cpp_execution_component>& components
 ) {
 	auto components_range = std::ranges::views::all(components);

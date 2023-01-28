@@ -1,5 +1,7 @@
 #include "entity_manager.hh"
 
+using namespace ecsact::async_reference::detail;
+
 void entity_manager::process_entities(
 	async_callbacks&          callbacks,
 	const ecsact_registry_id& registry_id

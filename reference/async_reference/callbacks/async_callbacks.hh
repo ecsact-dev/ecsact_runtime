@@ -7,6 +7,8 @@
 #include "reference/async_reference/util/types.hh"
 #include "reference/async_reference/util/util.hh"
 
+namespace ecsact::async_reference::detail {
+
 class async_callbacks {
 public:
 	void invoke(const ecsact_async_events_collector* async_events);
@@ -18,3 +20,5 @@ private:
 
 	std::mutex async_m;
 };
+
+} // namespace ecsact::async_reference::detail

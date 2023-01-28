@@ -8,6 +8,7 @@
 #include "ecsact/runtime/serialize.hh"
 #include "reference/async_reference/util/types.hh"
 
+namespace ecsact::async_reference::detail {
 class execution_callbacks {
 public:
 	execution_callbacks();
@@ -59,3 +60,4 @@ private:
 		void*               callback_user_data
 	);
 };
+} // namespace ecsact::async_reference::detail

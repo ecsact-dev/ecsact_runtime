@@ -7,6 +7,7 @@
 #include "reference/async_reference/callbacks/async_callbacks.hh"
 #include "reference/async_reference/util/types.hh"
 
+namespace ecsact::async_reference::detail {
 class entity_manager {
 public:
 	void process_entities(
@@ -21,3 +22,4 @@ private:
 
 	std::vector<ecsact_async_request_id> pending_entity_requests;
 };
+} // namespace ecsact::async_reference::detail
