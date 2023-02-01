@@ -168,6 +168,8 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 	cpp_options.updates.reserve(options.update_components_length);
 	cpp_options.removes.reserve(options.remove_components_length);
 	cpp_options.actions.reserve(options.actions_length);
+	cpp_options.create_entities.reserve(options.create_entities_length);
+	cpp_options.destroy_entities.reserve(options.destroy_entities_length);
 
 	if(options.add_components != nullptr) {
 		for(int i = 0; i < options.add_components_length; i++) {
@@ -231,6 +233,35 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 			cpp_options.actions.push_back(action_info);
 		}
 	}
+
+	if(options.create_entities_components != nullptr) {
+		for(int i = 0; i < options.create_entities_length; i++) {
+			types::entity_create_options entity_to_create{};
+			auto component_list_length = options.create_entities_components_length[i];
+			entity_to_create.components.reserve(component_list_length);
+
+			for(int j = 0; j < component_list_length; j++) {
+				types::cpp_component new_entity_component{};
+
+				auto component = options.create_entities_components[i][j];
+				auto serialized_component = ecsact::serialize(component);
+
+				new_entity_component._id = component.component_id;
+				new_entity_component.data = serialized_component;
+				entity_to_create.components.push_back(new_entity_component);
+			}
+			cpp_options.create_entities.push_back(entity_to_create);
+		}
+	}
+
+	if(options.destroy_entities != nullptr) {
+		cpp_options.destroy_entities.insert(
+			cpp_options.destroy_entities.begin(),
+			options.destroy_entities,
+			options.destroy_entities + options.destroy_entities_length
+		);
+	}
+
 	return cpp_options;
 }
 
