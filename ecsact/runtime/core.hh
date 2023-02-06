@@ -2,6 +2,8 @@
 
 #include <type_traits>
 #include <span>
+#include <vector>
+#include <utility>
 #if __has_include(<ranges>)
 #	include <ranges>
 #endif
@@ -13,60 +15,102 @@ namespace ecsact::core {
  * Lightweight view of a `ecsact_execution_options` struct.
  */
 class execution_options_view {
-	ecsact_execution_options& _c_exec_opts;
+	const ecsact_execution_options& _c_exec_opts;
 
 public:
-	inline execution_options_view(ecsact_execution_options& options)
+	inline execution_options_view(const ecsact_execution_options& options)
 		: _c_exec_opts(options) {
 	}
 
-	inline auto add_components() -> std::span<ecsact_component> {
+	inline auto add_components() const -> std::span<ecsact_component> {
 		return std::span(
 			_c_exec_opts.add_components,
 			static_cast<size_t>(_c_exec_opts.add_components_length)
 		);
 	}
 
-	inline auto add_components_entities() -> std::span<ecsact_entity_id> {
+	inline auto add_components_entities() const -> std::span<ecsact_entity_id> {
 		return std::span(
 			_c_exec_opts.add_components_entities,
 			static_cast<size_t>(_c_exec_opts.add_components_length)
 		);
 	}
 
-	inline auto update_components() -> std::span<ecsact_component> {
+	inline auto update_components() const -> std::span<ecsact_component> {
 		return std::span(
 			_c_exec_opts.update_components,
 			static_cast<size_t>(_c_exec_opts.update_components_length)
 		);
 	}
 
-	inline auto update_components_entities() -> std::span<ecsact_entity_id> {
+	inline auto update_components_entities() const
+		-> std::span<ecsact_entity_id> {
 		return std::span(
 			_c_exec_opts.update_components_entities,
 			static_cast<size_t>(_c_exec_opts.update_components_length)
 		);
 	}
 
-	inline auto remove_components() -> std::span<ecsact_component_id> {
+	inline auto remove_components() const -> std::span<ecsact_component_id> {
 		return std::span(
 			_c_exec_opts.remove_components,
 			static_cast<size_t>(_c_exec_opts.remove_components_length)
 		);
 	}
 
-	inline auto remove_components_entities() -> std::span<ecsact_entity_id> {
+	inline auto remove_components_entities() const
+		-> std::span<ecsact_entity_id> {
 		return std::span(
 			_c_exec_opts.remove_components_entities,
 			static_cast<size_t>(_c_exec_opts.remove_components_length)
 		);
 	}
 
-	inline auto actions() -> std::span<ecsact_action> {
+	inline auto actions() const -> std::span<ecsact_action> {
 		return std::span(
 			_c_exec_opts.actions,
 			static_cast<size_t>(_c_exec_opts.actions_length)
 		);
+	}
+
+	inline auto add_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component>> {
+		auto result = std::vector<std::pair<ecsact_entity_id, ecsact_component>>{};
+		result.reserve(_c_exec_opts.add_components_length);
+		for(int i = 0; _c_exec_opts.add_components_length > i; ++i) {
+			auto entity = _c_exec_opts.add_components_entities[i];
+			auto comp = _c_exec_opts.add_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
+	}
+
+	inline auto update_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component>> {
+		auto result = std::vector<std::pair<ecsact_entity_id, ecsact_component>>{};
+		result.reserve(_c_exec_opts.update_components_length);
+		for(int i = 0; _c_exec_opts.update_components_length > i; ++i) {
+			auto entity = _c_exec_opts.update_components_entities[i];
+			auto comp = _c_exec_opts.update_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
+	}
+
+	inline auto remove_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component_id>> {
+		auto result =
+			std::vector<std::pair<ecsact_entity_id, ecsact_component_id>>{};
+		result.reserve(_c_exec_opts.remove_components_length);
+		for(int i = 0; _c_exec_opts.remove_components_length > i; ++i) {
+			auto entity = _c_exec_opts.remove_components_entities[i];
+			auto comp = _c_exec_opts.remove_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
 	}
 
 	/**
@@ -93,6 +137,27 @@ public:
 		return std::views::zip(remove_components_entities(), remove_components());
 	}
 #endif
+};
+
+template<std::size_t Extent = std::dynamic_extent>
+class execution_options_view_span {
+	std::span<ecsact_execution_options, Extent> _span;
+
+public:
+	using size_type = std::size_t;
+
+	constexpr execution_options_view_span() noexcept {
+	}
+
+	template<class It>
+	constexpr execution_options_view_span(It first, size_type count)
+		: _span(std::forward<It>(first), count) {
+	}
+
+	template<class It, class End>
+	constexpr execution_options_view_span(It first, End last)
+		: _span(std::forward<It>(first), std::forward<End>(last)) {
+	}
 };
 
 class registry {
