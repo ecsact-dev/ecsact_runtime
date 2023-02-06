@@ -1,9 +1,143 @@
 #pragma once
 
 #include <type_traits>
+#include <span>
+#include <vector>
+#include <utility>
+#if __has_include(<ranges>)
+#	include <ranges>
+#endif
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
+
+/**
+ * Lightweight view of a `ecsact_execution_options` struct.
+ */
+class execution_options_view {
+	const ecsact_execution_options& _c_exec_opts;
+
+public:
+	inline execution_options_view(const ecsact_execution_options& options)
+		: _c_exec_opts(options) {
+	}
+
+	inline auto add_components() const -> std::span<ecsact_component> {
+		return std::span(
+			_c_exec_opts.add_components,
+			static_cast<size_t>(_c_exec_opts.add_components_length)
+		);
+	}
+
+	inline auto add_components_entities() const -> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.add_components_entities,
+			static_cast<size_t>(_c_exec_opts.add_components_length)
+		);
+	}
+
+	inline auto update_components() const -> std::span<ecsact_component> {
+		return std::span(
+			_c_exec_opts.update_components,
+			static_cast<size_t>(_c_exec_opts.update_components_length)
+		);
+	}
+
+	inline auto update_components_entities() const
+		-> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.update_components_entities,
+			static_cast<size_t>(_c_exec_opts.update_components_length)
+		);
+	}
+
+	inline auto remove_components() const -> std::span<ecsact_component_id> {
+		return std::span(
+			_c_exec_opts.remove_components,
+			static_cast<size_t>(_c_exec_opts.remove_components_length)
+		);
+	}
+
+	inline auto remove_components_entities() const
+		-> std::span<ecsact_entity_id> {
+		return std::span(
+			_c_exec_opts.remove_components_entities,
+			static_cast<size_t>(_c_exec_opts.remove_components_length)
+		);
+	}
+
+	inline auto actions() const -> std::span<ecsact_action> {
+		return std::span(
+			_c_exec_opts.actions,
+			static_cast<size_t>(_c_exec_opts.actions_length)
+		);
+	}
+
+	inline auto add_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component>> {
+		auto result = std::vector<std::pair<ecsact_entity_id, ecsact_component>>{};
+		result.reserve(_c_exec_opts.add_components_length);
+		for(int i = 0; _c_exec_opts.add_components_length > i; ++i) {
+			auto entity = _c_exec_opts.add_components_entities[i];
+			auto comp = _c_exec_opts.add_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
+	}
+
+	inline auto update_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component>> {
+		auto result = std::vector<std::pair<ecsact_entity_id, ecsact_component>>{};
+		result.reserve(_c_exec_opts.update_components_length);
+		for(int i = 0; _c_exec_opts.update_components_length > i; ++i) {
+			auto entity = _c_exec_opts.update_components_entities[i];
+			auto comp = _c_exec_opts.update_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
+	}
+
+	inline auto remove_components_pairs() const
+		-> std::vector<std::pair<ecsact_entity_id, ecsact_component_id>> {
+		auto result =
+			std::vector<std::pair<ecsact_entity_id, ecsact_component_id>>{};
+		result.reserve(_c_exec_opts.remove_components_length);
+		for(int i = 0; _c_exec_opts.remove_components_length > i; ++i) {
+			auto entity = _c_exec_opts.remove_components_entities[i];
+			auto comp = _c_exec_opts.remove_components[i];
+			result.push_back({entity, comp});
+		}
+
+		return result;
+	}
+
+	/**
+	 * @returns `true` when all lengths are `0`
+	 */
+	inline auto empty() const noexcept -> bool {
+		return //
+			_c_exec_opts.actions_length == 0 &&
+			_c_exec_opts.add_components_length == 0 &&
+			_c_exec_opts.update_components_length == 0 &&
+			_c_exec_opts.remove_components_length == 0;
+	}
+
+#ifdef __cpp_lib_ranges_zip
+	inline auto add_components_zip() {
+		return std::views::zip(add_components_entities(), add_components());
+	}
+
+	inline auto update_components_zip() {
+		return std::views::zip(update_components_entities(), update_components());
+	}
+
+	inline auto remove_components_zip() {
+		return std::views::zip(remove_components_entities(), remove_components());
+	}
+#endif
+};
 
 class registry {
 	ecsact_registry_id _id;
