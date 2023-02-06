@@ -27,6 +27,10 @@ struct c_execution_options {
 	std::vector<ecsact_entity_id>               updates_entities;
 	std::vector<ecsact_component_id>            remove_ids;
 	std::vector<ecsact_entity_id>               removes_entities;
+	std::vector<ecsact_entity_id>               destroy_entities;
+
+	std::vector<std::vector<data_info<ecsact_component_id>>>
+		create_entities_components;
 
 	ecsact_execution_options c();
 
@@ -36,6 +40,10 @@ private:
 	std::vector<ecsact_action>    actions;
 	std::vector<ecsact_component> adds;
 	std::vector<ecsact_component> updates;
+
+	std::vector<ecsact_component*>             create_entity_components_datas;
+	std::vector<std::vector<ecsact_component>> create_entity_components;
+	std::vector<int32_t>                       create_entity_components_length;
 };
 
 } // namespace ecsact::async_reference::detail

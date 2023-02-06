@@ -87,10 +87,16 @@ void util::cpp_to_c_execution_options(
 	types::cpp_execution_options& options,
 	const ecsact_registry_id&     registry_id
 ) {
-	// out_c_execution_options.actions_info.resize(options.actions.size());
-	// out_c_execution_options.adds_info.resize(options.adds.size());
-	// out_c_execution_options.updates_info.resize(options.updates.size());
-	// out_c_execution_options.remove_ids.resize(options.removes.size());
+	out_c_execution_options.actions_info.reserve(options.actions.size());
+	out_c_execution_options.adds_info.reserve(options.adds.size());
+	out_c_execution_options.updates_info.reserve(options.updates.size());
+	out_c_execution_options.remove_ids.reserve(options.removes.size());
+	out_c_execution_options.create_entities_components.reserve(
+		options.create_entities.size()
+	);
+	out_c_execution_options.destroy_entities.reserve(
+		options.destroy_entities.size()
+	);
 
 	if(options.actions.size() > 0) {
 		for(auto& action_info : options.actions) {
@@ -157,6 +163,30 @@ void util::cpp_to_c_execution_options(
 		);
 
 		out_c_execution_options.removes_entities = entities;
+	}
+
+	if(options.create_entities.size() > 0) {
+		for(int i = 0; i < options.create_entities.size(); i++) {
+			auto new_entity_components = options.create_entities[i].components;
+			std::vector<data_info<ecsact_component_id>> entity_components;
+			for(auto& component : new_entity_components) {
+				entity_components.push_back(detail::data_info<ecsact_component_id>{
+					.id = component._id,
+					.data = ecsact::deserialize(component._id, component.data),
+				});
+			}
+			out_c_execution_options.create_entities_components.push_back(
+				entity_components
+			);
+		}
+	}
+
+	if(options.destroy_entities.size() > 0) {
+		out_c_execution_options.destroy_entities.insert(
+			out_c_execution_options.destroy_entities.begin(),
+			options.destroy_entities.begin(),
+			options.destroy_entities.end()
+		);
 	}
 }
 
@@ -290,6 +320,14 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 		}
 	}
 
+	if(options.destroy_entities.size() > 0) {
+		auto entities = std::views::all(options.destroy_entities);
+		auto has_duplicates = util::check_entity_duplicates(entities);
+		if(has_duplicates) {
+			return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
+		}
+	}
+
 	return error;
 }
 
@@ -356,6 +394,22 @@ void util::merge_options(
 			tick_options.removes.end(),
 			other_options.removes.begin(),
 			other_options.removes.end()
+		);
+	}
+
+	if(other_options.create_entities.size() > 0) {
+		tick_options.create_entities.insert(
+			tick_options.create_entities.end(),
+			other_options.create_entities.begin(),
+			other_options.create_entities.end()
+		);
+	}
+
+	if(other_options.destroy_entities.size() > 0) {
+		tick_options.destroy_entities.insert(
+			tick_options.destroy_entities.end(),
+			other_options.destroy_entities.begin(),
+			other_options.destroy_entities.end()
 		);
 	}
 }

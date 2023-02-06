@@ -168,7 +168,6 @@ void async_reference::execute_systems() {
 				);
 			}
 			auto options = c_exec_options.c();
-			entity_manager.process_entities(async_callbacks, *registry_id);
 
 			auto exec_lk = exec_callbacks.lock();
 			auto systems_error =
@@ -193,22 +192,6 @@ void async_reference::invoke_execution_events(
 	if(registry_id) {
 		exec_callbacks.invoke(execution_evc, *registry_id);
 	}
-}
-
-void async_reference::create_entity_request(ecsact_async_request_id req_id) {
-	if(is_connected == false && is_connected_notified == false) {
-		types::async_error async_err{
-			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
-			.request_ids = {req_id},
-		};
-
-		async_callbacks.add(async_err);
-		is_connected_notified = true;
-
-		return;
-	}
-
-	entity_manager.request_entity(req_id);
 }
 
 int32_t async_reference::get_current_tick() {

@@ -48,15 +48,6 @@ void async_callbacks::invoke(const ecsact_async_events_collector* async_events
 						error,
 						async_events->system_error_callback_user_data
 					);
-				} else if constexpr(std::is_same_v<T, types::entity>) {
-					if(async_events->async_entity_callback == nullptr) {
-						return;
-					}
-					async_events->async_entity_callback(
-						*error.entity_id,
-						error.request_id,
-						async_events->async_entity_callback_user_data
-					);
 				}
 			},
 			request

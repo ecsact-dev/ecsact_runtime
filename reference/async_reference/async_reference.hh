@@ -18,7 +18,6 @@
 #include "reference/async_reference/tick_manager/tick_manager.hh"
 #include "reference/async_reference/callbacks/execution_callbacks.hh"
 #include "reference/async_reference/callbacks/async_callbacks.hh"
-#include "reference/async_reference/entity_manager/entity_manager.hh"
 #include "request_id_factory/request_id_factory.hh"
 
 namespace ecsact::async_reference::detail {
@@ -44,7 +43,6 @@ public:
 
 	int32_t get_current_tick();
 
-	void create_entity_request(ecsact_async_request_id req_id);
 	void connect(ecsact_async_request_id req_id, const char* connection_string);
 
 	void disconnect();
@@ -56,7 +54,6 @@ private:
 
 	tick_manager             tick_manager;
 	execution_callbacks      exec_callbacks;
-	entity_manager           entity_manager;
 	detail::async_callbacks& async_callbacks;
 
 	std::thread execution_thread;

@@ -34,6 +34,9 @@ private:
 	std::vector<types::callback_info> update_callbacks_info;
 	std::vector<types::callback_info> remove_callbacks_info;
 
+	std::vector<types::entity_callback_info> create_entity_callbacks_info;
+	std::vector<types::entity_callback_info> destroy_entity_callbacks_info;
+
 	bool has_callbacks();
 
 	static void init_callback(
@@ -58,6 +61,18 @@ private:
 		ecsact_component_id component_id,
 		const void*         component_data,
 		void*               callback_user_data
+	);
+
+	static void entity_created_callback(
+		ecsact_event     event,
+		ecsact_entity_id entity_id,
+		void*            callback_user_data
+	);
+
+	static void entity_destroyed_callback(
+		ecsact_event     event,
+		ecsact_entity_id entity_id,
+		void*            callback_user_data
 	);
 };
 } // namespace ecsact::async_reference::detail
