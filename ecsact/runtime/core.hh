@@ -139,27 +139,6 @@ public:
 #endif
 };
 
-template<std::size_t Extent = std::dynamic_extent>
-class execution_options_view_span {
-	std::span<ecsact_execution_options, Extent> _span;
-
-public:
-	using size_type = std::size_t;
-
-	constexpr execution_options_view_span() noexcept {
-	}
-
-	template<class It>
-	constexpr execution_options_view_span(It first, size_type count)
-		: _span(std::forward<It>(first), count) {
-	}
-
-	template<class It, class End>
-	constexpr execution_options_view_span(It first, End last)
-		: _span(std::forward<It>(first), std::forward<End>(last)) {
-	}
-};
-
 class registry {
 	ecsact_registry_id _id;
 	bool               _owned = false;
