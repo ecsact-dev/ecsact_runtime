@@ -9,6 +9,7 @@
 #include "async_test.ecsact.systems.hh"
 #include "ecsact/runtime/async.h"
 #include "ecsact/runtime/dynamic.h"
+#include "ecsact/runtime/core.hh"
 
 using namespace std::chrono_literals;
 using std::chrono::duration_cast;
@@ -175,36 +176,20 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	auto my_needed_component = async_test::NeededComponent{};
 	auto my_update_component = async_test::ComponentUpdate{.value_to_update = 1};
 
-	std::array add_components{
-		ecsact_component{
-			.component_id = async_test::NeededComponent::id,
-			.component_data = &my_needed_component,
-		},
-		ecsact_component{
-			.component_id = async_test::ComponentUpdate::id,
-			.component_data = &my_update_component,
-		},
-	};
-	auto add_components_entities = std::array{cb_info.entity, cb_info.entity};
+	auto options = ecsact::core::execution_options{};
 
-	ASSERT_EQ(add_components_entities.size(), add_components.size());
+	options.add_component<async_test::NeededComponent>(
+		cb_info.entity,
+		my_needed_component
+	);
+	options.add_component<async_test::ComponentUpdate>(
+		cb_info.entity,
+		my_update_component
+	);
 
 	// Adding components
-	auto add_options = ecsact_execution_options{};
-	add_options.add_components_length = add_components.size();
-	add_options.add_components_entities = add_components_entities.data();
-	add_options.add_components = add_components.data();
-	ecsact_async_enqueue_execution_options(add_options);
-
-	// Prepare update component data
-	my_update_component.value_to_update += 5;
-	auto update_components = std::array{
-		ecsact_component{
-			.component_id = async_test::ComponentUpdate::id,
-			.component_data = &my_update_component,
-		},
-	};
-	auto component_update_entities = std::array{cb_info.entity};
+	ecsact_async_enqueue_execution_options(options.c());
+	options.clear();
 
 	// Prepare the events collector for the flush to make sure we got all the
 	// events we expected.
@@ -259,12 +244,16 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			ASSERT_EQ(comp->value_to_update, 6);
 		};
 
+	// Prepare update component data
+	my_update_component.value_to_update += 5;
+
 	// Update components
-	ecsact_execution_options update_options{};
-	update_options.update_components_length = update_components.size();
-	update_options.update_components_entities = component_update_entities.data();
-	update_options.update_components = update_components.data();
-	ecsact_async_enqueue_execution_options(update_options);
+	options.update_component<async_test::ComponentUpdate>(
+		cb_info.entity,
+		my_update_component
+	);
+	ecsact_async_enqueue_execution_options(options.c());
+	options.clear();
 
 	start_tick = ecsact_async_get_current_tick();
 	while(!cb_info.update_happened) {
@@ -277,16 +266,11 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	evc.update_callback = {};
 	evc.update_callback_user_data = nullptr;
 
-	// Prepare remove component data
-	auto remove_components = std::array{async_test::ComponentUpdate::id};
-	auto components_remove_entities = std::array{cb_info.entity};
-
 	// Remove component
-	auto remove_options = ecsact_execution_options{};
-	remove_options.remove_components_length = remove_components.size();
-	remove_options.remove_components_entities = components_remove_entities.data();
-	remove_options.remove_components = remove_components.data();
-	ecsact_async_enqueue_execution_options(remove_options);
+	options.remove_component<async_test::ComponentUpdate>(cb_info.entity);
+
+	ecsact_async_enqueue_execution_options(options.c());
+	options.clear();
 
 	evc.remove_callback_user_data = &cb_info;
 	evc.remove_callback = //
