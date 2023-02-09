@@ -160,9 +160,18 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			cb_info.entity = entity_id;
 		};
 
+	// Declare core execution options
+	auto options = ecsact::core::execution_options{};
+
 	ecsact_async_events_collector entity_async_evc{};
 	entity_async_evc.async_entity_callback = entity_cb;
 	entity_async_evc.async_entity_callback_user_data = &cb_info;
+
+	auto my_needed_component = async_test::NeededComponent{};
+
+	options.create_entity().add_component(&my_needed_component);
+
+	ecsact_async_enqueue_execution_options(options.c());
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
@@ -172,20 +181,14 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		ASSERT_LT(tick_diff, 10);
 	}
 
+	options.clear();
+
 	// Preparing add component data
-	auto my_needed_component = async_test::NeededComponent{};
+	// auto my_needed_component = async_test::NeededComponent{};
 	auto my_update_component = async_test::ComponentUpdate{.value_to_update = 1};
 
-	auto options = ecsact::core::execution_options{};
-
-	options.add_component<async_test::NeededComponent>(
-		cb_info.entity,
-		my_needed_component
-	);
-	options.add_component<async_test::ComponentUpdate>(
-		cb_info.entity,
-		my_update_component
-	);
+	// options.add_component(cb_info.entity, &my_needed_component);
+	options.add_component(cb_info.entity, &my_update_component);
 
 	// Adding components
 	ecsact_async_enqueue_execution_options(options.c());
@@ -250,7 +253,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	// Update components
 	options.update_component<async_test::ComponentUpdate>(
 		cb_info.entity,
-		my_update_component
+		&my_update_component
 	);
 	ecsact_async_enqueue_execution_options(options.c());
 	options.clear();

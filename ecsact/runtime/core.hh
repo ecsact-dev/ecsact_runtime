@@ -112,18 +112,26 @@ private:
 
 class execution_options {
 public:
+	/**
+	 * The lifetime of @p `component` must be maintained until the
+	 * `ecsact::core::execution_options` destructor occurs or `clear()` occurs.
+	 */
 	template<typename C>
-	void add_component(ecsact_entity_id entity, const C& component) {
+	void add_component(ecsact_entity_id entity, C* component) {
 		add_components_container.push_back(
-			ecsact_component{.component_id = C::id, .component_data = &component}
+			ecsact_component{.component_id = C::id, .component_data = component}
 		);
 		add_entities_container.push_back(entity);
 	}
 
+	/**
+	 * The lifetime of @p `component` must be maintained until the
+	 * `ecsact::core::execution_options` destructor occurs or `clear()` occurs.
+	 */
 	template<typename C>
-	void update_component(ecsact_entity_id entity, const C& component) {
+	void update_component(ecsact_entity_id entity, C* component) {
 		update_components_container.push_back(
-			ecsact_component{.component_id = C::id, .component_data = &component}
+			ecsact_component{.component_id = C::id, .component_data = component}
 		);
 		update_entities_container.push_back(entity);
 	}
@@ -153,6 +161,18 @@ public:
 
 	inline void clear() {
 		options = {};
+
+		add_entities_container.clear();
+		add_components_container.clear();
+
+		update_entities_container.clear();
+		update_components_container.clear();
+
+		remove_entities_container.clear();
+		remove_component_ids_container.clear();
+
+		create_entities.clear();
+		destroy_entities.clear();
 	}
 
 	inline ecsact_execution_options c() {
