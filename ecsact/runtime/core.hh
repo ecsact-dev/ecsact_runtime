@@ -171,6 +171,9 @@ public:
 		remove_entities_container.clear();
 		remove_component_ids_container.clear();
 
+		entities_components.clear();
+		entities_component_lengths.clear();
+
 		create_entities.clear();
 		destroy_entities.clear();
 	}
@@ -187,9 +190,6 @@ public:
 		options.remove_components_length = remove_component_ids_container.size();
 		options.remove_components_entities = remove_entities_container.data();
 		options.remove_components = remove_component_ids_container.data();
-
-		auto entities_component_lengths = std::vector<int>{};
-		auto entities_components = std::vector<ecsact_component*>{};
 
 		for(auto& built_entity : create_entities) {
 			entities_component_lengths.push_back(built_entity.components.size());
@@ -219,6 +219,9 @@ private:
 
 	std::vector<builder_entity>   create_entities;
 	std::vector<ecsact_entity_id> destroy_entities;
+
+	std::vector<int>               entities_component_lengths;
+	std::vector<ecsact_component*> entities_components;
 
 	ecsact_execution_options options;
 };
