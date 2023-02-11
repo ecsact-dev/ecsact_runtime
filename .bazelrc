@@ -11,6 +11,9 @@ build:windows --host_platform=@ecsact_runtime//bazel/platforms:windows
 build:linux --platforms=@ecsact_runtime//bazel/platforms:linux
 build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
 
+build:no-warnings --per_file_copt=//.*@-Werror
+
+common:linux:ci --config=no-warnings
 common:ci --announce_rc
 common:ci --disk_cache=~/.cache/bazel-disk-cache
 test:ci --test_output=errors

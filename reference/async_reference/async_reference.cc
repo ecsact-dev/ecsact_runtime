@@ -124,7 +124,6 @@ void async_reference::execute_systems() {
 	execution_thread = std::thread([this] {
 		using namespace std::chrono_literals;
 		using clock = std::chrono::high_resolution_clock;
-		using milliseconds = std::chrono::milliseconds;
 		using nanoseconds = std::chrono::nanoseconds;
 		using std::chrono::duration_cast;
 

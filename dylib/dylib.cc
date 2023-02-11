@@ -47,10 +47,10 @@ FOR_EACH_ECSACT_SERIALIZE_API_FN(ECSACT_DYLIB_UTIL_FN_PTR_DEFN);
 #define HAS_FN_CHECK(fn_name, target_fn_name) \
 	if(std::strcmp(target_fn_name, #fn_name) == 0) return true
 
-#define ASSIGN_FN_IF(fn_name, target_fn_name, fn_ptr)          \
-	if(std::strcmp(#fn_name, target_fn_name) == 0) {             \
-		::fn_name = reinterpret_cast<decltype(::fn_name)>(fn_ptr); \
-	}                                                            \
+#define ASSIGN_FN_IF(fn_name, target_fn_name, fn_ptr)      \
+	if(std::strcmp(#fn_name, target_fn_name) == 0) {         \
+		fn_name = reinterpret_cast<decltype(fn_name)>(fn_ptr); \
+	}                                                        \
 	static_assert(true, "macro requires ;")
 
 bool ecsact_dylib_has_fn(const char* fn_name) {
