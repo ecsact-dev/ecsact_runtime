@@ -223,6 +223,20 @@ public:
 	) {
 		return ecsact_update_component(_id, entity_id, Component::id, &component);
 	}
+
+	inline void execute_systems(int32_t execution_count = 1) {
+		ecsact_execute_systems(_id, execution_count, nullptr, nullptr);
+	}
+
+	template<typename ExecutionOptionsRange>
+	inline void execute_systems(ExecutionOptionsRange&& execution_options_range) {
+		ecsact_execution_options* options = std::data(execution_options_range);
+
+		auto execution_count =
+			static_cast<int32_t>(std::size(execution_options_range));
+
+		ecsact_execute_systems(_id, execution_count, options, nullptr);
+	}
 };
 
 } // namespace ecsact::core
