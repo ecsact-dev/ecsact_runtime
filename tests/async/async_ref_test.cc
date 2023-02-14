@@ -159,12 +159,11 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			cb_info.entity = entity_id;
 		};
 
-	// Declare core execution options
-	auto options = ecsact::core::execution_options{};
+	ecsact::core::execution_options options{};
 
-	ecsact_async_events_collector entity_async_evc{};
-	entity_async_evc.async_entity_callback = entity_cb;
-	entity_async_evc.async_entity_callback_user_data = &cb_info;
+	auto evc = ecsact_execution_events_collector{};
+	evc.entity_created_callback = entity_cb;
+	evc.entity_created_callback_user_data = &cb_info;
 
 	auto my_needed_component = async_test::NeededComponent{};
 
@@ -180,18 +179,18 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		ASSERT_LT(tick_diff, 10);
 	}
 
+	// Reset events collector and options
+	evc.entity_created_callback = {};
+	evc.entity_created_callback_user_data = nullptr;
 	options.clear();
 
 	// Preparing add component data
-	// auto my_needed_component = async_test::NeededComponent{};
 	auto my_update_component = async_test::ComponentUpdate{.value_to_update = 1};
 
-	// options.add_component(cb_info.entity, &my_needed_component);
 	options.add_component(cb_info.entity, &my_update_component);
 
 	// Adding components
 	ecsact_async_enqueue_execution_options(options.c());
-	options.clear();
 
 	// Prepare the events collector for the flush to make sure we got all the
 	// events we expected.
@@ -225,6 +224,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	evc.init_callback = {};
 	evc.init_callback_user_data = nullptr;
+	options.clear();
 
 	evc.update_callback_user_data = &cb_info;
 	evc.update_callback = //
@@ -250,12 +250,9 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	my_update_component.value_to_update += 5;
 
 	// Update components
-	options.update_component<async_test::ComponentUpdate>(
-		cb_info.entity,
-		&my_update_component
-	);
+	options.update_component(cb_info.entity, &my_update_component);
+
 	ecsact_async_enqueue_execution_options(options.c());
-	options.clear();
 
 	start_tick = ecsact_async_get_current_tick();
 	while(!cb_info.update_happened) {
@@ -265,6 +262,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		ASSERT_LT(tick_diff, 10);
 	}
 
+	options.clear();
 	evc.update_callback = {};
 	evc.update_callback_user_data = nullptr;
 
@@ -272,7 +270,6 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	options.remove_component<async_test::ComponentUpdate>(cb_info.entity);
 
 	ecsact_async_enqueue_execution_options(options.c());
-	options.clear();
 
 	evc.remove_callback_user_data = &cb_info;
 	evc.remove_callback = //
@@ -307,6 +304,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 			<< "  remove = " << cb_info.remove_happened << "\n";
 	}
 
+	options.clear();
 	ecsact_async_disconnect();
 }
 
@@ -322,17 +320,9 @@ TEST(AsyncRef, TryMergeFailure) {
 
 	ecsact_async_connect("good?tick_rate=25");
 
-	auto my_needed_component = async_test::NeededComponent{};
-	auto another_my_needed_component = async_test::NeededComponent{};
-
-	ecsact_component needed_component{
-		.component_id = async_test::NeededComponent::id,
-		.component_data = &my_needed_component,
-	};
-
-	ecsact_component another_needed_component{
-		.component_id = async_test::NeededComponent::id,
-		.component_data = &another_my_needed_component,
+	struct merge_callback_data {
+		ecsact_async_request_id request_id;
+		bool                    wait;
 	};
 
 	auto entity_cb = //
@@ -347,56 +337,6 @@ TEST(AsyncRef, TryMergeFailure) {
 			entity_info.wait = true;
 			entity_info.entity = entity_id;
 		};
-
-	entity_cb_info cb_info{};
-
-	// 1D array
-	std::array<ecsact_component, 2> entity_components = {
-		needed_component,
-		another_needed_component,
-	};
-
-	// 1D array
-	std::array<ecsact_component, 1> another_entity_components = {
-		needed_component,
-	};
-
-	// Do I combine both the above arrays to make a 2D array?
-	auto my_vector = std::vector<ecsact_component*>{};
-	my_vector.push_back(entity_components.data());
-	my_vector.push_back(another_entity_components.data());
-
-	// Holds above array sizes
-	std::array<int, 2> entity_component_lengths = {
-		entity_components.size(),
-		another_entity_components.size(),
-	};
-
-	ecsact_execution_options entity_options{};
-
-	entity_options.create_entities_components = my_vector.data();
-	entity_options.create_entities_length = entity_component_lengths.size();
-	entity_options.create_entities_components_length =
-		entity_component_lengths.data();
-
-	ecsact_async_enqueue_execution_options(entity_options);
-
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &cb_info;
-
-	auto start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
-
-	struct merge_callback_data {
-		ecsact_async_request_id request_id;
-		bool                    wait;
-	};
 
 	auto async_err_cb = //
 		[](
@@ -414,35 +354,41 @@ TEST(AsyncRef, TryMergeFailure) {
 			cb_data.wait = true;
 		};
 
-	std::array entities{cb_info.entity, cb_info.entity};
-	std::array components{
-		needed_component,
-		another_needed_component,
-	};
+	entity_cb_info cb_info{};
 
-	ecsact_execution_options options{};
-	options.add_components_entities = entities.data();
-	options.add_components = components.data();
-	options.add_components_length = entities.size();
+	ecsact::core::execution_options options{};
 
-	auto options_request = ecsact_async_enqueue_execution_options(options);
+	auto my_needed_component = async_test::NeededComponent{};
+	auto another_my_needed_component = async_test::NeededComponent{};
 
-	merge_callback_data merge_cb_info{
-		.request_id = options_request,
-		.wait = false,
-	};
+	options.create_entity()
+		.add_component(&my_needed_component)
+		.add_component(&another_my_needed_component);
 
-	ecsact_async_events_collector async_evc{};
+	auto request_id = ecsact_async_enqueue_execution_options(options.c());
+
+	auto merge_data = merge_callback_data{};
+	merge_data.request_id = request_id;
+	merge_data.wait = false;
+
+	auto evc = ecsact_execution_events_collector{};
+	evc.entity_created_callback = entity_cb;
+	evc.entity_created_callback_user_data = &cb_info;
+
+	auto async_evc = ecsact_async_events_collector{};
+
 	async_evc.async_error_callback = async_err_cb;
-	async_evc.async_error_callback_user_data = &merge_cb_info;
+	async_evc.async_error_callback_user_data = &merge_data;
 
-	start_tick = ecsact_async_get_current_tick();
-	while(merge_cb_info.wait != true) {
-		ecsact_async_flush_events(nullptr, &async_evc);
+	auto start_tick = ecsact_async_get_current_tick();
+	while(merge_data.wait != true) {
+		ecsact_async_flush_events(&evc, &async_evc);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
 		ASSERT_LT(tick_diff, 10);
 	}
+
+	options.clear();
 
 	ecsact_async_disconnect();
 }

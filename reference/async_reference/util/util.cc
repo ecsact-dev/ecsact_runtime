@@ -6,7 +6,7 @@
 
 using namespace ecsact::async_reference::detail;
 
-static ecsact_async_error validate_instructions(
+static ecsact_async_error validate_entity_instructions(
 	const std::vector<types::cpp_execution_component>& components
 ) {
 	auto components_range = std::ranges::views::all(components);
@@ -35,6 +35,29 @@ static ecsact_async_error validate_instructions(
 				return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
 				break;
 			}
+		}
+	}
+	return ECSACT_ASYNC_OK;
+}
+
+static ecsact_async_error validate_instructions(
+	const std::vector<types::cpp_component>& components
+) {
+	auto components_range = std::ranges::views::all(components);
+
+	for(auto& component : components) {
+		auto view = std::views::filter(
+			components_range,
+			[&components_range, &component](types::cpp_component other_component) {
+				return component._id == other_component._id;
+			}
+		);
+		int component_count = 0;
+		for(auto& found_component : view) {
+			component_count++;
+		}
+		if(component_count > 1) {
+			return ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE;
 		}
 	}
 	return ECSACT_ASYNC_OK;
@@ -300,23 +323,32 @@ ecsact_async_error util::validate_options(types::cpp_execution_options& options
 	ecsact_async_error error = ECSACT_ASYNC_OK;
 
 	if(options.adds.size() > 0) {
-		error = validate_instructions(options.adds);
+		error = validate_entity_instructions(options.adds);
 		if(error != ECSACT_ASYNC_OK) {
 			return error;
 		}
 	}
 
 	if(options.updates.size() > 0) {
-		error = validate_instructions(options.updates);
+		error = validate_entity_instructions(options.updates);
 		if(error != ECSACT_ASYNC_OK) {
 			return error;
 		}
 	}
 
 	if(options.removes.size() > 0) {
-		error = validate_instructions(options.removes);
+		error = validate_entity_instructions(options.removes);
 		if(error != ECSACT_ASYNC_OK) {
 			return error;
+		}
+	}
+
+	if(options.create_entities.size() > 0) {
+		for(auto& entity_to_create : options.create_entities) {
+			error = validate_instructions(entity_to_create.components);
+			if(error != ECSACT_ASYNC_OK) {
+				return error;
+			}
 		}
 	}
 
