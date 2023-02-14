@@ -20,8 +20,7 @@ static ecsact_async_error validate_instructions(
 	for(auto& component : components) {
 		auto view = std::views::filter(
 			components_range,
-			[&components_range,
-			 &component](types::cpp_execution_component other_component) {
+			[&component](types::cpp_execution_component other_component) {
 				return component._id == other_component._id;
 			}
 		);
@@ -52,8 +51,6 @@ ecsact_async_error validate_merge_instructions(
 	auto entities = util::get_cpp_entities(components);
 	auto other_entities = util::get_cpp_entities(other_components);
 
-	auto empty_view = std::ranges::empty_view<int>{};
-
 	auto has_duplicates =
 		util::check_entity_merge_duplicates(entities, other_entities);
 
@@ -64,8 +61,7 @@ ecsact_async_error validate_merge_instructions(
 	for(auto& component : components) {
 		auto component_view = std::views::filter(
 			other_components,
-			[&other_components,
-			 &component](types::cpp_execution_component other_component) {
+			[&component](types::cpp_execution_component other_component) {
 				return component._id == other_component._id;
 			}
 		);

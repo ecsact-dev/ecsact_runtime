@@ -50,7 +50,7 @@ bool check_entity_duplicates(auto entities_view) {
 				return entity_id == other_entity;
 			});
 		int same_entity_count = 0;
-		for(auto _ : duplicate_view) {
+		for([[maybe_unused]] auto _ : duplicate_view) {
 			same_entity_count++;
 			if(same_entity_count > 1) {
 				return true;
@@ -71,7 +71,7 @@ bool check_entity_merge_duplicates(
 			});
 
 		int same_entity_count = 0;
-		for(auto _ : duplicate_view) {
+		for([[maybe_unused]] auto _ : duplicate_view) {
 			same_entity_count++;
 			if(same_entity_count > 0) {
 				return true;
