@@ -48,12 +48,12 @@ static ecsact_async_error validate_instructions(
 	for(auto& component : components) {
 		auto view = std::views::filter(
 			components_range,
-			[&components_range, &component](types::cpp_component other_component) {
+			[&component](types::cpp_component other_component) {
 				return component._id == other_component._id;
 			}
 		);
 		int component_count = 0;
-		for(auto& found_component : view) {
+		for([[maybe_unused]] auto& _ : view) {
 			component_count++;
 		}
 		if(component_count > 1) {
