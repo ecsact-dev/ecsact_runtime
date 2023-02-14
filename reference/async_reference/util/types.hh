@@ -10,6 +10,11 @@
 
 namespace ecsact::async_reference::detail::types {
 
+struct entity_callback_info {
+	ecsact_event     event;
+	ecsact_entity_id entity_id;
+};
+
 struct callback_info {
 	ecsact_event        event;
 	ecsact_entity_id    entity_id;
@@ -33,12 +38,23 @@ struct cpp_execution_component {
 	std::vector<std::byte> data;
 };
 
+struct cpp_component {
+	ecsact_component_id    _id;
+	std::vector<std::byte> data;
+};
+
+struct entity_create_options {
+	std::vector<cpp_component> components;
+};
+
 struct action_info {
 	ecsact_action_id       action_id;
 	std::vector<std::byte> serialized_data;
 };
 
 struct cpp_execution_options {
+	std::vector<entity_create_options>   create_entities;
+	std::vector<ecsact_entity_id>        destroy_entities;
 	std::vector<cpp_execution_component> adds;
 	std::vector<cpp_execution_component> updates;
 	std::vector<cpp_execution_component> removes;
@@ -55,6 +71,12 @@ struct cpp_execution_options {
 			return true;
 		}
 		if(actions.size() > 0) {
+			return true;
+		}
+		if(create_entities.size() > 0) {
+			return true;
+		}
+		if(destroy_entities.size() > 0) {
 			return true;
 		}
 		return false;

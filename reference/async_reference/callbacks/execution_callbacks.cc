@@ -6,9 +6,15 @@ execution_callbacks::execution_callbacks() {
 	collector.init_callback = &execution_callbacks::init_callback;
 	collector.update_callback = &execution_callbacks::update_callback;
 	collector.remove_callback = &execution_callbacks::remove_callback;
+	collector.entity_created_callback =
+		&execution_callbacks::entity_created_callback;
+	collector.entity_destroyed_callback =
+		&execution_callbacks::entity_destroyed_callback;
 	collector.init_callback_user_data = this;
 	collector.update_callback_user_data = this;
 	collector.remove_callback_user_data = this;
+	collector.entity_created_callback_user_data = this;
+	collector.entity_destroyed_callback_user_data = this;
 }
 
 ecsact_execution_events_collector* execution_callbacks::get_collector() {
@@ -29,6 +35,8 @@ void execution_callbacks::invoke(
 			init_callbacks_info.clear();
 			update_callbacks_info.clear();
 			remove_callbacks_info.clear();
+			create_entity_callbacks_info.clear();
+			destroy_entity_callbacks_info.clear();
 		}
 		return;
 	}
@@ -37,15 +45,24 @@ void execution_callbacks::invoke(
 	std::vector<types::callback_info> update_callbacks;
 	std::vector<types::callback_info> remove_callbacks;
 
+	std::vector<types::entity_callback_info> entity_created_callbacks;
+	std::vector<types::entity_callback_info> entity_destroyed_callbacks;
+
 	std::unique_lock lk(execution_m);
 
 	init_callbacks = std::move(init_callbacks_info);
 	update_callbacks = std::move(update_callbacks_info);
 	remove_callbacks = std::move(remove_callbacks_info);
 
+	entity_created_callbacks = std::move(create_entity_callbacks_info);
+	entity_destroyed_callbacks = std::move(destroy_entity_callbacks_info);
+
 	init_callbacks_info.clear();
 	update_callbacks_info.clear();
 	remove_callbacks_info.clear();
+
+	create_entity_callbacks_info.clear();
+	destroy_entity_callbacks_info.clear();
 
 	lk.unlock();
 
@@ -111,6 +128,26 @@ void execution_callbacks::invoke(
 			}
 		}
 	}
+
+	if(execution_events->entity_created_callback != nullptr) {
+		for(auto& info : entity_created_callbacks) {
+			execution_events->entity_created_callback(
+				info.event,
+				info.entity_id,
+				execution_events->entity_created_callback_user_data
+			);
+		}
+	}
+
+	if(execution_events->entity_destroyed_callback != nullptr) {
+		for(auto& info : entity_destroyed_callbacks) {
+			execution_events->entity_destroyed_callback(
+				info.event,
+				info.entity_id,
+				execution_events->entity_destroyed_callback_user_data
+			);
+		}
+	}
 }
 
 bool execution_callbacks::has_callbacks() {
@@ -123,6 +160,14 @@ bool execution_callbacks::has_callbacks() {
 	}
 
 	if(remove_callbacks_info.size() > 0) {
+		return true;
+	}
+
+	if(create_entity_callbacks_info.size() > 0) {
+		return true;
+	}
+
+	if(destroy_entity_callbacks_info.size() > 0) {
 		return true;
 	}
 
@@ -199,7 +244,6 @@ void execution_callbacks::remove_callback(
 			init_cb_info.entity_id == entity_id;
 	});
 
-	// Maybe I can store data from here?
 	std::erase_if(self->update_callbacks_info, [&](auto& update_cb_info) {
 		return update_cb_info.component_id == component_id &&
 			update_cb_info.entity_id == entity_id;
@@ -225,4 +269,34 @@ void execution_callbacks::remove_callback(
 	// Same for remove, I could store data here
 	// maybe...?
 	self->remove_callbacks_info.push_back(info);
+}
+
+void execution_callbacks::entity_created_callback(
+	ecsact_event     event,
+	ecsact_entity_id entity_id,
+	void*            callback_user_data
+) {
+	auto self = static_cast<execution_callbacks*>(callback_user_data);
+
+	auto info = types::entity_callback_info{};
+
+	info.event = event;
+	info.entity_id = entity_id;
+
+	self->create_entity_callbacks_info.push_back(info);
+}
+
+void execution_callbacks::entity_destroyed_callback(
+	ecsact_event     event,
+	ecsact_entity_id entity_id,
+	void*            callback_user_data
+) {
+	auto self = static_cast<execution_callbacks*>(callback_user_data);
+
+	auto info = types::entity_callback_info{};
+
+	info.event = event;
+	info.entity_id = entity_id;
+
+	self->destroy_entity_callbacks_info.push_back(info);
 }

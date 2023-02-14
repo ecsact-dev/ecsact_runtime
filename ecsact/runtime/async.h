@@ -101,22 +101,6 @@ typedef void (*ecsact_execute_sys_error_callback)(
 	void*                        callback_user_data
 );
 
-/**
- * When an entity is sucessfully created this callback is
- * invoked.
- *
- * @param entity_id the entity id of the created entity
- * @param request_id the request ID returned by the create entity callback
- * @param callback_user_data the @ref
- * ecsact_async_events_collector::error_callback_user_data
- */
-typedef void (*ecsact_async_create_entity_callback)(
-	//
-	ecsact_entity_id        entity_id,
-	ecsact_async_request_id request_id,
-	void*                   callback_user_data
-);
-
 typedef struct ecsact_async_events_collector {
 	/**
 	 * invoked when an async request failed.
@@ -129,19 +113,6 @@ typedef struct ecsact_async_events_collector {
 	 * `callback_user_data` passed to `async_error_callback`
 	 */
 	void* async_error_callback_user_data;
-
-	/**
-	 * Invoked when a create entity request succeeds.
-	 * @see ecsact_async_create_entity_callback
-	 * @see ecsact_entity_id
-	 * @see ecsact_async_error
-	 */
-	ecsact_async_create_entity_callback async_entity_callback;
-
-	/**
-	 * `callback_user_data` passed to `async_entity_callback`
-	 */
-	void* async_entity_callback_user_data;
 
 	/**
 	 * invoked when a system execution error occurred.
@@ -204,11 +175,6 @@ ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
 ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
 
 /**
- * Returns an entity
- */
-ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_create_entity)(void);
-
-/**
  * Gets the current tick
  */
 ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
@@ -218,7 +184,6 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
 	fn(ecsact_async_flush_events, __VA_ARGS__);              \
 	fn(ecsact_async_connect, __VA_ARGS__);                   \
 	fn(ecsact_async_disconnect, __VA_ARGS__);                \
-	fn(ecsact_async_create_entity, __VA_ARGS__);             \
 	fn(ecsact_async_get_current_tick, __VA_ARGS__);
 
 #undef ECSACT_ASYNC_API

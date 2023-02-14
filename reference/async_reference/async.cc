@@ -38,20 +38,6 @@ void ecsact_async_flush_events(
 	}
 }
 
-ecsact_async_request_id ecsact_async_create_entity() {
-	auto req_id = request_id_factory.next_id();
-	if(!reference) {
-		async_callbacks.add(detail::types::async_error{
-			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
-			.request_ids = {req_id},
-		});
-		return req_id;
-	}
-
-	reference->create_entity_request(req_id);
-	return req_id;
-}
-
 ecsact_async_request_id ecsact_async_enqueue_execution_options(
 	const ecsact_execution_options options
 ) {
