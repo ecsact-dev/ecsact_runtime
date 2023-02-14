@@ -159,6 +159,10 @@ public:
 		destroy_entities.push_back(entity_id);
 	}
 
+	inline void push_action(const ecsact_action& action) {
+		actions.push_back(action);
+	}
+
 	inline void clear() {
 		options = {};
 
@@ -176,6 +180,8 @@ public:
 
 		create_entities.clear();
 		destroy_entities.clear();
+
+		actions.clear();
 	}
 
 	inline ecsact_execution_options c() {
@@ -204,6 +210,9 @@ public:
 		options.destroy_entities = destroy_entities.data();
 		options.destroy_entities_length = destroy_entities.size();
 
+		options.actions = actions.data();
+		options.actions_length = actions.size();
+
 		return options;
 	}
 
@@ -222,6 +231,8 @@ private:
 
 	std::vector<int>               entities_component_lengths;
 	std::vector<ecsact_component*> entities_components;
+
+	std::vector<ecsact_action> actions;
 
 	ecsact_execution_options options;
 };
