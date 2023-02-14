@@ -27,7 +27,8 @@ void async_test::RemoveComponent::impl(context& ctx) {
 }
 
 void async_test::TryEntity::impl(context& ctx) {
-	auto action = ctx.action();
+	// santity check
+	ctx.action();
 }
 
 void assert_time_past(
@@ -75,7 +76,7 @@ void flush_events_never_error(const ecsact_execution_events_collector* exec_evc
 	ASSERT_FALSE(_error_happened)
 
 TEST(AsyncRef, ConnectBad) {
-	auto connect_req_id = ecsact_async_connect("bad");
+	ecsact_async_connect("bad");
 
 	auto async_err_cb = //
 		[](
@@ -114,14 +115,13 @@ TEST(AsyncRef, InvalidConnectionString) {
 }
 
 TEST(AsyncRef, Disconnect) {
-	auto connect_req_id = ecsact_async_connect("good");
+	ecsact_async_connect("good");
 
 	ecsact_async_disconnect();
 }
 
 TEST(AsyncRef, AddUpdateAndRemove) {
 	using namespace std::chrono_literals;
-	using clock = std::chrono::high_resolution_clock;
 	using std::chrono::duration_cast;
 
 	// In this test we're adding to components and then immediately updating one
@@ -129,7 +129,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	// First we'll need to connect to the async API and create an entity. We'll
 	// set our tick rate to 25ms.
-	auto connect_req_id = ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?tick_rate=25");
 
 	// This will store temporary state in our entity callback
 	struct callback_data {
@@ -310,7 +310,6 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 TEST(AsyncRef, TryMergeFailure) {
 	using namespace std::chrono_literals;
-	using clock = std::chrono::high_resolution_clock;
 	using std::chrono::duration_cast;
 
 	struct entity_cb_info {
@@ -395,10 +394,9 @@ TEST(AsyncRef, TryMergeFailure) {
 
 TEST(AsyncRef, ReceiveMultipleEntities) {
 	using namespace std::chrono_literals;
-	using clock = std::chrono::high_resolution_clock;
 	using std::chrono::duration_cast;
 
-	auto connect_req_id = ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?tick_rate=25");
 
 	auto options = ecsact::core::execution_options{};
 
@@ -450,7 +448,6 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 
 TEST(AsyncRef, TryAction) {
 	using namespace std::chrono_literals;
-	using clock = std::chrono::high_resolution_clock;
 	using std::chrono::duration_cast;
 
 	static std::atomic_bool reached_system = false;
