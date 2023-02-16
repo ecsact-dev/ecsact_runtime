@@ -415,7 +415,7 @@ typedef enum {
 } ecsact_event;
 
 /**
- * Event handler callback
+ * Component event callback
  */
 typedef void (*ecsact_component_event_callback)( //
 	ecsact_event        event,
@@ -425,8 +425,20 @@ typedef void (*ecsact_component_event_callback)( //
 	void*               callback_user_data
 );
 
-typedef void (*ecsact_entity_event_callback
-)(ecsact_event event, ecsact_entity_id entity_id, void* callback_user_data);
+/**
+ * Entity event callback
+ * @param event always ECSACT_EVENT_CREATE_ENTITY or ECSACT_EVENT_DESTROY_ENTITY
+ * @param entity_id the entity that was created or destroyed
+ * @param index the original index given in the execution options or `-1` if
+ *        from a generator system.
+ * @param callback_user_data void pointer originally given at execution / flush
+ */
+typedef void (*ecsact_entity_event_callback)( //
+	ecsact_event     event,
+	ecsact_entity_id entity_id,
+	int32_t          index,
+	void*            callback_user_data
+);
 
 /**
  * Holds event handler callbacks and their user data
