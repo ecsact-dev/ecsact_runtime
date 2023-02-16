@@ -285,6 +285,7 @@ void execution_callbacks::entity_created_callback(
 
 	info.event = event;
 	info.entity_id = entity_id;
+	info.index = index;
 
 	self->create_entity_callbacks_info.push_back(info);
 }
@@ -301,6 +302,7 @@ void execution_callbacks::entity_destroyed_callback(
 
 	info.event = event;
 	info.entity_id = entity_id;
+	info.index = index;
 
 	self->destroy_entity_callbacks_info.push_back(info);
 }
