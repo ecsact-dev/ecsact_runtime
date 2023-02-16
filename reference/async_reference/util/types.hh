@@ -13,6 +13,7 @@ namespace ecsact::async_reference::detail::types {
 struct entity_callback_info {
 	ecsact_event     event;
 	ecsact_entity_id entity_id;
+	int32_t          index = -1;
 };
 
 struct callback_info {

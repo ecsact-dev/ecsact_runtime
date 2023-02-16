@@ -134,6 +134,7 @@ void execution_callbacks::invoke(
 			execution_events->entity_created_callback(
 				info.event,
 				info.entity_id,
+				info.index,
 				execution_events->entity_created_callback_user_data
 			);
 		}
@@ -144,6 +145,7 @@ void execution_callbacks::invoke(
 			execution_events->entity_destroyed_callback(
 				info.event,
 				info.entity_id,
+				info.index,
 				execution_events->entity_destroyed_callback_user_data
 			);
 		}
@@ -274,6 +276,7 @@ void execution_callbacks::remove_callback(
 void execution_callbacks::entity_created_callback(
 	ecsact_event     event,
 	ecsact_entity_id entity_id,
+	int32_t          index,
 	void*            callback_user_data
 ) {
 	auto self = static_cast<execution_callbacks*>(callback_user_data);
@@ -289,6 +292,7 @@ void execution_callbacks::entity_created_callback(
 void execution_callbacks::entity_destroyed_callback(
 	ecsact_event     event,
 	ecsact_entity_id entity_id,
+	int32_t          index,
 	void*            callback_user_data
 ) {
 	auto self = static_cast<execution_callbacks*>(callback_user_data);
