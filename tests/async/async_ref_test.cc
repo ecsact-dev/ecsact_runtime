@@ -149,9 +149,10 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	auto entity_cb = //
 		[](
-			ecsact_event     event,
-			ecsact_entity_id entity_id,
-			void*            callback_user_data
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
 		) {
 			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
 
@@ -326,9 +327,10 @@ TEST(AsyncRef, TryMergeFailure) {
 
 	auto entity_cb = //
 		[](
-			ecsact_event     event,
-			ecsact_entity_id entity_id,
-			void*            callback_user_data
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
 		) {
 			entity_cb_info& entity_info =
 				*static_cast<entity_cb_info*>(callback_user_data);
@@ -413,9 +415,10 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 
 	auto entity_cb = //
 		[](
-			ecsact_event     event,
-			ecsact_entity_id entity_id,
-			void*            callback_user_data
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
 		) {
 			entity_cb_info& entity_info =
 				*static_cast<entity_cb_info*>(callback_user_data);
@@ -463,9 +466,10 @@ TEST(AsyncRef, TryAction) {
 
 	auto entity_cb = //
 		[](
-			ecsact_event     event,
-			ecsact_entity_id entity_id,
-			void*            callback_user_data
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
 		) {
 			cb_info.wait = true;
 			cb_info.entity = entity_id;

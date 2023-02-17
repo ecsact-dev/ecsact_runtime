@@ -29,6 +29,7 @@ struct c_execution_options {
 	std::vector<ecsact_entity_id>               removes_entities;
 	std::vector<ecsact_entity_id>               destroy_entities;
 
+	std::vector<ecsact_placeholder_entity_id> create_entity_placeholder_ids;
 	std::vector<std::vector<data_info<ecsact_component_id>>>
 		create_entities_components;
 

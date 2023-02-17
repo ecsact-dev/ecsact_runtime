@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "common.h"
 #include "ecsact/runtime/common.h"
 
 #ifndef ECSACT_CORE_API_VISIBILITY
@@ -340,6 +341,11 @@ typedef struct ecsact_execution_options {
 	int create_entities_length;
 
 	/**
+	 * Placeholder IDs that represent an entity.
+	 */
+	ecsact_placeholder_entity_id* create_entities;
+
+	/**
 	 * Sequential list of component lengths for each entity in
 	 * `create_entities_components`.
 	 */
@@ -415,7 +421,7 @@ typedef enum {
 } ecsact_event;
 
 /**
- * Event handler callback
+ * Component event callback
  */
 typedef void (*ecsact_component_event_callback)( //
 	ecsact_event        event,
@@ -425,8 +431,21 @@ typedef void (*ecsact_component_event_callback)( //
 	void*               callback_user_data
 );
 
-typedef void (*ecsact_entity_event_callback
-)(ecsact_event event, ecsact_entity_id entity_id, void* callback_user_data);
+/**
+ * Entity event callback
+ * @param event always ECSACT_EVENT_CREATE_ENTITY or ECSACT_EVENT_DESTROY_ENTITY
+ * @param entity_id the entity that was created or destroyed
+ * @param placeholder_entity_id the placeholder entity ID originally given in
+ *        execution options or one of the constant placeholder entity IDs.
+ * @param  * @param callback_user_data void pointer originally given at
+ * execution / flush
+ */
+typedef void (*ecsact_entity_event_callback)( //
+	ecsact_event                 event,
+	ecsact_entity_id             entity_id,
+	ecsact_placeholder_entity_id placeholder_entity_id,
+	void*                        callback_user_data
+);
 
 /**
  * Holds event handler callbacks and their user data

@@ -20,6 +20,7 @@ ECSACT_TYPED_ID(ecsact_field_id);
 ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
 ECSACT_TYPED_ID(ecsact_entity_id);
+ECSACT_TYPED_ID(ecsact_placeholder_entity_id);
 ECSACT_TYPED_ID(ecsact_system_generates_id);
 ECSACT_TYPED_ID(ecsact_async_request_id);
 
@@ -120,6 +121,18 @@ static const ecsact_component_id ecsact_invalid_component_id =
 	(ecsact_component_id)-1;
 
 static const ecsact_entity_id ecsact_invalid_entity_id = (ecsact_entity_id)-1;
+
+/**
+ * Entity is from a generator system.
+ */
+static const ecsact_placeholder_entity_id ecsact_generated_entity =
+	(ecsact_placeholder_entity_id)-1;
+
+/**
+ * Entity is from an external source such as over a network.
+ */
+static const ecsact_placeholder_entity_id ecsact_external_entity =
+	(ecsact_placeholder_entity_id)-2;
 
 typedef enum {
 	/**
@@ -264,5 +277,16 @@ typedef int (*ecsact_component_compare_fn_t)(const void* a, const void* b);
  * Comparison function between 2 actions of the same type
  */
 typedef int (*ecsact_action_compare_fn_t)(const void* a, const void* b);
+
+/**
+ * A convenient function for generating placeholder entity IDs. This is not a
+ * necessary function. Any 32 bit integer >=0 is a valid placeholder entity ID.
+ * Integers <0 are reserved as special placeholder IDs.
+ */
+inline ecsact_placeholder_entity_id ecsact_util_make_placeholder_entity_id(
+	int32_t id
+) {
+	return (ecsact_placeholder_entity_id)id;
+}
 
 #endif // ECSACT_RUNTIME_COMMON_H
