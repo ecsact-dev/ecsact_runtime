@@ -45,7 +45,8 @@ struct cpp_component {
 };
 
 struct entity_create_options {
-	std::vector<cpp_component> components;
+	ecsact_placeholder_entity_id placeholder_entity_id;
+	std::vector<cpp_component>   components;
 };
 
 struct action_info {

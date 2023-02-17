@@ -1,4 +1,5 @@
 #include <memory>
+#include <cassert>
 
 #include "util.hh"
 
@@ -115,6 +116,9 @@ void util::cpp_to_c_execution_options(
 	out_c_execution_options.updates_info.reserve(options.updates.size());
 	out_c_execution_options.remove_ids.reserve(options.removes.size());
 	out_c_execution_options.create_entities_components.reserve(
+		options.create_entities.size()
+	);
+	out_c_execution_options.create_entity_placeholder_ids.reserve(
 		options.create_entities.size()
 	);
 	out_c_execution_options.destroy_entities.reserve(
@@ -287,9 +291,13 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 		}
 	}
 
-	if(options.create_entities_components != nullptr) {
+	if(options.create_entities != nullptr) {
+		assert(options.create_entities_components != nullptr);
+		assert(options.create_entities_components_length != nullptr);
+
 		for(int i = 0; i < options.create_entities_length; i++) {
 			types::entity_create_options entity_to_create{};
+			entity_to_create.placeholder_entity_id = options.create_entities[i];
 			auto component_list_length = options.create_entities_components_length[i];
 			entity_to_create.components.reserve(component_list_length);
 

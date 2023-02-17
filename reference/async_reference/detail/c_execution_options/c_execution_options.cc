@@ -3,6 +3,13 @@
 using namespace ecsact::async_reference::detail;
 
 ecsact_execution_options c_execution_options::c() {
+	actions.reserve(actions_info.size());
+	actions.clear();
+	adds.reserve(adds_info.size());
+	adds.clear();
+	updates.reserve(updates_info.size());
+	updates.clear();
+
 	for(auto& action_info : actions_info) {
 		ecsact_action action;
 		action.action_data = action_info.data.data();
@@ -60,6 +67,7 @@ ecsact_execution_options c_execution_options::c() {
 	options.remove_components_entities = removes_entities.data();
 	options.remove_components_length = remove_ids.size();
 
+	options.create_entities = create_entity_placeholder_ids.data();
 	options.create_entities_components = create_entity_components_datas.data();
 	options.create_entities_length = create_entities_components.size();
 	options.create_entities_components_length =

@@ -94,6 +94,8 @@ public:
 };
 
 class builder_entity {
+	friend class execution_options;
+
 public:
 	template<typename C>
 	inline builder_entity& add_component(C* component) {
@@ -104,9 +106,8 @@ public:
 		return *this;
 	}
 
-	friend class execution_options;
-
 private:
+	ecsact_placeholder_entity_id  placeholder_entity_id;
 	std::vector<ecsact_component> components;
 };
 
@@ -150,8 +151,11 @@ public:
 		remove_entities_container.push_back(entity_id);
 	}
 
-	inline builder_entity& create_entity() {
-		auto& builder = create_entities.emplace_back(builder_entity{});
+	inline builder_entity& create_entity(
+		ecsact_placeholder_entity_id placeholder_entity_id = {}
+	) {
+		auto& builder = create_entities.emplace_back();
+		builder.placeholder_entity_id = placeholder_entity_id;
 		return builder;
 	}
 
@@ -197,11 +201,19 @@ public:
 		options.remove_components_entities = remove_entities_container.data();
 		options.remove_components = remove_component_ids_container.data();
 
+		entities_components.clear();
+		entities_components.reserve(create_entities.size());
+		entities_component_lengths.clear();
+		entities_component_lengths.reserve(create_entities.size());
+		create_placeholders.clear();
+		create_placeholders.reserve(create_entities.size());
 		for(auto& built_entity : create_entities) {
+			create_placeholders.push_back(built_entity.placeholder_entity_id);
 			entities_component_lengths.push_back(built_entity.components.size());
 			entities_components.push_back(built_entity.components.data());
 		}
 
+		options.create_entities = create_placeholders.data();
 		options.create_entities_components = entities_components.data();
 		options.create_entities_length = create_entities.size();
 		options.create_entities_components_length =
@@ -229,8 +241,9 @@ private:
 	std::vector<builder_entity>   create_entities;
 	std::vector<ecsact_entity_id> destroy_entities;
 
-	std::vector<int>               entities_component_lengths;
-	std::vector<ecsact_component*> entities_components;
+	std::vector<ecsact_placeholder_entity_id> create_placeholders;
+	std::vector<int32_t>                      entities_component_lengths;
+	std::vector<ecsact_component*>            entities_components;
 
 	std::vector<ecsact_action> actions;
 
