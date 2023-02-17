@@ -64,17 +64,17 @@ private:
 	);
 
 	static void entity_created_callback(
-		ecsact_event     event,
-		ecsact_entity_id entity_id,
-		int32_t          index,
-		void*            callback_user_data
+		ecsact_event                 event,
+		ecsact_entity_id             entity_id,
+		ecsact_placeholder_entity_id placeholder_entity_id,
+		void*                        callback_user_data
 	);
 
 	static void entity_destroyed_callback(
-		ecsact_event     event,
-		ecsact_entity_id entity_id,
-		int32_t          index,
-		void*            callback_user_data
+		ecsact_event                 event,
+		ecsact_entity_id             entity_id,
+		ecsact_placeholder_entity_id placeholder_entity_id,
+		void*                        callback_user_data
 	);
 };
 } // namespace ecsact::async_reference::detail
