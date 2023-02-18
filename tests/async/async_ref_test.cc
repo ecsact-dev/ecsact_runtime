@@ -174,6 +174,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
