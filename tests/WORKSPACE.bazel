@@ -37,9 +37,9 @@ boost_http_archives()
 
 http_archive(
     name = "ecsact_rt_entt",
-    sha256 = "8b1980fa026266a6ef44aef1f147d7a4319134fab65cb3b3bf63eae0de9f0bd2",
-    strip_prefix = "ecsact_rt_entt-6fecd48f243d16d7043c351fb37b5a1fb1bdaa21",
-    url = "https://github.com/ecsact-dev/ecsact_rt_entt/archive/6fecd48f243d16d7043c351fb37b5a1fb1bdaa21.zip",
+    sha256 = "695ca1afe41b9485fd55d7847ad4864e08a124ba031ad96e70c610f39cc4bbf4",
+    strip_prefix = "ecsact_rt_entt-cb4bb939f7b91d6b3194a1af001f0618d37cc112",
+    url = "https://github.com/ecsact-dev/ecsact_rt_entt/archive/cb4bb939f7b91d6b3194a1af001f0618d37cc112.zip",
 )
 
 http_archive(

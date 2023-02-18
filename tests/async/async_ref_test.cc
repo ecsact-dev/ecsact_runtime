@@ -174,6 +174,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -518,12 +519,7 @@ TEST(AsyncRef, TryAction) {
 		}
 	);
 
-	ecsact_action my_action{
-		.action_id = async_test::TryEntity::id,
-		.action_data = &my_try_entity,
-	};
-
-	options.push_action(my_action);
+	options.push_action(&my_try_entity);
 
 	ecsact_async_enqueue_execution_options(options.c());
 
