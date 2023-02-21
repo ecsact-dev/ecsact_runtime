@@ -12,12 +12,12 @@
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
-#include "reference/async_reference/detail/c_execution_options/c_execution_options.hh"
-#include "reference/async_reference/util/types.hh"
-#include "reference/async_reference/util/util.hh"
-#include "reference/async_reference/tick_manager/tick_manager.hh"
-#include "reference/async_reference/callbacks/execution_callbacks.hh"
-#include "reference/async_reference/callbacks/async_callbacks.hh"
+#include "detail/c_execution_options/c_execution_options.hh"
+#include "util/types.hh"
+#include "util/util.hh"
+#include "tick_manager/tick_manager.hh"
+#include "callbacks/execution_callbacks.hh"
+#include "callbacks/async_callbacks.hh"
 #include "request_id_factory/request_id_factory.hh"
 
 namespace ecsact::async_reference::detail {

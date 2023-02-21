@@ -4,8 +4,8 @@
 #include <map>
 #include <mutex>
 
-#include "reference/async_reference/util/types.hh"
-#include "reference/async_reference/util/util.hh"
+#include "../util/types.hh"
+#include "../util/util.hh"
 
 namespace ecsact::async_reference::detail {
 
