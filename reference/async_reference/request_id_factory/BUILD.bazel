@@ -14,5 +14,7 @@ filegroup(
         "**/*.hh",
         "**/*.cc",
     ]),
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//reference/async_reference:__pkg__",
+    ],
 )
