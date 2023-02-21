@@ -7,3 +7,12 @@ cc_library(
     copts = copts,
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "sources",
+    srcs = glob([
+        "**/*.hh",
+        "**/*.cc",
+    ]),
+    visibility = ["//visibility:public"],
+)
