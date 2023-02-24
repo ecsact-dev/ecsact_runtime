@@ -48,7 +48,6 @@ ecsact_execution_options c_execution_options::c() {
 		}
 
 		create_entity_components_datas.push_back(entity_components.data());
-		// Do stuff here
 	}
 
 	options.actions = actions.data();
@@ -72,6 +71,9 @@ ecsact_execution_options c_execution_options::c() {
 	options.create_entities_length = create_entities_components.size();
 	options.create_entities_components_length =
 		create_entity_components_length.data();
+
+	options.destroy_entities = destroy_entities.data();
+	options.destroy_entities_length = destroy_entities.size();
 
 	return options;
 }
