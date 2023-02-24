@@ -1,5 +1,7 @@
 package serialize_test;
 
+component ExampleTagComponent {}
+
 component ExampleComponent {
 	i32 num;
 }

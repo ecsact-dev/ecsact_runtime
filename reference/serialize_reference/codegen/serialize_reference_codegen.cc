@@ -57,27 +57,45 @@ void ecsact_codegen_plugin(
 		auto comp_name =
 			ecsact::meta::decl_full_name(ecsact_id_cast<ecsact_decl_id>(comp_id));
 		auto cpp_comp_name = cpp_identifier(comp_name);
+		auto field_ids = ecsact::meta::get_field_ids(comp_id);
 
-		ctx.write(
-			"_comp_sizes[static_cast<ecsact_component_id>(",
-			static_cast<int32_t>(comp_id),
-			")] = sizeof(",
-			cpp_comp_name,
-			");\n"
-		);
+		if(field_ids.empty()) {
+			ctx.write(
+				"_comp_sizes[static_cast<ecsact_component_id>(",
+				static_cast<int32_t>(comp_id),
+				")] = 0;\n"
+			);
+		} else {
+			ctx.write(
+				"_comp_sizes[static_cast<ecsact_component_id>(",
+				static_cast<int32_t>(comp_id),
+				")] = sizeof(",
+				cpp_comp_name,
+				");\n"
+			);
+		}
 	}
 
 	for(auto act_id : ecsact::meta::get_action_ids(pkg_id)) {
 		auto act_name =
 			ecsact::meta::decl_full_name(ecsact_id_cast<ecsact_decl_id>(act_id));
 		auto cpp_act_name = cpp_identifier(act_name);
-		ctx.write(
-			"_act_sizes[static_cast<ecsact_action_id>(",
-			static_cast<int32_t>(act_id),
-			")] = sizeof(",
-			cpp_act_name,
-			");\n"
-		);
+		auto field_ids = ecsact::meta::get_field_ids(act_id);
+		if(field_ids.empty()) {
+			ctx.write(
+				"_act_sizes[static_cast<ecsact_action_id>(",
+				static_cast<int32_t>(act_id),
+				")] = 0;\n"
+			);
+		} else {
+			ctx.write(
+				"_act_sizes[static_cast<ecsact_action_id>(",
+				static_cast<int32_t>(act_id),
+				")] = sizeof(",
+				cpp_act_name,
+				");\n"
+			);
+		}
 	}
 	ctx.indentation -= 1;
 
