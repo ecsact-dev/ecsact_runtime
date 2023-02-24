@@ -8,8 +8,8 @@
 #include "async_test.ecsact.hh"
 #include "async_test.ecsact.systems.hh"
 #include "ecsact/runtime/async.h"
-#include "ecsact/runtime/dynamic.h"
 #include "ecsact/runtime/core.hh"
+#include "ecsact/runtime/dynamic.h"
 
 using namespace std::chrono_literals;
 using std::chrono::duration_cast;
@@ -395,7 +395,7 @@ TEST(AsyncRef, TryMergeFailure) {
 	ecsact_async_disconnect();
 }
 
-TEST(AsyncRef, ReceiveMultipleEntities) {
+TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 	using namespace std::chrono_literals;
 	using std::chrono::duration_cast;
 
@@ -410,8 +410,9 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 	}
 
 	struct entity_cb_info {
-		std::array<int, 10> entity_request_ids;
-		int&                counter;
+		std::array<int, 10>              entity_request_ids;
+		std::array<ecsact_entity_id, 10> entity_ids;
+		int&                             counter;
 	};
 
 	auto entity_cb = //
@@ -424,6 +425,7 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 			entity_cb_info& entity_info =
 				*static_cast<entity_cb_info*>(callback_user_data);
 			entity_info.entity_request_ids[entity_info.counter] = entity_info.counter;
+			entity_info.entity_ids[entity_info.counter] = entity_id;
 			entity_info.counter++;
 		};
 
@@ -445,6 +447,48 @@ TEST(AsyncRef, ReceiveMultipleEntities) {
 
 	for(int i = 0; i < entity_info.entity_request_ids.size(); i++) {
 		ASSERT_EQ(i, entity_info.entity_request_ids[i]);
+	}
+
+	struct destroy_cb_info {
+		ecsact_entity_id entity_id;
+		bool             wait;
+	};
+
+	auto destroy_entity_cb = //
+		[](
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
+		) {
+			destroy_cb_info& destroy_cb =
+				*static_cast<destroy_cb_info*>(callback_user_data);
+			assert(entity_id == destroy_cb.entity_id);
+			destroy_cb.wait = true;
+		};
+
+	options.clear();
+	evc.entity_created_callback = nullptr;
+	evc.entity_created_callback_user_data = nullptr;
+
+	destroy_cb_info cb_info{
+		.entity_id = entity_info.entity_ids[5],
+		.wait = false,
+	};
+
+	evc.entity_destroyed_callback = destroy_entity_cb;
+	evc.entity_destroyed_callback_user_data = &cb_info;
+
+	options.destroy_entity(cb_info.entity_id);
+
+	ecsact_async_enqueue_execution_options(options.c());
+
+	start_tick = ecsact_async_get_current_tick();
+	while(cb_info.wait != true) {
+		ecsact_async_flush_events(&evc, nullptr);
+		auto current_tick = ecsact_async_get_current_tick();
+		auto tick_diff = current_tick - start_tick;
+		ASSERT_LT(tick_diff, 10);
 	}
 
 	ecsact_async_disconnect();
