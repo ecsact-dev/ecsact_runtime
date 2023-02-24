@@ -83,7 +83,7 @@ void ecsact_codegen_plugin(
 		auto field_ids = ecsact::meta::get_field_ids(act_id);
 		if(field_ids.empty()) {
 			ctx.write(
-				"_act_sizes[static_cast<esact_action_id>(",
+				"_act_sizes[static_cast<ecsact_action_id>(",
 				static_cast<int32_t>(act_id),
 				")] = 0;\n"
 			);
