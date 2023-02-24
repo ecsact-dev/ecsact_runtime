@@ -59,3 +59,40 @@ TEST(ActionSerialize, Cpp) {
 	auto act = ecsact::deserialize<ExampleAction>(serialized_act);
 	EXPECT_EQ(act.input, 42);
 }
+
+TEST(TagComponentSerialize, Correctness) {
+	auto tag_comp = serialize_test::ExampleTagComponent{};
+	auto tag_comp_size =
+		ecsact_serialize_component_size(serialize_test::ExampleTagComponent::id);
+	EXPECT_EQ(tag_comp_size, 0);
+
+	std::vector<uint8_t> serialized_comp(
+		ecsact_serialize_component_size(serialize_test::ExampleTagComponent::id)
+	);
+
+	ecsact_serialize_component(
+		serialize_test::ExampleTagComponent::id,
+		&tag_comp,
+		serialized_comp.data()
+	);
+
+	auto deserialized_comp = serialize_test::ExampleTagComponent{};
+
+	ecsact_deserialize_component(
+		serialize_test::ExampleTagComponent::id,
+		serialized_comp.data(),
+		&deserialized_comp
+	);
+
+	ecsact_serialize_component(
+		serialize_test::ExampleTagComponent::id,
+		nullptr,
+		nullptr
+	);
+
+	ecsact_deserialize_component(
+		serialize_test::ExampleTagComponent::id,
+		nullptr,
+		nullptr
+	);
+}
