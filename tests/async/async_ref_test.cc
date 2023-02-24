@@ -395,7 +395,7 @@ TEST(AsyncRef, TryMergeFailure) {
 	ecsact_async_disconnect();
 }
 
-TEST(AsyncRef, ReceiveMultipleEntities) {
+TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 	using namespace std::chrono_literals;
 	using std::chrono::duration_cast;
 
