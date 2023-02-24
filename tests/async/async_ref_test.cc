@@ -218,6 +218,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	start_tick = ecsact_async_get_current_tick();
 	while(!cb_info.init_happened) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -258,6 +259,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	start_tick = ecsact_async_get_current_tick();
 	while(!cb_info.update_happened) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -296,6 +298,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	start_tick = ecsact_async_get_current_tick();
 	// Flush until we hit a maximum or get all our events we expect.
 	while(!cb_info.all_events_happened()) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -384,6 +387,7 @@ TEST(AsyncRef, TryMergeFailure) {
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(merge_data.wait != true) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, &async_evc);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -439,6 +443,7 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(counter < 10) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -485,6 +490,7 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 
 	start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -539,6 +545,7 @@ TEST(AsyncRef, TryAction) {
 
 	auto start_tick = ecsact_async_get_current_tick();
 	while(cb_info.wait != true) {
+		std::this_thread::yield();
 		ecsact_async_flush_events(&evc, nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
@@ -569,6 +576,7 @@ TEST(AsyncRef, TryAction) {
 
 	start_tick = ecsact_async_get_current_tick();
 	while(reached_system != true) {
+		std::this_thread::yield();
 		FLUSH_EVENTS_NEVER_ERROR(nullptr);
 		auto current_tick = ecsact_async_get_current_tick();
 		auto tick_diff = current_tick - start_tick;
