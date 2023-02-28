@@ -120,7 +120,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	// First we'll need to connect to the async API and create an entity. We'll
 	// set our tick rate to 25ms.
-	auto connect_req_id = ecsact::async::connect("good?tick_rate=25");
+	ecsact_async_connect("good?tick_rate=25");
 
 	// This will store temporary state in our entity callback
 	struct callback_data {
