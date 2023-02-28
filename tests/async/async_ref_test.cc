@@ -7,7 +7,7 @@
 
 #include "async_test.ecsact.hh"
 #include "async_test.ecsact.systems.hh"
-#include "ecsact/runtime/async.h"
+#include "ecsact/runtime/async.hh"
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/dynamic.h"
 
@@ -76,48 +76,39 @@ void flush_events_never_error(const ecsact_execution_events_collector* exec_evc
 	ASSERT_FALSE(_error_happened)
 
 TEST(AsyncRef, ConnectBad) {
-	ecsact_async_connect("bad");
+	auto connect_req_id = ecsact::async::connect("bad");
+	auto async_evc = ecsact::async::async_events_collector<>{};
+	async_evc.set_async_error_callback(
+		[&](ecsact_async_error err, std::span<ecsact_async_request_id> req_ids) {
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], connect_req_id);
+			ASSERT_EQ(err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
+		}
+	);
 
-	auto async_err_cb = //
-		[](
-			ecsact_async_error       async_err,
-			int                      request_ids_length,
-			ecsact_async_request_id* request_ids,
-			void*                    callback_user_data
-		) { ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_PERMISSION_DENIED); };
-
-	ecsact_async_events_collector async_evc{};
-	async_evc.async_error_callback = async_err_cb;
-
-	ecsact_async_flush_events(nullptr, &async_evc);
-	ecsact_async_disconnect();
+	ecsact::async::flush_events(async_evc);
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, InvalidConnectionString) {
-	static auto req_id = ecsact_async_connect("good?bad_option=true&foo=baz");
+	auto connect_req_id = ecsact::async::connect("good?bad_option=true&foo=baz");
+	auto async_evc = ecsact::async::async_events_collector<>{};
+	async_evc.set_async_error_callback(
+		[&](ecsact_async_error err, std::span<ecsact_async_request_id> req_ids) {
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], connect_req_id);
+			ASSERT_EQ(err, ECSACT_ASYNC_INVALID_CONNECTION_STRING);
+		}
+	);
 
-	auto async_err_cb = //
-		[](
-			ecsact_async_error       async_err,
-			int                      request_ids_length,
-			ecsact_async_request_id* request_ids,
-			void*                    callback_user_data
-		) {
-			ASSERT_EQ(async_err, ECSACT_ASYNC_INVALID_CONNECTION_STRING);
-			ASSERT_EQ(request_ids_length, 1);
-			ASSERT_EQ(request_ids[0], req_id);
-		};
-
-	ecsact_async_events_collector async_evc{};
-	async_evc.async_error_callback = async_err_cb;
-
-	ecsact_async_flush_events(nullptr, &async_evc);
+	ecsact::async::flush_events(async_evc);
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, Disconnect) {
-	ecsact_async_connect("good");
-
-	ecsact_async_disconnect();
+	// Ignoring request ID
+	static_cast<void>(ecsact::async::connect("good"));
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, AddUpdateAndRemove) {
@@ -310,7 +301,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 	}
 
 	options.clear();
-	ecsact_async_disconnect();
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, TryMergeFailure) {
@@ -587,33 +578,25 @@ TEST(AsyncRef, TryAction) {
 }
 
 TEST(AsyncRef, FlushNoEventsOrConnect) {
-	ecsact_async_flush_events(nullptr, nullptr);
+	ecsact::async::flush_events();
 }
 
 TEST(AsyncRef, EnqueueErrorBeforeConnect) {
-	// It doesn't matter what is in our options. We should get an error regardless
-	// of it's content if we aren't connected.
-	auto        options = ecsact_execution_options{};
-	static auto req_id = ecsact_async_enqueue_execution_options(options);
-	static auto async_error_happened = false;
-
-	auto async_evc = ecsact_async_events_collector{};
-	async_evc.async_error_callback = //
-		[](
-			ecsact_async_error       async_err,
-			int                      request_ids_length,
-			ecsact_async_request_id* request_ids,
-			void*                    callback_user_data
-		) {
+	auto options = ecsact::core::execution_options{};
+	auto req_id = ecsact::async::enqueue_execution_options(options);
+	auto async_error_happened = false;
+	auto async_evc = ecsact::async::async_events_collector<>{};
+	async_evc.set_async_error_callback(
+		[&](ecsact_async_error err, std::span<ecsact_async_request_id> req_ids) {
 			async_error_happened = true;
-			ASSERT_EQ(request_ids_length, 1);
-			ASSERT_EQ(request_ids[0], req_id);
-			ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
-			ASSERT_EQ(callback_user_data, nullptr);
-		};
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], req_id);
+			ASSERT_EQ(err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
+		}
+	);
 
 	// The reference implementation gives an error right away if not connected
 	// but a different implementation of the async API may delay the error.
-	ecsact_async_flush_events(nullptr, &async_evc);
+	ecsact::async::flush_events(async_evc);
 	ASSERT_TRUE(async_error_happened);
 }

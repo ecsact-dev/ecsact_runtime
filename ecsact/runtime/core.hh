@@ -6,7 +6,6 @@
 #include <functional>
 #include <optional>
 #include "common.h"
-#include "core.h"
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
