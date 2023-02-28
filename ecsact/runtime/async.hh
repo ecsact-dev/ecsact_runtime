@@ -4,9 +4,7 @@
 #include <span>
 #include <concepts>
 #include <utility>
-#include "async.h"
-#include "core.h"
-#include "core.hh"
+#include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/async.h"
 
 namespace ecsact::async {
@@ -46,12 +44,12 @@ public:
 		auto user_data =
 			static_cast<void*>(const_cast<async_events_collector*>(this));
 
-		if(!_async_error_cb.has_value()) {
+		if(_async_error_cb.has_value()) {
 			evc.async_error_callback = &async_events_collector::async_error_callback;
 			evc.async_error_callback_user_data = user_data;
 		}
 
-		if(!_system_error_cb.has_value()) {
+		if(_system_error_cb.has_value()) {
 			evc.system_error_callback =
 				&async_events_collector::system_error_callback;
 			evc.system_error_callback_user_data = user_data;
@@ -119,6 +117,10 @@ inline auto disconnect() -> void {
 	ecsact::core::execution_options& options
 ) -> ecsact_async_request_id {
 	return ecsact_async_enqueue_execution_options(options.c());
+}
+
+inline auto flush_events() -> void {
+	ecsact_async_flush_events(nullptr, nullptr);
 }
 
 template<typename ExecutionEventsCollector>
