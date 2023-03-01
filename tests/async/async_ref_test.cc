@@ -398,16 +398,17 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 
 	auto options = ecsact::core::execution_options{};
 
-	options.create_entity();
+	options.create_entity(static_cast<ecsact_placeholder_entity_id>(42));
 
 	for(int i = 0; i < 10; i++) {
 		ecsact_async_enqueue_execution_options(options.c());
 	}
 
 	struct entity_cb_info {
-		std::array<int, 10>              entity_request_ids;
-		std::array<ecsact_entity_id, 10> entity_ids;
-		int&                             counter;
+		std::array<int, 10>                          entity_request_ids;
+		std::array<ecsact_entity_id, 10>             entity_ids;
+		std::array<ecsact_placeholder_entity_id, 10> placeholder_ids;
+		int&                                         counter;
 	};
 
 	auto entity_cb = //
@@ -421,6 +422,7 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 				*static_cast<entity_cb_info*>(callback_user_data);
 			entity_info.entity_request_ids[entity_info.counter] = entity_info.counter;
 			entity_info.entity_ids[entity_info.counter] = entity_id;
+			entity_info.placeholder_ids[entity_info.counter] = placeholder_entity_id;
 			entity_info.counter++;
 		};
 
@@ -443,6 +445,10 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 
 	for(int i = 0; i < entity_info.entity_request_ids.size(); i++) {
 		ASSERT_EQ(i, entity_info.entity_request_ids[i]);
+		ASSERT_EQ(
+			static_cast<ecsact_placeholder_entity_id>(42),
+			entity_info.placeholder_ids[i]
+		);
 	}
 
 	struct destroy_cb_info {
