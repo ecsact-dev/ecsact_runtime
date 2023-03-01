@@ -111,6 +111,7 @@ void util::cpp_to_c_execution_options(
 	types::cpp_execution_options& options,
 	const ecsact_registry_id&     registry_id
 ) {
+	out_c_execution_options = {};
 	out_c_execution_options.actions_info.reserve(options.actions.size());
 	out_c_execution_options.adds_info.reserve(options.adds.size());
 	out_c_execution_options.updates_info.reserve(options.updates.size());
@@ -204,6 +205,9 @@ void util::cpp_to_c_execution_options(
 			}
 			out_c_execution_options.create_entities_components.push_back(
 				entity_components
+			);
+			out_c_execution_options.create_entity_placeholder_ids.push_back(
+				options.create_entities[i].placeholder_entity_id
 			);
 		}
 	}
