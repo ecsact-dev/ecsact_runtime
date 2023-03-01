@@ -296,10 +296,10 @@ types::cpp_execution_options util::c_to_cpp_execution_options(
 	}
 
 	if(options.create_entities != nullptr) {
-		assert(options.create_entities_components != nullptr);
-		assert(options.create_entities_components_length != nullptr);
-
 		for(int i = 0; i < options.create_entities_length; i++) {
+			assert(options.create_entities_components != nullptr);
+			assert(options.create_entities_components_length != nullptr);
+
 			types::entity_create_options entity_to_create{};
 			entity_to_create.placeholder_entity_id = options.create_entities[i];
 			auto component_list_length = options.create_entities_components_length[i];
@@ -454,43 +454,6 @@ void util::merge_options(
 			tick_options.destroy_entities.end(),
 			other_options.destroy_entities.begin(),
 			other_options.destroy_entities.end()
-		);
-	}
-}
-
-void util::merge_options(
-	types::pending_execution_options&       pending,
-	const types::pending_execution_options& other_pending
-) {
-	if(other_pending.options.actions.size() > 0) {
-		pending.options.actions.insert(
-			pending.options.actions.end(),
-			other_pending.options.actions.begin(),
-			other_pending.options.actions.end()
-		);
-	}
-
-	if(other_pending.options.adds.size() > 0) {
-		pending.options.adds.insert(
-			pending.options.adds.end(),
-			other_pending.options.adds.begin(),
-			other_pending.options.adds.end()
-		);
-	}
-
-	if(other_pending.options.updates.size() > 0) {
-		pending.options.updates.insert(
-			pending.options.updates.end(),
-			other_pending.options.updates.begin(),
-			other_pending.options.updates.end()
-		);
-	}
-
-	if(other_pending.options.removes.size() > 0) {
-		pending.options.removes.insert(
-			pending.options.removes.end(),
-			other_pending.options.removes.begin(),
-			other_pending.options.removes.end()
 		);
 	}
 }

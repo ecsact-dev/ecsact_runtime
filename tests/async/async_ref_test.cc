@@ -606,3 +606,85 @@ TEST(AsyncRef, EnqueueErrorBeforeConnect) {
 	ecsact::async::flush_events(async_evc);
 	ASSERT_TRUE(async_error_happened);
 }
+
+TEST(AsyncRef, RemoveTagComponent) {
+	ecsact_async_connect("good?tick_rate=25");
+
+	struct callback_info {
+		std::atomic_bool wait = false;
+		ecsact_entity_id entity = {};
+	};
+
+	auto cb_info = callback_info{};
+
+	auto entity_cb = //
+		[](
+			ecsact_event                 event,
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id,
+			void*                        callback_user_data
+		) {
+			auto& cb_info = *static_cast<callback_info*>(callback_user_data);
+
+			cb_info.wait = true;
+			cb_info.entity = entity_id;
+		};
+
+	ecsact::core::execution_options options{};
+
+	auto evc = ecsact_execution_events_collector{};
+	evc.entity_created_callback = entity_cb;
+	evc.entity_created_callback_user_data = &cb_info;
+
+	auto my_needed_component = async_test::NeededComponent{};
+
+	options.create_entity().add_component(&my_needed_component);
+
+	ecsact_async_enqueue_execution_options(options.c());
+
+	auto start_tick = ecsact_async_get_current_tick();
+	while(cb_info.wait != true) {
+		std::this_thread::yield();
+		ecsact_async_flush_events(&evc, nullptr);
+		auto current_tick = ecsact_async_get_current_tick();
+		auto tick_diff = current_tick - start_tick;
+		ASSERT_LT(tick_diff, 10);
+	}
+
+	options.clear();
+	evc.entity_created_callback = {};
+	evc.entity_created_callback_user_data = nullptr;
+
+	// Remove component
+	options.remove_component<async_test::NeededComponent>(cb_info.entity);
+
+	ecsact_async_enqueue_execution_options(options.c());
+
+	cb_info.wait = false;
+
+	evc.remove_callback_user_data = &cb_info;
+	evc.remove_callback = //
+		[](
+			ecsact_event        event,
+			ecsact_entity_id    entity_id,
+			ecsact_component_id component_id,
+			const void*         component_data,
+			void*               callback_user_data
+		) {
+			auto& cb_info = *static_cast<callback_info*>(callback_user_data);
+
+			cb_info.wait = true;
+			ASSERT_EQ(component_id, async_test::NeededComponent::id);
+		};
+
+	start_tick = ecsact_async_get_current_tick();
+	while(cb_info.wait != true) {
+		std::this_thread::yield();
+		ecsact_async_flush_events(&evc, nullptr);
+		auto current_tick = ecsact_async_get_current_tick();
+		auto tick_diff = current_tick - start_tick;
+		ASSERT_LT(tick_diff, 10);
+	}
+
+	ecsact_async_disconnect();
+}

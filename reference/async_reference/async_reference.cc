@@ -136,11 +136,11 @@ void async_reference::execute_systems() {
 			const auto sleep_duration = tick_rate - execution_duration;
 
 			auto wait_start = clock::now();
-			std::this_thread::sleep_for(sleep_duration - sleep_drift);
+			std::this_thread::sleep_for(sleep_duration);
 			auto wait_end = clock::now();
 
-			sleep_drift =
-				sleep_duration - duration_cast<nanoseconds>(wait_start - wait_end);
+			// sleep_drift =
+			// 	sleep_duration - duration_cast<nanoseconds>(wait_start - wait_end);
 
 			if(async_err.error != ECSACT_ASYNC_OK) {
 				async_callbacks.add(async_err);
