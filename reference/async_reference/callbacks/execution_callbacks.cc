@@ -68,7 +68,7 @@ void execution_callbacks::invoke(
 	create_entity_callbacks_info.clear();
 	destroy_entity_callbacks_info.clear();
 
-	remove_execution_components.clear();
+	removed_execute_components.clear();
 
 	lk.unlock();
 
@@ -121,12 +121,8 @@ void execution_callbacks::invoke(
 
 	if(execution_events->remove_callback != nullptr) {
 		for(auto& component_info : remove_callbacks) {
-			for(auto itr = remove_execution_components.begin();
-					itr != remove_execution_components.end();) {
-				auto& execute_component = *itr;
-
+			for(auto& execute_component : remove_execution_components) {
 				if(execute_component.entity_id != component_info.entity_id && execute_component._id != component_info.component_id) {
-					++itr;
 					continue;
 				}
 
