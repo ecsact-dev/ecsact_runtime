@@ -48,6 +48,8 @@ void execution_callbacks::invoke(
 	std::vector<types::entity_callback_info> entity_created_callbacks;
 	std::vector<types::entity_callback_info> entity_destroyed_callbacks;
 
+	std::vector<types::cpp_execution_component> remove_execution_components;
+
 	std::unique_lock lk(execution_m);
 
 	init_callbacks = std::move(init_callbacks_info);
@@ -57,6 +59,8 @@ void execution_callbacks::invoke(
 	entity_created_callbacks = std::move(create_entity_callbacks_info);
 	entity_destroyed_callbacks = std::move(destroy_entity_callbacks_info);
 
+	remove_execution_components = std::move(removed_execute_components);
+
 	init_callbacks_info.clear();
 	update_callbacks_info.clear();
 	remove_callbacks_info.clear();
@@ -64,7 +68,20 @@ void execution_callbacks::invoke(
 	create_entity_callbacks_info.clear();
 	destroy_entity_callbacks_info.clear();
 
+	remove_execution_components.clear();
+
 	lk.unlock();
+
+	if(execution_events->entity_created_callback != nullptr) {
+		for(auto& info : entity_created_callbacks) {
+			execution_events->entity_created_callback(
+				info.event,
+				info.entity_id,
+				info.placeholder_entity_id,
+				execution_events->entity_created_callback_user_data
+			);
+		}
+	}
 
 	if(execution_events->init_callback != nullptr) {
 		for(auto& component_info : init_callbacks) {
@@ -104,8 +121,8 @@ void execution_callbacks::invoke(
 
 	if(execution_events->remove_callback != nullptr) {
 		for(auto& component_info : remove_callbacks) {
-			for(auto itr = removed_execute_components.begin();
-					itr != removed_execute_components.end();) {
+			for(auto itr = remove_execution_components.begin();
+					itr != remove_execution_components.end();) {
 				auto& execute_component = *itr;
 
 				if(execute_component.entity_id != component_info.entity_id && execute_component._id != component_info.component_id) {
@@ -123,20 +140,7 @@ void execution_callbacks::invoke(
 					deserialized_component.data(),
 					execution_events->remove_callback_user_data
 				);
-
-				itr = removed_execute_components.erase(itr);
 			}
-		}
-	}
-
-	if(execution_events->entity_created_callback != nullptr) {
-		for(auto& info : entity_created_callbacks) {
-			execution_events->entity_created_callback(
-				info.event,
-				info.entity_id,
-				info.placeholder_entity_id,
-				execution_events->entity_created_callback_user_data
-			);
 		}
 	}
 
@@ -268,8 +272,6 @@ void execution_callbacks::remove_callback(
 		.data = serialized_component,
 	});
 
-	// Same for remove, I could store data here
-	// maybe...?
 	self->remove_callbacks_info.push_back(info);
 }
 
