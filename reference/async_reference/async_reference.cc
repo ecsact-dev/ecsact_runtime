@@ -128,19 +128,13 @@ void async_reference::execute_systems() {
 		using std::chrono::duration_cast;
 
 		nanoseconds execution_duration = {};
-		nanoseconds sleep_drift = {};
 
 		while(is_connected == true) {
 			auto async_err = tick_manager.validate_pending_options();
 
 			const auto sleep_duration = tick_rate - execution_duration;
 
-			auto wait_start = clock::now();
-			std::this_thread::sleep_for(sleep_duration - sleep_drift);
-			auto wait_end = clock::now();
-
-			sleep_drift =
-				sleep_duration - duration_cast<nanoseconds>(wait_start - wait_end);
+			std::this_thread::sleep_for(sleep_duration);
 
 			if(async_err.error != ECSACT_ASYNC_OK) {
 				async_callbacks.add(async_err);
