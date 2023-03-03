@@ -120,7 +120,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	// First we'll need to connect to the async API and create an entity. We'll
 	// set our tick rate to 25ms.
-	ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?delta_speed=25");
 
 	// This will store temporary state in our entity callback
 	struct callback_data {
@@ -313,7 +313,7 @@ TEST(AsyncRef, TryMergeFailure) {
 		bool             wait;
 	};
 
-	ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?delta_speed=25");
 
 	struct merge_callback_data {
 		ecsact_async_request_id request_id;
@@ -394,7 +394,7 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 	using namespace std::chrono_literals;
 	using std::chrono::duration_cast;
 
-	ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?delta_speed=25");
 
 	auto options = ecsact::core::execution_options{};
 
@@ -503,7 +503,7 @@ TEST(AsyncRef, TryAction) {
 
 	static std::atomic_bool reached_system = false;
 
-	ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?delta_speed=25");
 
 	struct entity_cb_info {
 		ecsact_entity_id entity;
@@ -608,7 +608,7 @@ TEST(AsyncRef, EnqueueErrorBeforeConnect) {
 }
 
 TEST(AsyncRef, RemoveTagComponent) {
-	ecsact_async_connect("good?tick_rate=25");
+	ecsact_async_connect("good?delta_speed=25");
 
 	struct callback_info {
 		std::atomic_bool wait = false;
