@@ -64,12 +64,12 @@ void async_reference::connect(
 
 	auto result = parse_connection_string(connect_str);
 
-	if(result.options.contains("tick_rate")) {
-		auto tick_str = result.options.at("tick_rate");
+	if(result.options.contains("delta_speed")) {
+		auto tick_str = result.options.at("delta_speed");
 
 		int tick_int = std::stoi(tick_str);
 
-		tick_rate = std::chrono::milliseconds(tick_int);
+		delta_speed = std::chrono::milliseconds(tick_int);
 	}
 
 	// The good and bad strings simulate the outcome of connections
@@ -79,7 +79,7 @@ void async_reference::connect(
 		return;
 	}
 
-	if(tick_rate.count() == 0) {
+	if(delta_speed.count() == 0) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_INVALID_CONNECTION_STRING,
 			.request_ids = {req_id},
@@ -132,7 +132,7 @@ void async_reference::execute_systems() {
 		while(is_connected == true) {
 			auto async_err = tick_manager.validate_pending_options();
 
-			const auto sleep_duration = tick_rate - execution_duration;
+			const auto sleep_duration = delta_speed - execution_duration;
 
 			std::this_thread::sleep_for(sleep_duration);
 

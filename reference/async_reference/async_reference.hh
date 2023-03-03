@@ -62,6 +62,6 @@ private:
 	std::atomic_bool is_connected = false;
 	std::atomic_bool is_connected_notified = false;
 
-	std::chrono::milliseconds tick_rate = {};
+	std::chrono::milliseconds delta_speed = {};
 };
 }; // namespace ecsact::async_reference::detail
