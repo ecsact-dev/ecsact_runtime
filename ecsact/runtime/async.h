@@ -5,40 +5,21 @@
 #include "ecsact/runtime/common.h"
 #include "ecsact/runtime/core.h"
 
-#ifndef ECSACT_ASYNC_API_VISIBILITY
-#	ifdef ECSACT_ASYNC_API_LOAD_AT_RUNTIME
-#		define ECSACT_ASYNC_API_VISIBILITY
-#	else
-#		ifdef ECSACT_ASYNC_API_EXPORT
-#			ifdef _WIN32
-#				define ECSACT_ASYNC_API_VISIBILITY __declspec(dllexport)
-#			else
-#				define ECSACT_ASYNC_API_VISIBILITY \
-					__attribute__((visibility("default")))
-#			endif
-#		else
-#			ifdef _WIN32
-#				define ECSACT_ASYNC_API_VISIBILITY __declspec(dllimport)
-#			else
-#				define ECSACT_ASYNC_API_VISIBILITY
-#			endif
-#		endif
-#	endif
-#endif // ECSACT_ASYNC_API_VISIBILITY
-
-#ifndef ECSACT_ASYNC_API
-#	ifdef __cplusplus
-#		define ECSACT_ASYNC_API extern "C" ECSACT_ASYNC_API_VISIBILITY
-#	else
-#		define ECSACT_ASYNC_API extern ECSACT_ASYNC_API_VISIBILITY
-#	endif
-#endif // ECSACT_ASYNC_API
+#ifdef ECSACT_ASYNC_API_VISIBILITY
+#	error "ECSACT_ASYNC_API_VISIBILITY define is deprecated"
+#endif
 
 #ifndef ECSACT_ASYNC_API_FN
-#	ifdef ECSACT_ASYNC_API_LOAD_AT_RUNTIME
-#		define ECSACT_ASYNC_API_FN(ret, name) ECSACT_ASYNC_API ret(*name)
-#	else
+#	if defined(ECSACT_ASYNC_API)
 #		define ECSACT_ASYNC_API_FN(ret, name) ECSACT_ASYNC_API ret name
+#	elif defined(ECSACT_ASYNC_API_LOAD_AT_RUNTIME)
+#		define ECSACT_ASYNC_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#	elif defined(ECSACT_ASYNC_API_EXPORT)
+#		define ECSACT_ASYNC_API_FN(ret, name) \
+			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name
+#	else
+#		define ECSACT_ASYNC_API_FN(ret, name) \
+			ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret name
 #	endif
 #endif // ECSACT_ASYNC_API_FN
 

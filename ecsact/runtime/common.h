@@ -9,6 +9,24 @@
 #	define ECSACT_TYPED_ID(name) typedef int32_t name
 #endif
 
+#ifdef __cplusplus
+#	define ECSACT_EXTERN extern "C"
+#else
+#	define ECSACT_EXTERN extern
+#endif
+
+#if defined(__wasm__)
+#	define ECSACT_EXPORT(ExportName) [[clang::export_name(ExportName)]]
+#	define ECSACT_IMPORT(ImportModule, ImportName) \
+		[[clang::import_module(ImportModule)]] [[clang::import_name(ImportName)]]
+#elif defined(_WIN32)
+#	define ECSACT_EXPORT(ExportName) __declspec(dllexport)
+#	define ECSACT_IMPORT(ImportModule, ImportName) __declspec(dllimport)
+#else
+#	define ECSACT_EXPORT(ExportName) __attribute__((visibility("default")))
+#	define ECSACT_IMPORT(ImportModule, ImportName)
+#endif
+
 ECSACT_TYPED_ID(ecsact_package_id);
 ECSACT_TYPED_ID(ecsact_system_id);
 ECSACT_TYPED_ID(ecsact_action_id);

@@ -5,40 +5,21 @@
 #include <stdbool.h>
 #include "ecsact/runtime/common.h"
 
-#ifndef ECSACT_SERIALIZE_API_VISIBILITY
-#	ifdef ECSACT_SERIALIZE_API_LOAD_AT_RUNTIME
-#		define ECSACT_SERIALIZE_API_VISIBILITY
-#	else
-#		ifdef ECSACT_SERIALIZE_API_EXPORT
-#			ifdef _WIN32
-#				define ECSACT_SERIALIZE_API_VISIBILITY __declspec(dllexport)
-#			else
-#				define ECSACT_SERIALIZE_API_VISIBILITY \
-					__attribute__((visibility("default")))
-#			endif
-#		else
-#			ifdef _WIN32
-#				define ECSACT_SERIALIZE_API_VISIBILITY __declspec(dllimport)
-#			else
-#				define ECSACT_SERIALIZE_API_VISIBILITY
-#			endif
-#		endif
-#	endif
-#endif // ECSACT_SERIALIZE_API_VISIBILITY
-
-#ifndef ECSACT_SERIALIZE_API
-#	ifdef __cplusplus
-#		define ECSACT_SERIALIZE_API extern "C" ECSACT_SERIALIZE_API_VISIBILITY
-#	else
-#		define ECSACT_SERIALIZE_API extern ECSACT_SERIALIZE_API_VISIBILITY
-#	endif
-#endif // ECSACT_SERIALIZE_API
+#ifdef ECSACT_SERIALIZE_API_VISIBILITY
+#	error "ECSACT_SERIALIZE_API_VISIBILITY define is deprecated"
+#endif
 
 #ifndef ECSACT_SERIALIZE_API_FN
-#	ifdef ECSACT_SERIALIZE_API_LOAD_AT_RUNTIME
-#		define ECSACT_SERIALIZE_API_FN(ret, name) ECSACT_SERIALIZE_API ret(*name)
-#	else
+#	if defined(ECSACT_SERIALIZE_API)
 #		define ECSACT_SERIALIZE_API_FN(ret, name) ECSACT_SERIALIZE_API ret name
+#	elif defined(ECSACT_SERIALIZE_API_LOAD_AT_RUNTIME)
+#		define ECSACT_SERIALIZE_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#	elif defined(ECSACT_SERIALIZE_API_EXPORT)
+#		define ECSACT_SERIALIZE_API_FN(ret, name) \
+			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name
+#	else
+#		define ECSACT_SERIALIZE_API_FN(ret, name) \
+			ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret name
 #	endif
 #endif // ECSACT_SERIALIZE_API_FN
 
