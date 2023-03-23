@@ -14,6 +14,28 @@
 using namespace std::chrono_literals;
 using std::chrono::duration_cast;
 
+void flush_with_condition(bool& condition, auto&& evc) {
+	auto start_tick = ecsact::async::get_current_tick();
+	while(condition != true) {
+		std::this_thread::yield();
+		ecsact::async::flush_events(evc);
+		auto current_tick = ecsact::async::get_current_tick();
+		auto tick_diff = current_tick - start_tick;
+		ASSERT_LT(tick_diff, 10);
+	}
+}
+
+void flush_with_condition(bool& condition, auto&& evc, auto&& async_evc) {
+	auto start_tick = ecsact::async::get_current_tick();
+	while(condition != true) {
+		std::this_thread::yield();
+		ecsact::async::flush_events(evc, async_evc);
+		auto current_tick = ecsact::async::get_current_tick();
+		auto tick_diff = current_tick - start_tick;
+		ASSERT_LT(tick_diff, 10);
+	}
+}
+
 void async_test::AddComponent::impl(context& ctx) {
 	ctx.add(async_test::ComponentAddRemove{
 		.value = 10,
@@ -120,187 +142,112 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	// First we'll need to connect to the async API and create an entity. We'll
 	// set our tick rate to 25ms.
-	ecsact_async_connect("good?delta_time=25");
+	static_cast<void>(ecsact::async::connect("good?delta_time=25"));
 
-	// This will store temporary state in our entity callback
-	struct callback_data {
-		std::atomic_bool wait = false;
-		ecsact_entity_id entity = {};
+	ecsact_entity_id entity = {};
 
-		std::atomic_bool init_happened = false;
-		std::atomic_bool update_happened = false;
-		std::atomic_bool remove_happened = false;
+	bool entity_wait = false;
 
-		auto all_events_happened() -> bool {
-			return init_happened && update_happened && remove_happened;
-		}
-	};
-
-	auto cb_info = callback_data{};
-
-	auto entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
-
-			cb_info.wait = true;
-			cb_info.entity = entity_id;
-		};
-
+	// Declare an execution options that can affect the system execution loop
 	ecsact::core::execution_options options{};
 
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &cb_info;
+	// Declare an event collector that gathers events from the async execution
+	auto evc = ecsact::core::execution_events_collector<>{};
 
+	evc.set_entity_created_callback(
+		[&](ecsact_entity_id entity_id, ecsact_placeholder_entity_id) {
+			entity_wait = true;
+			entity = entity_id;
+		}
+	);
+
+	// Declare a component to be added to an entity
 	auto my_needed_component = async_test::NeededComponent{};
 
+	// Use the builder on options to add a component
 	options.create_entity().add_component(&my_needed_component);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	// Queue the options to be used in the async execution
+	// It will continue or assert until the expected callback is invoked
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	auto start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	// Flush for feedback from the async execution
+	// An event is expected
+	flush_with_condition(entity_wait, evc);
 
-	// Reset events collector and options
-	evc.entity_created_callback = {};
-	evc.entity_created_callback_user_data = nullptr;
 	options.clear();
+	evc.clear();
 
-	// Preparing add component data
 	auto my_update_component = async_test::ComponentUpdate{.value_to_update = 1};
 
-	options.add_component(cb_info.entity, &my_update_component);
+	bool init_happened = false;
+	options.add_component(entity, &my_update_component);
 
-	// Adding components
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	// Prepare the events collector for the flush to make sure we got all the
-	// events we expected.
-	evc.init_callback_user_data = &cb_info;
-	evc.init_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
-			cb_info.init_happened = true;
+	evc.set_init_callback<async_test::ComponentUpdate>(
+		[&](ecsact_entity_id id, const async_test::ComponentUpdate& component) {
+			init_happened = true;
+			ASSERT_EQ(component.value_to_update, 1);
+		}
+	);
 
-			if(component_id == async_test::ComponentUpdate::id) {
-				auto comp =
-					static_cast<const async_test::ComponentUpdate*>(component_data);
+	flush_with_condition(init_happened, evc);
 
-				ASSERT_EQ(comp->value_to_update, 1);
-			}
-		};
-
-	start_tick = ecsact_async_get_current_tick();
-	while(!cb_info.init_happened) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
-
-	evc.init_callback = {};
-	evc.init_callback_user_data = nullptr;
 	options.clear();
+	evc.clear();
 
-	evc.update_callback_user_data = &cb_info;
-	evc.update_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
+	bool update_happened = false;
 
-			cb_info.update_happened = true;
-			ASSERT_EQ(component_id, async_test::ComponentUpdate::id);
+	evc.set_update_callback<async_test::ComponentUpdate>(
+		[&](ecsact_entity_id id, const async_test::ComponentUpdate& component) {
+			update_happened = true;
+			ASSERT_EQ(component.value_to_update, 6);
+		}
+	);
 
-			auto comp =
-				static_cast<const async_test::ComponentUpdate*>(component_data);
-
-			ASSERT_EQ(comp->value_to_update, 6);
-		};
-
-	// Prepare update component data
 	my_update_component.value_to_update += 5;
 
-	// Update components
-	options.update_component(cb_info.entity, &my_update_component);
+	options.update_component(entity, &my_update_component);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	start_tick = ecsact_async_get_current_tick();
-	while(!cb_info.update_happened) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	flush_with_condition(update_happened, evc);
 
 	options.clear();
-	evc.update_callback = {};
-	evc.update_callback_user_data = nullptr;
+	evc.clear();
+
+	bool remove_happened = false;
 
 	// Remove component
-	options.remove_component<async_test::ComponentUpdate>(cb_info.entity);
+	options.remove_component<async_test::ComponentUpdate>(entity);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	evc.remove_callback_user_data = &cb_info;
-	evc.remove_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_data*>(callback_user_data);
+	evc.set_remove_callback<async_test::ComponentUpdate>(
+		[&](ecsact_entity_id id, const async_test::ComponentUpdate& component) {
+			remove_happened = true;
+			ASSERT_EQ(component.value_to_update, 6);
+		}
+	);
 
-			cb_info.remove_happened = true;
-			ASSERT_EQ(component_id, async_test::ComponentUpdate::id);
-
-			auto comp =
-				static_cast<const async_test::ComponentUpdate*>(component_data);
-
-			ASSERT_EQ(comp->value_to_update, 6);
-		};
-
-	start_tick = ecsact_async_get_current_tick();
+	auto start_tick = ecsact::async::get_current_tick();
 	// Flush until we hit a maximum or get all our events we expect.
-	while(!cb_info.all_events_happened()) {
+	while(init_happened && update_happened && remove_happened) {
 		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
+		ecsact::async::flush_events(evc);
+		auto current_tick = ecsact::async::get_current_tick();
 		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10)
-			<< "Not all events happened before maximum was reached\n"
-			<< "  init = " << cb_info.init_happened << "\n"
-			<< "  update = " << cb_info.update_happened << "\n"
-			<< "  remove = " << cb_info.remove_happened << "\n";
+		ASSERT_LT(tick_diff, 10) //
+			<< "Not all events happened before maximum was "
+				 "reached\n"
+			<< "  init = " << init_happened << "\n"
+			<< "  update = " << update_happened << "\n"
+			<< "  remove = " << remove_happened << "\n";
 	}
 
 	options.clear();
+	evc.clear();
 	ecsact::async::disconnect();
 }
 
@@ -308,49 +255,7 @@ TEST(AsyncRef, TryMergeFailure) {
 	using namespace std::chrono_literals;
 	using std::chrono::duration_cast;
 
-	struct entity_cb_info {
-		ecsact_entity_id entity;
-		bool             wait;
-	};
-
-	ecsact_async_connect("good?delta_time=25");
-
-	struct merge_callback_data {
-		ecsact_async_request_id request_id;
-		bool                    wait;
-	};
-
-	auto entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			entity_cb_info& entity_info =
-				*static_cast<entity_cb_info*>(callback_user_data);
-
-			entity_info.wait = true;
-			entity_info.entity = entity_id;
-		};
-
-	auto async_err_cb = //
-		[](
-			ecsact_async_error       async_err,
-			int                      request_ids_length,
-			ecsact_async_request_id* request_ids,
-			void*                    callback_user_data
-		) {
-			auto& cb_data = *static_cast<merge_callback_data*>(callback_user_data);
-
-			ASSERT_EQ(async_err, ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE);
-
-			auto request_id = request_ids[0];
-			ASSERT_EQ(cb_data.request_id, request_id);
-			cb_data.wait = true;
-		};
-
-	entity_cb_info cb_info{};
+	static_cast<void>(ecsact::async::connect("good?delta_time=25"));
 
 	ecsact::core::execution_options options{};
 
@@ -361,84 +266,85 @@ TEST(AsyncRef, TryMergeFailure) {
 		.add_component(&my_needed_component)
 		.add_component(&another_my_needed_component);
 
-	auto request_id = ecsact_async_enqueue_execution_options(options.c());
+	auto request_id = ecsact::async::enqueue_execution_options(options);
 
-	auto merge_data = merge_callback_data{};
-	merge_data.request_id = request_id;
-	merge_data.wait = false;
+	bool wait = false;
+	auto entity = ecsact_entity_id{};
 
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &cb_info;
+	auto evc = ecsact::core::execution_events_collector{};
 
-	auto async_evc = ecsact_async_events_collector{};
+	evc.set_entity_created_callback(
+		[&](ecsact_entity_id entity_id, ecsact_placeholder_entity_id) {
+			entity = entity_id;
+		}
+	);
 
-	async_evc.async_error_callback = async_err_cb;
-	async_evc.async_error_callback_user_data = &merge_data;
+	auto async_evc = ecsact::async::async_events_collector{};
 
-	auto start_tick = ecsact_async_get_current_tick();
-	while(merge_data.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, &async_evc);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	async_evc.set_async_error_callback(
+		[&](
+			ecsact_async_error                 err,
+			std::span<ecsact_async_request_id> request_ids
+		) {
+			ASSERT_EQ(err, ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE);
+
+			auto error_id = request_ids[0];
+			ASSERT_EQ(error_id, request_id);
+			wait = true;
+		}
+	);
+
+	flush_with_condition(wait, evc, async_evc);
 
 	options.clear();
+	evc.clear();
 
-	ecsact_async_disconnect();
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 	using namespace std::chrono_literals;
 	using std::chrono::duration_cast;
 
-	ecsact_async_connect("good?delta_time=25");
+	static_cast<void>(ecsact::async::connect("good?delta_time=25"));
 
 	auto options = ecsact::core::execution_options{};
 
 	options.create_entity(static_cast<ecsact_placeholder_entity_id>(42));
 
 	for(int i = 0; i < 10; i++) {
-		ecsact_async_enqueue_execution_options(options.c());
+		static_cast<void>(ecsact::async::enqueue_execution_options(options));
 	}
 
 	struct entity_cb_info {
 		std::array<int, 10>                          entity_request_ids;
 		std::array<ecsact_entity_id, 10>             entity_ids;
 		std::array<ecsact_placeholder_entity_id, 10> placeholder_ids;
-		int&                                         counter;
 	};
-
-	auto entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			entity_cb_info& entity_info =
-				*static_cast<entity_cb_info*>(callback_user_data);
-			entity_info.entity_request_ids[entity_info.counter] = entity_info.counter;
-			entity_info.entity_ids[entity_info.counter] = entity_id;
-			entity_info.placeholder_ids[entity_info.counter] = placeholder_entity_id;
-			entity_info.counter++;
-		};
 
 	int counter = 0;
 
-	entity_cb_info entity_info{.entity_request_ids = {}, .counter = counter};
+	entity_cb_info entity_info = {};
 
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &entity_info;
+	auto evc = ecsact::core::execution_events_collector{};
 
-	auto start_tick = ecsact_async_get_current_tick();
+	evc.set_entity_created_callback(
+		[&](
+			ecsact_entity_id             entity_id,
+			ecsact_placeholder_entity_id placeholder_entity_id
+		) {
+			entity_info.entity_request_ids[counter] = counter;
+			entity_info.entity_ids[counter] = entity_id;
+			entity_info.placeholder_ids[counter] = placeholder_entity_id;
+			counter++;
+		}
+	);
+
+	auto start_tick = ecsact::async::get_current_tick();
 	while(counter < 10) {
 		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
+		ecsact::async::flush_events(evc);
+		auto current_tick = ecsact::async::get_current_tick();
 		auto tick_diff = current_tick - start_tick;
 		ASSERT_LT(tick_diff, 10);
 	}
@@ -451,50 +357,24 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 		);
 	}
 
-	struct destroy_cb_info {
-		ecsact_entity_id entity_id;
-		bool             wait;
-	};
-
-	auto destroy_entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			destroy_cb_info& destroy_cb =
-				*static_cast<destroy_cb_info*>(callback_user_data);
-			assert(entity_id == destroy_cb.entity_id);
-			destroy_cb.wait = true;
-		};
-
 	options.clear();
-	evc.entity_created_callback = nullptr;
-	evc.entity_created_callback_user_data = nullptr;
+	evc.clear();
 
-	destroy_cb_info cb_info{
-		.entity_id = entity_info.entity_ids[5],
-		.wait = false,
-	};
+	auto entity_to_destroy = entity_info.entity_ids[5];
+	bool wait = false;
 
-	evc.entity_destroyed_callback = destroy_entity_cb;
-	evc.entity_destroyed_callback_user_data = &cb_info;
+	evc.set_entity_destroyed_callback([&](ecsact_entity_id entity_id) {
+		assert(entity_id == entity_to_destroy);
+		wait = true;
+	});
 
-	options.destroy_entity(cb_info.entity_id);
+	options.destroy_entity(entity_to_destroy);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	flush_with_condition(wait, evc);
 
-	ecsact_async_disconnect();
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, TryAction) {
@@ -503,25 +383,7 @@ TEST(AsyncRef, TryAction) {
 
 	static std::atomic_bool reached_system = false;
 
-	ecsact_async_connect("good?delta_time=25");
-
-	struct entity_cb_info {
-		ecsact_entity_id entity;
-		bool             wait;
-	};
-
-	static entity_cb_info cb_info;
-
-	auto entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			cb_info.wait = true;
-			cb_info.entity = entity_id;
-		};
+	static_cast<void>(ecsact::async::connect("good?delta_time=25"));
 
 	// Declare components required for the action
 	async_test::NeededComponent my_needed_component{};
@@ -534,53 +396,55 @@ TEST(AsyncRef, TryAction) {
 		.add_component(&my_needed_component)
 		.add_component(&my_update_component);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &cb_info;
+	auto evc = ecsact::core::execution_events_collector{};
 
-	auto start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	static auto entity = ecsact_entity_id{};
+	auto        wait = false;
+
+	evc.set_entity_created_callback(
+		[&](ecsact_entity_id entity_id, ecsact_placeholder_entity_id) {
+			wait = true;
+			entity = entity_id;
+		}
+	);
+
+	flush_with_condition(wait, evc);
 
 	options.clear();
 
 	async_test::TryEntity my_try_entity;
 
-	my_try_entity.my_entity = cb_info.entity;
+	my_try_entity.my_entity = entity;
 
-	// Declare an action, add a check to see it's running
+	// Declare an action which takes in a function as the implementation
 	reached_system = false;
 	ecsact_set_system_execution_impl(
 		ecsact_id_cast<ecsact_system_like_id>(async_test::TryEntity::id),
 		[](ecsact_system_execution_context* context) {
 			async_test::TryEntity system_action{};
 			ecsact_system_execution_context_action(context, &system_action);
-			ASSERT_EQ(cb_info.entity, system_action.my_entity);
+			ASSERT_EQ(entity, system_action.my_entity);
 			reached_system = true;
 		}
 	);
 
+	// Push the action to execution options
 	options.push_action(&my_try_entity);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	start_tick = ecsact_async_get_current_tick();
+	auto start_tick = ecsact::async::get_current_tick();
 	while(reached_system != true) {
 		std::this_thread::yield();
 		FLUSH_EVENTS_NEVER_ERROR(nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
+		auto current_tick = ecsact::async::get_current_tick();
 		auto tick_diff = current_tick - start_tick;
 		ASSERT_LT(tick_diff, 10);
 	}
 
-	ecsact_async_disconnect();
+	ecsact::async::disconnect();
 }
 
 TEST(AsyncRef, FlushNoEventsOrConnect) {
@@ -608,83 +472,52 @@ TEST(AsyncRef, EnqueueErrorBeforeConnect) {
 }
 
 TEST(AsyncRef, RemoveTagComponent) {
-	ecsact_async_connect("good?delta_time=25");
+	static_cast<void>(ecsact::async::connect("good?delta_time=25"));
 
-	struct callback_info {
-		std::atomic_bool wait = false;
-		ecsact_entity_id entity = {};
-	};
-
-	auto cb_info = callback_info{};
-
-	auto entity_cb = //
-		[](
-			ecsact_event                 event,
-			ecsact_entity_id             entity_id,
-			ecsact_placeholder_entity_id placeholder_entity_id,
-			void*                        callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_info*>(callback_user_data);
-
-			cb_info.wait = true;
-			cb_info.entity = entity_id;
-		};
+	auto entity = ecsact_entity_id{};
+	auto wait = false;
 
 	ecsact::core::execution_options options{};
 
-	auto evc = ecsact_execution_events_collector{};
-	evc.entity_created_callback = entity_cb;
-	evc.entity_created_callback_user_data = &cb_info;
+	auto evc = ecsact::core::execution_events_collector{};
+
+	evc.set_entity_created_callback(
+		[&](ecsact_entity_id entity_id, ecsact_placeholder_entity_id) {
+			entity = entity_id;
+			wait = true;
+		}
+	);
 
 	auto my_needed_component = async_test::NeededComponent{};
 
 	options.create_entity().add_component(&my_needed_component);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
+	;
 
-	auto start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	flush_with_condition(wait, evc);
 
 	options.clear();
-	evc.entity_created_callback = {};
-	evc.entity_created_callback_user_data = nullptr;
+	evc.clear();
 
 	// Remove component
-	options.remove_component<async_test::NeededComponent>(cb_info.entity);
+	options.remove_component<async_test::NeededComponent>(entity);
 
-	ecsact_async_enqueue_execution_options(options.c());
+	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	cb_info.wait = false;
+	wait = false;
 
-	evc.remove_callback_user_data = &cb_info;
-	evc.remove_callback = //
-		[](
-			ecsact_event        event,
-			ecsact_entity_id    entity_id,
-			ecsact_component_id component_id,
-			const void*         component_data,
-			void*               callback_user_data
-		) {
-			auto& cb_info = *static_cast<callback_info*>(callback_user_data);
+	evc.set_remove_callback<async_test::NeededComponent>(
+		[&](ecsact_entity_id, const async_test::NeededComponent& component) {
+			ASSERT_EQ(component.id, async_test::NeededComponent::id);
+			wait = true;
+		}
+	);
 
-			cb_info.wait = true;
-			ASSERT_EQ(component_id, async_test::NeededComponent::id);
-		};
+	flush_with_condition(wait, evc);
 
-	start_tick = ecsact_async_get_current_tick();
-	while(cb_info.wait != true) {
-		std::this_thread::yield();
-		ecsact_async_flush_events(&evc, nullptr);
-		auto current_tick = ecsact_async_get_current_tick();
-		auto tick_diff = current_tick - start_tick;
-		ASSERT_LT(tick_diff, 10);
-	}
+	options.clear();
+	evc.clear();
 
-	ecsact_async_disconnect();
+	ecsact::async::disconnect();
 }
