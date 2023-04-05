@@ -81,6 +81,41 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 	void*               out_component_data
 );
 
+typedef void (*ecsact_dump_entities_callback)( //
+	const void* data,
+	int32_t     data_length,
+	void*       callback_user_data
+);
+
+/**
+ * Invokes @p callback an unspecified amount of times with chunks of data
+ * representing all the entities in @p registry.
+ */
+ECSACT_SERIALIZE_API_FN(void, ecsact_dump_entities)
+( //
+	ecsact_registry_id            registry,
+	ecsact_dump_entities_callback callback,
+	void*                         callback_user_data
+);
+
+typedef int32_t (*ecsact_restore_entities_callback)( //
+	void*   out_data,
+	int32_t data_max_length,
+	void*   callback_user_data
+);
+
+/**
+ * Clears @p registry and invokes @p callback until it returns `0` creating
+ * entities and adding components from data given from the @p callback.
+ */
+ECSACT_SERIALIZE_API_FN(void, ecsact_restore_entities)
+( //
+	ecsact_registry_id                       registry,
+	ecsact_restore_entities_callback         callback,
+	const ecsact_execution_events_collector* events_collector,
+	void*                                    callback_user_data
+);
+
 // # BEGIN FOR_EACH_ECSACT_SERIALIZE_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...) \
