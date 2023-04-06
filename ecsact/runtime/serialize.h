@@ -127,7 +127,10 @@ ECSACT_SERIALIZE_API_FN(void, ecsact_restore_entities)
 		fn(ecsact_serialize_action, __VA_ARGS__);         \
 		fn(ecsact_deserialize_action, __VA_ARGS__);       \
 		fn(ecsact_serialize_component, __VA_ARGS__);      \
-		fn(ecsact_deserialize_component, __VA_ARGS__)
+		fn(ecsact_deserialize_component, __VA_ARGS__);    \
+		fn(ecsact_dump_entities, __VA_ARGS__);            \
+		fn(ecsact_restore_entities, __VA_ARGS__)
+
 #endif
 
 #endif // ECSACT_RUNTIME_SERIALIZE_H
