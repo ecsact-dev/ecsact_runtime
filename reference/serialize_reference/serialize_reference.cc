@@ -230,12 +230,14 @@ ecsact_restore_error ecsact_restore_entities(
 				ecsact::deserialize(component_id, serialized_component_data);
 
 			if(ecsact_has_component(registry_id, entity_id, component_id)) {
-				ecsact_update_component(
-					registry_id,
-					entity_id,
-					component_id,
-					component_data.data()
-				);
+				if(component_size != 0) {
+					ecsact_update_component(
+						registry_id,
+						entity_id,
+						component_id,
+						component_data.data()
+					);
+				}
 				updated_components.push_back({entity_id, component_id});
 			} else {
 				ecsact_add_component(
