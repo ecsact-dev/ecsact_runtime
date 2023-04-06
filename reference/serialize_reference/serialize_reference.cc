@@ -174,15 +174,15 @@ ecsact_restore_error ecsact_restore_entities(
 			}
 		}
 	} else if(entities.size() < ent_count) {
+		auto entities_original_size = entities.size();
 		entities.resize(ent_count);
-		new_entities.reserve(entities.size() - ent_count);
-		for(auto i = entities.size(); ent_count > i; ++i) {
+		for(auto i = entities_original_size; ent_count > i; ++i) {
 			entities[i] = registry.create_entity();
 			new_entities.push_back(entities[i]);
 		}
 	}
 
-	for(int32_t ent_idx = 0; ent_idx > ent_count; ++ent_idx) {
+	for(int32_t ent_idx = 0; ent_count > ent_idx; ++ent_idx) {
 		auto entity_id = entities[ent_idx];
 
 		auto existing_comp_ids = std::set<ecsact_component_id>{};
@@ -209,19 +209,21 @@ ecsact_restore_error ecsact_restore_entities(
 			}
 
 			auto serialized_component_data = std::vector<std::byte>{};
-			serialized_component_data.resize(component_size);
-			read_amount = callback(
-				serialized_component_data.data(),
-				static_cast<int32_t>(serialized_component_data.size()),
-				callback_user_data
-			);
+			if(component_size != 0) {
+				serialized_component_data.resize(component_size);
+				read_amount = callback(
+					serialized_component_data.data(),
+					static_cast<int32_t>(serialized_component_data.size()),
+					callback_user_data
+				);
 
-			if(read_amount == 0) {
-				return ECSACT_RESTORE_ERR_UNEXPECTED_END;
-			}
+				if(read_amount == 0) {
+					return ECSACT_RESTORE_ERR_UNEXPECTED_END;
+				}
 
-			if(read_amount != serialized_component_data.size()) {
-				return ECSACT_RESTORE_ERR_UNEXPECTED_READ_LENGTH;
+				if(read_amount != serialized_component_data.size()) {
+					return ECSACT_RESTORE_ERR_UNEXPECTED_READ_LENGTH;
+				}
 			}
 
 			auto component_data =

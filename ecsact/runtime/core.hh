@@ -5,7 +5,6 @@
 #include <map>
 #include <functional>
 #include <optional>
-#include "common.h"
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
@@ -421,6 +420,14 @@ public:
 
 	ecsact_registry_id id() const noexcept {
 		return _id;
+	}
+
+	auto clear() -> void {
+		ecsact_clear_registry(_id);
+	}
+
+	auto empty() const -> bool {
+		return ecsact_count_entities(_id) == 0;
 	}
 
 	auto create_entity() {
