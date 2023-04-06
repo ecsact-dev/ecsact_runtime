@@ -256,56 +256,66 @@ ecsact_restore_error ecsact_restore_entities(
 	}
 
 	if(events_collector != nullptr) {
-		for(auto entity : new_entities) {
-			events_collector->entity_created_callback(
-				ECSACT_EVENT_CREATE_ENTITY,
-				entity,
-				{}, // no placeholder
-				events_collector->entity_created_callback_user_data
-			);
+		if(events_collector->entity_created_callback != nullptr) {
+			for(auto entity : new_entities) {
+				events_collector->entity_created_callback(
+					ECSACT_EVENT_CREATE_ENTITY,
+					entity,
+					{}, // no placeholder
+					events_collector->entity_created_callback_user_data
+				);
+			}
 		}
 
-		for(auto&& [entity, comp_id] : new_components) {
-			events_collector->init_callback(
-				ECSACT_EVENT_INIT_COMPONENT,
-				entity,
-				comp_id,
-				ecsact_get_component(registry_id, entity, comp_id),
-				events_collector->init_callback_user_data
-			);
+		if(events_collector->init_callback != nullptr) {
+			for(auto&& [entity, comp_id] : new_components) {
+				events_collector->init_callback(
+					ECSACT_EVENT_INIT_COMPONENT,
+					entity,
+					comp_id,
+					ecsact_get_component(registry_id, entity, comp_id),
+					events_collector->init_callback_user_data
+				);
+			}
 		}
 
-		for(auto&& [entity, comp_id] : updated_components) {
-			events_collector->update_callback(
-				ECSACT_EVENT_UPDATE_COMPONENT,
-				entity,
-				comp_id,
-				ecsact_get_component(registry_id, entity, comp_id),
-				events_collector->update_callback_user_data
-			);
+		if(events_collector->update_callback != nullptr) {
+			for(auto&& [entity, comp_id] : updated_components) {
+				events_collector->update_callback(
+					ECSACT_EVENT_UPDATE_COMPONENT,
+					entity,
+					comp_id,
+					ecsact_get_component(registry_id, entity, comp_id),
+					events_collector->update_callback_user_data
+				);
+			}
 		}
 
-		for(auto&& [entity, comp_id] : removed_components) {
-			events_collector->remove_callback(
-				ECSACT_EVENT_REMOVE_COMPONENT,
-				entity,
-				comp_id,
-				ecsact_get_component(registry_id, entity, comp_id),
-				events_collector->remove_callback_user_data
-			);
+		if(events_collector->remove_callback != nullptr) {
+			for(auto&& [entity, comp_id] : removed_components) {
+				events_collector->remove_callback(
+					ECSACT_EVENT_REMOVE_COMPONENT,
+					entity,
+					comp_id,
+					ecsact_get_component(registry_id, entity, comp_id),
+					events_collector->remove_callback_user_data
+				);
 
-			ecsact_remove_component(registry_id, entity, comp_id);
+				ecsact_remove_component(registry_id, entity, comp_id);
+			}
 		}
 
-		for(auto entity : destroyed_entities) {
-			events_collector->entity_destroyed_callback(
-				ECSACT_EVENT_DESTROY_ENTITY,
-				entity,
-				{},
-				events_collector->entity_destroyed_callback_user_data
-			);
+		if(events_collector->entity_destroyed_callback != nullptr) {
+			for(auto entity : destroyed_entities) {
+				events_collector->entity_destroyed_callback(
+					ECSACT_EVENT_DESTROY_ENTITY,
+					entity,
+					{},
+					events_collector->entity_destroyed_callback_user_data
+				);
 
-			ecsact_destroy_entity(registry_id, entity);
+				ecsact_destroy_entity(registry_id, entity);
+			}
 		}
 	}
 

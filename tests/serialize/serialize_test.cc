@@ -99,7 +99,7 @@ TEST(TagComponentSerialize, Correctness) {
 	);
 }
 
-TEST(EntityDump, Success) {
+TEST(EntityDump, IntoClearedRegistry) {
 	auto reg = ecsact::core::registry("EntityDumpSuccess");
 
 	auto entity1 = reg.create_entity();
@@ -134,6 +134,42 @@ TEST(EntityDump, Success) {
 
 	EXPECT_TRUE(reg.empty());
 
+	auto evc = ecsact::core::execution_events_collector<>{};
+
+	auto entity_created_event_count = 0;
+	evc.set_entity_created_callback([&](auto, auto) {
+		entity_created_event_count += 1;
+	});
+
+	auto init_example_component_event_count = 0;
+	evc.set_init_callback<serialize_test::ExampleComponent>(
+		[&](ecsact_entity_id, const auto& comp) {
+			init_example_component_event_count += 1;
+			EXPECT_EQ(comp.num, 42);
+		}
+	);
+
+	auto update_example_component_event_count = 0;
+	evc.set_update_callback<serialize_test::ExampleComponent>(
+		[&](ecsact_entity_id, const auto&) {
+			update_example_component_event_count += 1;
+		}
+	);
+
+	auto remove_example_component_event_count = 0;
+	evc.set_update_callback<serialize_test::ExampleComponent>(
+		[&](ecsact_entity_id, const auto&) {
+			remove_example_component_event_count += 1;
+		}
+	);
+
+	auto entity_destroyed_event_count = 0;
+	evc.set_entity_destroyed_callback([&](auto) {
+		entity_destroyed_event_count += 1;
+	});
+
+	auto evc_c = evc.c();
+
 	auto restore_err = ecsact_restore_entities(
 		reg.id(),
 		[](void* out_data, int32_t data_max_length, void* ud) -> int32_t {
@@ -149,10 +185,15 @@ TEST(EntityDump, Success) {
 
 			return data_max_length;
 		},
-		nullptr,
+		&evc_c,
 		&dump_data
 	);
 
+	EXPECT_EQ(entity_created_event_count, 2);
+	EXPECT_EQ(init_example_component_event_count, 1);
+	EXPECT_EQ(update_example_component_event_count, 0);
+	EXPECT_EQ(remove_example_component_event_count, 0);
+	EXPECT_EQ(entity_destroyed_event_count, 0);
 	ASSERT_EQ(restore_err, ECSACT_RESTORE_OK);
 
 	EXPECT_TRUE(dump_data.empty()) //
