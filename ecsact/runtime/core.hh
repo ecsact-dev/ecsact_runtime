@@ -466,8 +466,20 @@ public:
 		return ecsact_update_component(_id, entity_id, Component::id, &component);
 	}
 
-	auto count_entities() -> int32_t {
+	inline auto count_entities() const -> int32_t {
 		return ecsact_count_entities(_id);
+	}
+
+	inline auto get_entities() const -> std::vector<ecsact_entity_id> {
+		const auto entities_count = count_entities();
+		auto       entities = std::vector<ecsact_entity_id>{};
+		entities.resize(entities_count);
+		ecsact_get_entities(_id, entities_count, entities.data(), nullptr);
+		return entities;
+	}
+
+	inline auto count_components(ecsact_entity_id entity) const -> int32_t {
+		return ecsact_count_components(_id, entity);
 	}
 
 	/**
