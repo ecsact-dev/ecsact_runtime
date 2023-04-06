@@ -16,11 +16,5 @@ cc_library(
 
 filegroup(
     name = "serialize_source",
-    srcs = glob([
-        "**/*.cc",
-        "**/*.hh",
-    ]),
-    visibility = [
-        "//reference/async_reference:__pkg__",
-    ],
+    srcs = glob(["*.cc", "*.hh"]),
 )

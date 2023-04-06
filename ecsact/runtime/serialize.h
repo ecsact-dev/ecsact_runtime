@@ -81,6 +81,72 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 	void*               out_component_data
 );
 
+typedef void (*ecsact_dump_entities_callback)( //
+	const void* data,
+	int32_t     data_length,
+	void*       callback_user_data
+);
+
+/**
+ * Invokes @p callback an unspecified amount of times with chunks of data
+ * representing all the entities in @p registry.
+ */
+ECSACT_SERIALIZE_API_FN(void, ecsact_dump_entities)
+( //
+	ecsact_registry_id            registry,
+	ecsact_dump_entities_callback callback,
+	void*                         callback_user_data
+);
+
+typedef int32_t (*ecsact_restore_entities_callback)( //
+	void*   out_data,
+	int32_t data_max_length,
+	void*   callback_user_data
+);
+
+typedef enum ecsact_restore_error {
+	/**
+	 * Restoration was successful. End was reached when no other entities are
+	 * expected.
+	 */
+	ECSACT_RESTORE_OK = 0,
+
+	/**
+	 * During entity restoration it is known that more could be restored but
+	 * the callback returned `0` indicating the end has been reached. This can
+	 * be the desired result when a restore is cancelled.
+	 */
+	ECSACT_RESTORE_ERR_UNEXPECTED_END = 1,
+
+	/**
+	 * Restore callback returned a read amount less than expected. This can
+	 * occur while restoring and the restore entities callback didn't read
+	 * enough information for the restoration to properly continue. It is
+	 * recommended that restore entities callbacks read all the way up to the
+	 * data_max_length.
+	 */
+	ECSACT_RESTORE_ERR_UNEXPECTED_READ_LENGTH = 2,
+
+	/**
+	 * Read data is in an unexpected format. `ecsact_restore_entities` should
+	 * only be used on data originally dumped by `ecsact_dump_entities` on the
+	 * same runtime.
+	 */
+	ECSACT_RESTORE_ERR_INVALID_FORMAT = 3,
+} ecsact_restore_error;
+
+/**
+ * Clears @p registry and invokes @p callback until it returns `0` creating
+ * entities and adding components from data given from the @p callback.
+ */
+ECSACT_SERIALIZE_API_FN(ecsact_restore_error, ecsact_restore_entities)
+( //
+	ecsact_registry_id                       registry,
+	ecsact_restore_entities_callback         callback,
+	const ecsact_execution_events_collector* events_collector,
+	void*                                    callback_user_data
+);
+
 // # BEGIN FOR_EACH_ECSACT_SERIALIZE_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...) \
@@ -92,7 +158,9 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_deserialize_component)
 		fn(ecsact_serialize_action, __VA_ARGS__);         \
 		fn(ecsact_deserialize_action, __VA_ARGS__);       \
 		fn(ecsact_serialize_component, __VA_ARGS__);      \
-		fn(ecsact_deserialize_component, __VA_ARGS__)
+		fn(ecsact_deserialize_component, __VA_ARGS__);    \
+		fn(ecsact_dump_entities, __VA_ARGS__);            \
+		fn(ecsact_restore_entities, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_SERIALIZE_H
