@@ -147,6 +147,27 @@ ECSACT_SERIALIZE_API_FN(ecsact_restore_error, ecsact_restore_entities)
 	void*                                    callback_user_data
 );
 
+typedef void (*ecsact_restore_as_execution_options_callback)( //
+	const ecsact_execution_options dumped_execution_options,
+	void*                          callback_user_data
+);
+
+/**
+ * Invokes @p callback until it returns `0` creating entities and adding
+ * components from data given from the @p callback into some @ref
+ * ecsact_execution_options which is passed to the @p done_callback.
+ */
+ECSACT_SERIALIZE_API_FN(
+	ecsact_restore_error,
+	ecsact_restore_as_execution_options
+)
+( //
+	ecsact_restore_entities_callback             callback,
+	void*                                        callback_user_data,
+	ecsact_restore_as_execution_options_callback done_callback,
+	void*                                        done_callback_user_data
+);
+
 // # BEGIN FOR_EACH_ECSACT_SERIALIZE_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_SERIALIZE_API_FN(fn, ...) \
@@ -160,7 +181,8 @@ ECSACT_SERIALIZE_API_FN(ecsact_restore_error, ecsact_restore_entities)
 		fn(ecsact_serialize_component, __VA_ARGS__);      \
 		fn(ecsact_deserialize_component, __VA_ARGS__);    \
 		fn(ecsact_dump_entities, __VA_ARGS__);            \
-		fn(ecsact_restore_entities, __VA_ARGS__)
+		fn(ecsact_restore_entities, __VA_ARGS__);         \
+		fn(ecsact_restore_as_execution_options, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_SERIALIZE_H
