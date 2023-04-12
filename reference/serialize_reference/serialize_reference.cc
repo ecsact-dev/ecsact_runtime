@@ -173,7 +173,7 @@ ecsact_restore_error ecsact_restore_as_execution_options(
 			auto& comp_id = comp_ids[j];
 			comp_data_list.push_back(ecsact_component{
 				.component_id = comp_id,
-				.component_data = comp_data.data(),
+				.component_data = comp_data_item.data(),
 			});
 		}
 	}
