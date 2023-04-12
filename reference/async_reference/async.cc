@@ -44,7 +44,7 @@ ecsact_async_request_id ecsact_async_enqueue_execution_options(
 	auto req_id = request_id_factory.next_id();
 	if(!reference) {
 		async_callbacks.add(detail::types::async_error{
-			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
+			.error = ECSACT_ASYNC_ERR_NOT_CONNECTED,
 			.request_ids = {req_id},
 		});
 		return req_id;

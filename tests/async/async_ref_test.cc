@@ -100,15 +100,28 @@ void flush_events_never_error(const ecsact_execution_events_collector* exec_evc
 TEST(AsyncRef, ConnectBad) {
 	auto connect_req_id = ecsact::async::connect("bad");
 	auto async_evc = ecsact::async::async_events_collector<>{};
+	auto error_callback_happened = false;
+
 	async_evc.set_async_error_callback(
 		[&](ecsact_async_error err, std::span<ecsact_async_request_id> req_ids) {
+			error_callback_happened = true;
 			ASSERT_EQ(req_ids.size(), 1);
 			ASSERT_EQ(req_ids[0], connect_req_id);
 			ASSERT_EQ(err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
 		}
 	);
 
-	ecsact::async::flush_events(async_evc);
+	// Some async implementations may take a bit to give connection error
+	for(auto i = 0; 100 > i; ++i) {
+		std::this_thread::yield();
+		ecsact::async::flush_events(async_evc);
+		if(error_callback_happened) {
+			break;
+		}
+	}
+
+	ASSERT_TRUE(error_callback_happened);
+
 	ecsact::async::disconnect();
 }
 
@@ -461,7 +474,7 @@ TEST(AsyncRef, EnqueueErrorBeforeConnect) {
 			async_error_happened = true;
 			ASSERT_EQ(req_ids.size(), 1);
 			ASSERT_EQ(req_ids[0], req_id);
-			ASSERT_EQ(err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
+			ASSERT_EQ(err, ECSACT_ASYNC_ERR_NOT_CONNECTED);
 		}
 	);
 
