@@ -75,7 +75,6 @@ void async_reference::connect(
 	// The good and bad strings simulate the outcome of connections
 	if(result.host != "good") {
 		is_connected = false;
-		is_connected_notified = false;
 
 		async_callbacks.add(types::async_error{
 			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,

@@ -60,7 +60,6 @@ private:
 	std::mutex  execution_m;
 
 	std::atomic_bool is_connected = false;
-	std::atomic_bool is_connected_notified = false;
 
 	std::chrono::milliseconds delta_time = {};
 };
