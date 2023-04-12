@@ -48,6 +48,11 @@ typedef enum {
 	 * ExecutionOptions failed to merge, and upon failure the connection is closed
 	 */
 	ECSACT_ASYNC_ERR_EXECUTION_MERGE_FAILURE,
+
+	/**
+	 * A request was made before connection was established
+	 */
+	ECSACT_ASYNC_ERR_NOT_CONNECTED,
 } ecsact_async_error;
 
 /**

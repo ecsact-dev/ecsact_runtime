@@ -76,6 +76,12 @@ void async_reference::connect(
 	if(result.host != "good") {
 		is_connected = false;
 		is_connected_notified = false;
+
+		async_callbacks.add(types::async_error{
+			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
+			.request_ids = {req_id},
+		});
+
 		return;
 	}
 
@@ -98,14 +104,11 @@ void async_reference::enqueue_execution_options(
 	ecsact_async_request_id         req_id,
 	const ecsact_execution_options& options
 ) {
-	if(is_connected == false && is_connected_notified == false) {
-		types::async_error async_err{
-			.error = ECSACT_ASYNC_ERR_PERMISSION_DENIED,
+	if(!is_connected) {
+		async_callbacks.add(types::async_error{
+			.error = ECSACT_ASYNC_ERR_NOT_CONNECTED,
 			.request_ids = {req_id},
-		};
-
-		is_connected_notified = true;
-		async_callbacks.add(async_err);
+		});
 		return;
 	}
 
