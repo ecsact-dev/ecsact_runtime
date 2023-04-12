@@ -2,6 +2,7 @@
 #include <optional>
 #include <type_traits>
 #include <set>
+#include <cassert>
 #include <vector>
 #include "ecsact/runtime/core.hh"
 #include "ecsact/runtime/common.h"
@@ -76,6 +77,125 @@ int ecsact_deserialize_component(
 	auto size = _ref_serialize_component_sizes->at(component_id);
 	memcpy(out_component_data, in_bytes, size);
 	return size;
+}
+
+ecsact_restore_error ecsact_restore_as_execution_options(
+	ecsact_restore_entities_callback             callback,
+	void*                                        callback_user_data,
+	ecsact_restore_as_execution_options_callback done_callback,
+	void*                                        done_callback_user_data
+) {
+	auto placeholder_ids = std::vector<ecsact_placeholder_entity_id>{};
+	auto component_ids_list = std::vector<std::vector<ecsact_component_id>>{};
+	auto component_datas_list =
+		std::vector<std::vector<std::vector<std::byte>>>{};
+
+	auto read_amount = int32_t{};
+
+#define READ_CALLBACK_INTO_VAR(v)                                                                                                  \
+	static_assert(std::is_integral_v<std::remove_reference_t<decltype(v)>> || std::is_enum_v<std::remove_reference_t<decltype(v)>>); \
+	read_amount = callback(&v, sizeof(v), callback_user_data);                                                                       \
+	if(read_amount == 0) return ECSACT_RESTORE_ERR_UNEXPECTED_END;                                                                   \
+	if(read_amount != sizeof(v)) return ECSACT_RESTORE_ERR_UNEXPECTED_READ_LENGTH
+
+	auto ent_count = int32_t{};
+	READ_CALLBACK_INTO_VAR(ent_count);
+
+	placeholder_ids.reserve(ent_count);
+	component_ids_list.reserve(ent_count);
+	component_datas_list.reserve(ent_count);
+
+	for(int32_t ent_idx = 0; ent_count > ent_idx; ++ent_idx) {
+		placeholder_ids.push_back(static_cast<ecsact_placeholder_entity_id>(ent_idx)
+		);
+
+		auto& component_ids = component_ids_list.emplace_back();
+		auto& component_datas = component_datas_list.emplace_back();
+
+		auto components_count = int32_t{};
+		READ_CALLBACK_INTO_VAR(components_count);
+
+		component_ids.reserve(components_count);
+		component_datas.reserve(components_count);
+
+		for(int i = 0; components_count > i; ++i) {
+			auto& component_id = component_ids.emplace_back();
+			auto& component_data = component_datas.emplace_back();
+			auto  component_size = int32_t{};
+			READ_CALLBACK_INTO_VAR(component_id);
+			READ_CALLBACK_INTO_VAR(component_size);
+
+			if(component_size != ecsact_serialize_component_size(component_id)) {
+				return ECSACT_RESTORE_ERR_INVALID_FORMAT;
+			}
+
+			auto serialized_component_data = std::vector<std::byte>{};
+			if(component_size != 0) {
+				serialized_component_data.resize(component_size);
+				read_amount = callback(
+					serialized_component_data.data(),
+					static_cast<int32_t>(serialized_component_data.size()),
+					callback_user_data
+				);
+
+				if(read_amount == 0) {
+					return ECSACT_RESTORE_ERR_UNEXPECTED_END;
+				}
+
+				if(read_amount != serialized_component_data.size()) {
+					return ECSACT_RESTORE_ERR_UNEXPECTED_READ_LENGTH;
+				}
+			}
+
+			component_data =
+				ecsact::deserialize(component_id, serialized_component_data);
+		}
+	}
+
+#undef READ_CALLBACK_INTO_VAR
+
+	auto entity_component_lengths = std::vector<int32_t>{};
+	entity_component_lengths.reserve(placeholder_ids.size());
+	for(auto& comps : component_ids_list) {
+		entity_component_lengths.push_back(static_cast<int32_t>(comps.size()));
+	}
+
+	auto entity_components_owner = std::vector<std::vector<ecsact_component>>{};
+	for(auto i = 0; component_datas_list.size() > i; ++i) {
+		auto& comp_data = component_datas_list[i];
+		auto& comp_ids = component_ids_list[i];
+
+		auto& comp_data_list = entity_components_owner.emplace_back();
+
+		assert(comp_data.size() == comp_ids.size());
+		for(auto j = 0; comp_data.size() > j; ++j) {
+			auto& comp_data_item = comp_data[j];
+			auto& comp_id = comp_ids[j];
+			comp_data_list.push_back(ecsact_component{
+				.component_id = comp_id,
+				.component_data = comp_data.data(),
+			});
+		}
+	}
+
+	auto entity_components = std::vector<ecsact_component*>{};
+	entity_components.reserve(entity_components_owner.size());
+
+	for(auto& entity_components_list : entity_components_owner) {
+		entity_components.emplace_back(entity_components_list.data());
+	}
+
+	auto exec_options = ecsact_execution_options{};
+	exec_options.create_entities_length =
+		static_cast<int32_t>(placeholder_ids.size());
+	exec_options.create_entities = placeholder_ids.data();
+	exec_options.create_entities_components_length =
+		entity_component_lengths.data();
+	exec_options.create_entities_components = entity_components.data();
+
+	done_callback(exec_options, done_callback_user_data);
+
+	return ECSACT_RESTORE_OK;
 }
 
 #if defined(ECSACT_CORE_API) || defined(ECSACT_CORE_API_LOAD_AT_RUNTIME) || \
