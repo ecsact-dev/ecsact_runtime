@@ -78,7 +78,8 @@ int ecsact_deserialize_component(
 	return size;
 }
 
-#if defined(ECSACT_CORE_API) || defined(ECSACT_CORE_API_LOAD_AT_RUNTIME)
+#if defined(ECSACT_CORE_API) || defined(ECSACT_CORE_API_LOAD_AT_RUNTIME) || \
+	defined(ECSACT_CORE_API_EXPORT)
 
 void ecsact_dump_entities(
 	ecsact_registry_id            registry_id,
