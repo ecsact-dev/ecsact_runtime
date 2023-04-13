@@ -70,6 +70,8 @@ void async_reference::connect(
 		int tick_int = std::stoi(tick_str);
 
 		delta_time = std::chrono::milliseconds(tick_int);
+	} else {
+		std::this_thread::yield();
 	}
 
 	// The good and bad strings simulate the outcome of connections
@@ -84,7 +86,7 @@ void async_reference::connect(
 		return;
 	}
 
-	if(delta_time.count() == 0) {
+	if(delta_time.count() < 0) {
 		types::async_error async_err{
 			.error = ECSACT_ASYNC_INVALID_CONNECTION_STRING,
 			.request_ids = {req_id},
@@ -134,9 +136,10 @@ void async_reference::execute_systems() {
 		while(is_connected == true) {
 			auto async_err = tick_manager.validate_pending_options();
 
-			const auto sleep_duration = delta_time - execution_duration;
-
-			std::this_thread::sleep_for(sleep_duration);
+			if(delta_time.count() > 0) {
+				const auto sleep_duration = delta_time - execution_duration;
+				std::this_thread::sleep_for(sleep_duration);
+			}
 
 			if(async_err.error != ECSACT_ASYNC_OK) {
 				async_callbacks.add(async_err);
