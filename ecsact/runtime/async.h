@@ -67,8 +67,7 @@ typedef enum {
  * @param callback_user_data the @ref
  * ecsact_async_events_collector::error_callback_user_data
  */
-typedef void (*ecsact_async_error_callback)(
-	//
+typedef void (*ecsact_async_error_callback)( //
 	ecsact_async_error       async_err,
 	int                      request_ids_length,
 	ecsact_async_request_id* request_ids,
@@ -81,10 +80,18 @@ typedef void (*ecsact_async_error_callback)(
  * @param execute_err when there is no system execution error, this will be
  * @ref ECSACT_EXEC_SYS_OK other @see ecsact_execute_systems_error
  */
-typedef void (*ecsact_execute_sys_error_callback)(
-	//
+typedef void (*ecsact_execute_sys_error_callback)( //
 	ecsact_execute_systems_error execute_err,
 	void*                        callback_user_data
+);
+
+/**
+ * Handler for when a request is done (error or success)
+ */
+typedef void (*ecsact_async_request_done_callback)( //
+	int                      request_ids_length,
+	ecsact_async_request_id* request_ids,
+	void*                    callback_user_data
 );
 
 typedef struct ecsact_async_events_collector {
@@ -111,6 +118,18 @@ typedef struct ecsact_async_events_collector {
 	 * `callback_user_data` passed to `error_callback`
 	 */
 	void* system_error_callback_user_data;
+
+	/**
+	 * invoked when requests are done (error or success). The request IDs passed
+	 * to the callback are no longer valid, but may be reused for future
+	 * requests.
+	 */
+	ecsact_async_request_done_callback async_request_done_callback;
+
+	/**
+	 * `callback_user_data` passed to `async_request_done_callback`
+	 */
+	void* async_request_done_callback_user_data;
 } ecsact_async_events_collector;
 
 /**

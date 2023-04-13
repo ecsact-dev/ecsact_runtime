@@ -27,6 +27,10 @@ struct async_error {
 	std::vector<ecsact_async_request_id> request_ids;
 };
 
+struct async_request_complete {
+	std::vector<ecsact_async_request_id> request_ids;
+};
+
 struct entity {
 	std::optional<ecsact_entity_id> entity_id;
 	ecsact_async_request_id         request_id;
@@ -90,7 +94,7 @@ struct pending_execution_options {
 	types::cpp_execution_options options;
 };
 
-using async_requests =
-	std::variant<ecsact_execute_systems_error, async_error, entity>;
+using async_requests = std::
+	variant<ecsact_execute_systems_error, async_error, async_request_complete>;
 
 } // namespace ecsact::async_reference::detail::types

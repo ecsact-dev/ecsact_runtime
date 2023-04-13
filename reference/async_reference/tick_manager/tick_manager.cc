@@ -12,8 +12,8 @@ void tick_manager::add_pending_options(
 	pending_options.emplace_back(pending);
 }
 
-std::optional<types::cpp_execution_options>
-tick_manager::move_and_increment_tick() {
+auto tick_manager::move_and_increment_tick()
+	-> std::optional<types::cpp_execution_options> {
 	auto cpp_options = std::optional<types::cpp_execution_options>{};
 
 	if(validated_options.has_value()) {
@@ -26,37 +26,51 @@ tick_manager::move_and_increment_tick() {
 	return std::nullopt;
 }
 
-types::async_error tick_manager::validate_pending_options() {
-	auto result = types::async_error{.error = ECSACT_ASYNC_OK, .request_ids = {}};
-
+auto tick_manager::validate_pending_options()
+	-> std::variant<types::async_error, types::async_request_complete> {
 	if(pending_options.empty()) {
-		return result;
+		return types::async_request_complete{};
 	}
 
-	std::vector<types::pending_execution_options> current_pending_options;
+	auto current_pending_options =
+		std::vector<types::pending_execution_options>{};
 
 	if(pending_options.size() > 0) {
-		std::unique_lock lk(tick_m);
+		auto lk = std::scoped_lock(tick_m);
 		current_pending_options = std::move(pending_options);
 		pending_options.clear();
-		lk.unlock();
 	}
+
+	auto requests_ids =
+		util::get_request_ids_from_pending_exec_options(current_pending_options);
 
 	for(auto& pending : current_pending_options) {
-		result.error = upsert_validated_options(pending.options);
+		auto async_error = upsert_validated_options(pending.options);
 
-		if(result.error != ECSACT_ASYNC_OK) {
-			auto requests =
-				util::get_request_ids_from_pending_exec_options(current_pending_options
-				);
+		if(async_error != ECSACT_ASYNC_OK) {
+			auto error = types::async_error{
+				.error = async_error,
+				.request_ids = {},
+			};
 
-			result.request_ids
-				.insert(result.request_ids.end(), requests.begin(), requests.end());
+			error.request_ids.insert(
+				error.request_ids.end(),
+				requests_ids.begin(),
+				requests_ids.end()
+			);
 
-			return result;
+			return error;
 		}
 	}
-	return result;
+
+	auto req_complete = types::async_request_complete{};
+	req_complete.request_ids.insert(
+		req_complete.request_ids.end(),
+		requests_ids.begin(),
+		requests_ids.end()
+	);
+
+	return req_complete;
 }
 
 int32_t tick_manager::get_current_tick() {

@@ -2,6 +2,7 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+#include <functional>
 
 #include "gtest/gtest.h"
 
@@ -14,9 +15,9 @@
 using namespace std::chrono_literals;
 using std::chrono::duration_cast;
 
-void flush_with_condition(bool& condition, auto&& evc) {
+auto flush_with_condition(std::function<bool()> pred, auto&& evc) -> void {
 	auto start_tick = ecsact::async::get_current_tick();
-	while(condition != true) {
+	while(pred() != true) {
 		std::this_thread::yield();
 		ecsact::async::flush_events(evc);
 		auto current_tick = ecsact::async::get_current_tick();
@@ -25,9 +26,13 @@ void flush_with_condition(bool& condition, auto&& evc) {
 	}
 }
 
-void flush_with_condition(bool& condition, auto&& evc, auto&& async_evc) {
+auto flush_with_condition(
+	std::function<bool()> pred,
+	auto&&                evc,
+	auto&&                async_evc
+) -> void {
 	auto start_tick = ecsact::async::get_current_tick();
-	while(condition != true) {
+	while(pred() != true) {
 		std::this_thread::yield();
 		ecsact::async::flush_events(evc, async_evc);
 		auto current_tick = ecsact::async::get_current_tick();
@@ -100,14 +105,23 @@ void flush_events_never_error(const ecsact_execution_events_collector* exec_evc
 TEST(AsyncRef, ConnectBad) {
 	auto connect_req_id = ecsact::async::connect("bad");
 	auto async_evc = ecsact::async::async_events_collector<>{};
-	auto error_callback_happened = false;
+	auto error_callback_invoke_count = 0;
+	auto done_callback_invoke_count = 0;
 
 	async_evc.set_async_error_callback(
 		[&](ecsact_async_error err, std::span<ecsact_async_request_id> req_ids) {
-			error_callback_happened = true;
+			error_callback_invoke_count += 1;
 			ASSERT_EQ(req_ids.size(), 1);
 			ASSERT_EQ(req_ids[0], connect_req_id);
 			ASSERT_EQ(err, ECSACT_ASYNC_ERR_PERMISSION_DENIED);
+		}
+	);
+
+	async_evc.set_async_requests_done_callback(
+		[&](std::span<ecsact_async_request_id> req_ids) {
+			done_callback_invoke_count += 1;
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], connect_req_id);
 		}
 	);
 
@@ -115,12 +129,13 @@ TEST(AsyncRef, ConnectBad) {
 	for(auto i = 0; 100 > i; ++i) {
 		std::this_thread::yield();
 		ecsact::async::flush_events(async_evc);
-		if(error_callback_happened) {
+		if(error_callback_invoke_count > 0 && done_callback_invoke_count > 0) {
 			break;
 		}
 	}
 
-	ASSERT_TRUE(error_callback_happened);
+	ASSERT_EQ(error_callback_invoke_count, 1);
+	ASSERT_EQ(done_callback_invoke_count, 1);
 
 	ecsact::async::disconnect();
 }
@@ -186,7 +201,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	// Flush for feedback from the async execution
 	// An event is expected
-	flush_with_condition(entity_wait, evc);
+	flush_with_condition([&] { return entity_wait; }, evc);
 
 	options.clear();
 	evc.clear();
@@ -205,7 +220,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 		}
 	);
 
-	flush_with_condition(init_happened, evc);
+	flush_with_condition([&] { return init_happened; }, evc);
 
 	options.clear();
 	evc.clear();
@@ -225,7 +240,7 @@ TEST(AsyncRef, AddUpdateAndRemove) {
 
 	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	flush_with_condition(update_happened, evc);
+	flush_with_condition([&] { return update_happened; }, evc);
 
 	options.clear();
 	evc.clear();
@@ -307,7 +322,7 @@ TEST(AsyncRef, TryMergeFailure) {
 		}
 	);
 
-	flush_with_condition(wait, evc, async_evc);
+	flush_with_condition([&] { return wait; }, evc, async_evc);
 
 	options.clear();
 	evc.clear();
@@ -385,7 +400,7 @@ TEST(AsyncRef, CreateMultipleEntitiesAndDestroy) {
 
 	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 
-	flush_with_condition(wait, evc);
+	flush_with_condition([&] { return wait; }, evc);
 
 	ecsact::async::disconnect();
 }
@@ -423,7 +438,7 @@ TEST(AsyncRef, TryAction) {
 		}
 	);
 
-	flush_with_condition(wait, evc);
+	flush_with_condition([&] { return wait; }, evc);
 
 	options.clear();
 
@@ -508,7 +523,7 @@ TEST(AsyncRef, RemoveTagComponent) {
 	static_cast<void>(ecsact::async::enqueue_execution_options(options));
 	;
 
-	flush_with_condition(wait, evc);
+	flush_with_condition([&] { return wait; }, evc);
 
 	options.clear();
 	evc.clear();
@@ -527,10 +542,60 @@ TEST(AsyncRef, RemoveTagComponent) {
 		}
 	);
 
-	flush_with_condition(wait, evc);
+	flush_with_condition([&] { return wait; }, evc);
 
 	options.clear();
 	evc.clear();
+
+	ecsact::async::disconnect();
+}
+
+TEST(AsyncRef, EnqueueDoneCallback) {
+	auto test_comp = async_test::ComponentUpdate{};
+	test_comp.value_to_update = 10;
+
+	auto options = ecsact::core::execution_options{};
+	options.create_entity().add_component(&test_comp);
+
+	auto connect_req_id = ecsact::async::connect("good?delta_time=10");
+	auto connect_done_invoke_count = 0;
+	auto enqueue_done_invoke_count = 0;
+
+	auto evc = ecsact::core::execution_events_collector<>{};
+	auto async_evc = ecsact::async::async_events_collector<>{};
+	async_evc.set_async_requests_done_callback(
+		[&](std::span<ecsact_async_request_id> req_ids) {
+			connect_done_invoke_count += 1;
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], connect_req_id);
+		}
+	);
+
+	flush_with_condition(
+		[&] { return connect_done_invoke_count > 0; },
+		evc,
+		async_evc
+	);
+
+	ASSERT_EQ(connect_done_invoke_count, 1);
+
+	auto enqueue_req_id = ecsact::async::enqueue_execution_options(options);
+
+	async_evc.set_async_requests_done_callback(
+		[&](std::span<ecsact_async_request_id> req_ids) {
+			enqueue_done_invoke_count += 1;
+			ASSERT_EQ(req_ids.size(), 1);
+			ASSERT_EQ(req_ids[0], enqueue_req_id);
+		}
+	);
+
+	flush_with_condition(
+		[&] { return enqueue_done_invoke_count > 0; },
+		evc,
+		async_evc
+	);
+
+	ASSERT_EQ(enqueue_done_invoke_count, 1);
 
 	ecsact::async::disconnect();
 }

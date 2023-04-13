@@ -83,21 +83,29 @@ void async_reference::connect(
 			.request_ids = {req_id},
 		});
 
+		async_callbacks.add(types::async_request_complete{
+			.request_ids = {req_id},
+		});
 		return;
 	}
 
 	if(delta_time.count() < 0) {
-		types::async_error async_err{
+		async_callbacks.add(types::async_error{
 			.error = ECSACT_ASYNC_INVALID_CONNECTION_STRING,
 			.request_ids = {req_id},
-		};
+		});
 
-		async_callbacks.add(async_err);
+		async_callbacks.add(types::async_request_complete{
+			.request_ids = {req_id},
+		});
 		return;
 	}
 
 	registry_id = ecsact_create_registry("async_reference_impl_reg");
 	is_connected = true;
+	async_callbacks.add(types::async_request_complete{
+		.request_ids = {req_id},
+	});
 	execute_systems();
 }
 
@@ -110,17 +118,18 @@ void async_reference::enqueue_execution_options(
 			.error = ECSACT_ASYNC_ERR_NOT_CONNECTED,
 			.request_ids = {req_id},
 		});
+		async_callbacks.add(types::async_request_complete{
+			.request_ids = {req_id},
+		});
 		return;
 	}
 
 	auto cpp_options = util::c_to_cpp_execution_options(options);
 
-	types::pending_execution_options pending_options{
+	tick_manager.add_pending_options(types::pending_execution_options{
 		.request_id = req_id,
 		.options = cpp_options,
-	};
-
-	tick_manager.add_pending_options(pending_options);
+	});
 	return;
 }
 
@@ -134,30 +143,37 @@ void async_reference::execute_systems() {
 		nanoseconds execution_duration = {};
 
 		while(is_connected == true) {
-			auto async_err = tick_manager.validate_pending_options();
+			auto event = tick_manager.validate_pending_options();
+
+			std::visit(
+				[&](auto&& event) {
+					if(event.request_ids.empty()) {
+						return;
+					}
+
+					async_callbacks.add(event);
+				},
+				event
+			);
+
+			if(auto err = std::get_if<types::async_error>(&event)) {
+				async_callbacks.add(types::async_request_complete{
+					.request_ids = err->request_ids,
+				});
+
+				is_connected = false;
+				break;
+			}
 
 			if(delta_time.count() > 0) {
 				const auto sleep_duration = delta_time - execution_duration;
 				std::this_thread::sleep_for(sleep_duration);
 			}
 
-			if(async_err.error != ECSACT_ASYNC_OK) {
-				async_callbacks.add(async_err);
-
-				is_connected = false;
-				break;
-			}
-
 			auto start = clock::now();
-
 			auto cpp_options = tick_manager.move_and_increment_tick();
-
-			// TODO(Kelwan): Add done callbacks so we can resolve all requests
-			// https://github.com/ecsact-dev/ecsact_runtime/issues/102
-
 			auto collector = exec_callbacks.get_collector();
-
-			detail::c_execution_options c_exec_options;
+			auto c_exec_options = detail::c_execution_options{};
 
 			if(cpp_options) {
 				util::cpp_to_c_execution_options(
