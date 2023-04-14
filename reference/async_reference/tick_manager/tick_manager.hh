@@ -15,7 +15,8 @@ public:
 	void add_pending_options(const types::pending_execution_options& options);
 	std::optional<types::cpp_execution_options> move_and_increment_tick();
 
-	types::async_error validate_pending_options();
+	auto validate_pending_options()
+		-> std::variant<types::async_error, types::async_request_complete>;
 
 	int32_t get_current_tick();
 

@@ -7,49 +7,73 @@ void async_callbacks::add(const types::async_requests type) {
 	requests.push_back(type);
 }
 
-void async_callbacks::invoke(const ecsact_async_events_collector* async_events
-) {
+static auto _invoke(
+	const ecsact_async_events_collector* async_evc,
+	types::async_error                   req
+) -> void {
+	if(async_evc->async_error_callback == nullptr) {
+		return;
+	}
+
+	async_evc->async_error_callback(
+		req.error,
+		req.request_ids.size(),
+		req.request_ids.data(),
+		async_evc->async_error_callback_user_data
+	);
+}
+
+static auto _invoke(
+	const ecsact_async_events_collector* async_evc,
+	ecsact_execute_systems_error         err
+) -> void {
+	if(async_evc->system_error_callback == nullptr) {
+		return;
+	}
+
+	async_evc->system_error_callback(
+		err,
+		async_evc->system_error_callback_user_data
+	);
+}
+
+static auto _invoke(
+	const ecsact_async_events_collector* async_evc,
+	types::async_request_complete        req
+) -> void {
+	if(async_evc->async_request_done_callback == nullptr) {
+		return;
+	}
+
+	async_evc->async_request_done_callback(
+		req.request_ids.size(),
+		req.request_ids.data(),
+		async_evc->async_request_done_callback_user_data
+	);
+}
+
+void async_callbacks::invoke(const ecsact_async_events_collector* async_evc) {
 	if(requests.empty()) {
 		return;
 	}
 
-	if(async_events == nullptr) {
-		std::unique_lock lk(async_m);
+	if(async_evc == nullptr) {
+		auto lk = std::scoped_lock(async_m);
 		requests.clear();
 		return;
 	}
 
-	std::vector<types::async_requests> pending_requests;
+	auto pending_requests = std::vector<types::async_requests>{};
 
-	std::unique_lock lk(async_m);
-	pending_requests = std::move(requests);
-	requests.clear();
-	lk.unlock();
+	{
+		auto lk = std::scoped_lock(async_m);
+		pending_requests = std::move(requests);
+		requests.clear();
+	}
 
 	for(auto& request : pending_requests) {
 		std::visit(
-			[&async_events](auto&& error) {
-				using T = std::decay_t<decltype(error)>;
-				if constexpr(std::is_same_v<T, types::async_error>) {
-					if(async_events->async_error_callback == nullptr) {
-						return;
-					}
-					async_events->async_error_callback(
-						error.error,
-						error.request_ids.size(),
-						error.request_ids.data(),
-						async_events->async_error_callback_user_data
-					);
-				} else if constexpr(std::is_same_v<T, ecsact_execute_systems_error>) {
-					if(async_events->system_error_callback == nullptr) {
-						return;
-					}
-					async_events->system_error_callback(
-						error,
-						async_events->system_error_callback_user_data
-					);
-				}
-			},
+			[async_evc](auto&& req) { _invoke(async_evc, std::move(req)); },
 			request
 		);
 	}
