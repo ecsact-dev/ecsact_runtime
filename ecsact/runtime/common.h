@@ -15,7 +15,10 @@
 #	define ECSACT_EXTERN extern
 #endif
 
-#if defined(__wasm__)
+#if defined(DOXYGEN)
+#	define ECSACT_EXPORT(ExportName)
+#	define ECSACT_IMPORT(ImportModule)
+#elif defined(__wasm__)
 #	define ECSACT_EXPORT(ExportName) [[clang::export_name(ExportName)]]
 #	define ECSACT_IMPORT(ImportModule, ImportName) \
 		[[clang::import_module(ImportModule)]] [[clang::import_name(ImportName)]]
