@@ -6,6 +6,7 @@
 #include <optional>
 #include <cstdlib>
 #include <string_view>
+#include <boost/process.hpp>
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/strip.h"
@@ -13,6 +14,7 @@
 
 using bazel::tools::cpp::runfiles::Runfiles;
 namespace fs = std::filesystem;
+namespace bp = boost::process;
 
 void remove_empties(std::vector<std::string>& str_list) {
 	for(auto itr = str_list.begin(); itr != str_list.end();) {
@@ -119,6 +121,8 @@ void check_module_header(fs::path module_header_path) {
 }
 
 int main(int argc, char* argv[]) {
+	using namespace std::string_literals;
+
 	auto runfiles = Runfiles::Create(argv[0]);
 	auto bwd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
 
@@ -178,6 +182,27 @@ int main(int argc, char* argv[]) {
 				<< clang_format << " exited with exit code " << format_exit_code
 				<< "\n";
 			return format_exit_code;
+		}
+		
+		auto diff_output = bp::ipstream{};
+		auto diff_proc = bp::child(
+			bp::exe(bp::search_path("git")),
+			bp::args({"diff"s, "-U0", arg.string()}),
+			bp::std_out > diff_output
+		);
+
+		auto line = std::string{};
+		while(std::getline(diff_output, line)) {
+			if(!line.starts_with("@@")) continue;
+			
+			auto line_start = line.find('-');
+			auto line_end = line.find(' ', line_start);
+			auto line_num = line.substr(line_start + 1, line_end - line_start - 1);
+
+			std::cout //
+				<< "::error file=" << arg.string() << ",line=" << line_num
+				<< "::When adding or removing an Ecsact function from the API "
+				<< "headers you must also update the FOR_EACH_ macro.\n";
 		}
 	}
 
