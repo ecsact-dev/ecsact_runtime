@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
 		clang_format = runfiles->Rlocation("llvm_toolchain/clang-format");
 	}
 
-	int exit_code = 0;
+	int  exit_code = 0;
 	auto header_files = std::vector<fs::path>{};
 	header_files.reserve(argc - 1);
 
@@ -190,7 +190,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(exit_code == 0 && header_files.empty()) {
-		std::cout << "::debug::No specified headers. Checking all module headers.\n";
+		std::cout << "::debug::No specified headers. Checking all module "
+								 "headers.\n";
 
 		auto non_module_headers = std::unordered_set{
 			"common.h"s,
@@ -215,9 +216,11 @@ int main(int argc, char* argv[]) {
 
 	for(auto header_file : header_files) {
 		auto relative_header_path = fs::relative(header_file);
-		auto group = gh_action_group{"Ecsact Module Header: "s + relative_header_path.string()};
+		auto group = gh_action_group{
+			"Ecsact Module Header: "s + relative_header_path.string()};
 
-		std::cout << "::debug::Checking " << header_file.generic_string() << " ...\n";
+		std::cout << "::debug::Checking " << header_file.generic_string()
+							<< " ...\n";
 		check_module_header(header_file);
 
 		std::string format_str = clang_format + " -i " + header_file.string();
@@ -230,7 +233,7 @@ int main(int argc, char* argv[]) {
 				<< "\n";
 			return format_exit_code;
 		}
-		
+
 		auto diff_output = bp::ipstream{};
 		auto diff_proc = bp::child(
 			bp::exe(bp::search_path("git")),
@@ -240,8 +243,10 @@ int main(int argc, char* argv[]) {
 
 		auto line = std::string{};
 		while(std::getline(diff_output, line)) {
-			if(!line.starts_with("@@")) continue;
-			
+			if(!line.starts_with("@@")) {
+				continue;
+			}
+
 			auto line_start = line.find('-');
 			auto line_end = line.find(' ', line_start);
 			auto line_num = line.substr(line_start + 1, line_end - line_start - 1);
