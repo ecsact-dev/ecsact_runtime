@@ -9,7 +9,9 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/strip.h"
+#include "tools/cpp/runfiles/runfiles.h"
 
+using bazel::tools::cpp::runfiles::Runfiles;
 namespace fs = std::filesystem;
 
 void remove_empties(std::vector<std::string>& str_list) {
@@ -117,7 +119,9 @@ void check_module_header(fs::path module_header_path) {
 }
 
 int main(int argc, char* argv[]) {
+	auto runfiles = Runfiles::Create(argv[0]);
 	auto bwd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
+
 	if(bwd == nullptr) {
 		std::cerr //
 			<< "[WARN] BUILD_WORKSPACE_DIRECTORY environment variable not "
@@ -139,6 +143,10 @@ int main(int argc, char* argv[]) {
 				return 1;
 			}
 		}
+	}
+
+	if(runfiles != nullptr && clang_format == "clang-format") {
+		clang_format = runfiles->Rlocation("llvm_toolchain/clang-format");
 	}
 
 	int exit_code = 0;
