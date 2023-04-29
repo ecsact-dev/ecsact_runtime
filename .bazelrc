@@ -9,6 +9,7 @@ build:windows --platforms=@ecsact_runtime//bazel/platforms:windows
 build:windows --host_platform=@ecsact_runtime//bazel/platforms:windows
 
 build:linux --platforms=@ecsact_runtime//bazel/platforms:linux
+build:linux --host_platform=@ecsact_runtime//bazel/platforms:linux
 build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
 
 build:no-warnings --per_file_copt=//.*@-Werror

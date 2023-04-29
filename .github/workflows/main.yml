@@ -49,7 +49,6 @@ jobs:
   check-module-headers:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" && sudo apt install clang-format-15
       - uses: actions/cache@v3
         with:
           path: |
@@ -57,5 +56,5 @@ jobs:
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
-      - run: bazel run --config=ci //scripts:check_module_header ecsact/runtime/core.h ecsact/runtime/dynamic.h ecsact/runtime/meta.h ecsact/runtime/serialize.h ecsact/runtime/static.h ecsact/runtime/async.h -- --clang-format clang-format-15
-      - run: git diff --quiet
+      - name: Check Module Headers
+        run: bazel run --config=ci //scripts:check_module_header
