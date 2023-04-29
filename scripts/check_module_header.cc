@@ -217,6 +217,7 @@ int main(int argc, char* argv[]) {
 				<< ",line=" << line_num
 				<< "::When adding or removing an Ecsact function from the API "
 				<< "headers you must also update the FOR_EACH_ macro.\n";
+			exit_code += 1;
 		}
 	}
 
