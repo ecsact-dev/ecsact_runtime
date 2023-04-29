@@ -131,6 +131,54 @@ void check_module_header(fs::path module_header_path) {
 	}
 }
 
+auto find_method_definition_line( //
+	fs::path    header_file,
+	std::string function_name
+) -> std::optional<int> {
+	auto stream = std::fstream(
+		header_file,
+		std::ios_base::in | std::ios_base::app | std::ios_base::binary
+	);
+	auto line = std::string{};
+	auto line_num = 1;
+	while(std::getline(stream, line)) {
+		auto idx = line.find(function_name + ")");
+		if(idx != std::string::npos) {
+			return line_num;
+		}
+
+		line_num += 1;
+	}
+
+	return std::nullopt;
+}
+
+auto report_needs_for_each_added( //
+	fs::path    header_file,
+	std::string added_fn
+) -> void {
+	auto line = find_method_definition_line(header_file, added_fn);
+	if(line) {
+		std::cout //
+			<< "::error file=" << fs::relative(header_file).string()
+			<< ",line=" << *line << "::" << added_fn
+			<< " needs to be added to the FOR_EACH macro\n";
+	}
+}
+
+auto report_needs_for_each_removal( //
+	fs::path    header_file,
+	std::string removed_fn
+) -> void {
+	auto line = find_method_definition_line(header_file, removed_fn);
+	if(line) {
+		std::cout //
+			<< "::error file=" << fs::relative(header_file).string()
+			<< ",line=" << *line << "::" << removed_fn
+			<< " needs to be removed from the FOR_EACH macro\n";
+	}
+}
+
 int main(int argc, char* argv[]) {
 	using namespace std::string_literals;
 
@@ -242,11 +290,13 @@ int main(int argc, char* argv[]) {
 		);
 
 		auto line = std::string{};
-		while(std::getline(diff_output, line)) {
+		auto found_line_info = false;
+		while(!found_line_info && std::getline(diff_output, line)) {
 			if(!line.starts_with("@@")) {
 				continue;
 			}
 
+			found_line_info = true;
 			auto line_start = line.find('-');
 			auto line_end = line.find(' ', line_start);
 			auto line_num = line.substr(line_start + 1, line_end - line_start - 1);
@@ -258,6 +308,43 @@ int main(int argc, char* argv[]) {
 				<< "::When adding or removing an Ecsact function from the API "
 				<< "headers you must also update the FOR_EACH_ macro.\n";
 			exit_code += 1;
+		}
+
+		auto removed_fns = std::unordered_set<std::string>{};
+		auto added_fns = std::unordered_set<std::string>{};
+		while(std::getline(diff_output, line)) {
+			auto fn_start_idx = line.find("fn(");
+
+			if(fn_start_idx == std::string::npos) {
+				continue;
+			}
+
+			auto fn_name = line.substr(
+				fn_start_idx + 3,
+				line.find(',', fn_start_idx + 3) - fn_start_idx - 3
+			);
+
+			if(line.starts_with('-')) {
+				removed_fns.insert(fn_name);
+			} else if(line.starts_with('+')) {
+				added_fns.insert(fn_name);
+			}
+		}
+
+		for(auto added_fn : added_fns) {
+			if(removed_fns.contains(added_fn)) {
+				continue;
+			}
+
+			report_needs_for_each_added(header_file, added_fn);
+		}
+
+		for(auto removed_fn : removed_fns) {
+			if(added_fns.contains(removed_fn)) {
+				continue;
+			}
+
+			report_needs_for_each_removal(header_file, removed_fn);
 		}
 	}
 
