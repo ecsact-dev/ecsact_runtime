@@ -56,5 +56,5 @@ jobs:
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
-      - name: Check Module Headers Script
-        run: bazel run --config=ci //scripts:check_module_header ecsact/runtime/core.h ecsact/runtime/dynamic.h ecsact/runtime/meta.h ecsact/runtime/serialize.h ecsact/runtime/static.h ecsact/runtime/async.h
+      - name: Check Module Headers
+        run: bazel run --config=ci //scripts:check_module_header

@@ -49,9 +49,9 @@ void check_module_header(fs::path module_header_path) {
 		"FOR_EACH_ECSACT_"s + absl::AsciiStrToUpper(module_name) + "_API_FN"s;
 
 	std::cout //
-		<< "::info::Module Name: " << module_name << "\n"
-		<< "::info::Module Method Macro Name: " << module_fn_macro_name << "\n"
-		<< "::info::For Each Module Method Macro Name: " << for_each_fn_macro_name
+		<< "::debug::Module Name: " << module_name << "\n"
+		<< "::debug::Module Method Macro Name: " << module_fn_macro_name << "\n"
+		<< "::debug::For Each Module Method Macro Name: " << for_each_fn_macro_name
 		<< "\n";
 
 	std::vector<std::string> methods;
@@ -103,7 +103,7 @@ void check_module_header(fs::path module_header_path) {
 		}
 	}
 
-	std::cout << "::info::Found " << methods.size() << " methods\n";
+	std::cout << "::debug::Found " << methods.size() << " methods\n";
 
 	if(for_each_begin) {
 		fs::resize_file(module_header_path, static_cast<int>(*for_each_begin));
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(exit_code == 0 && header_files.empty()) {
-		std::cout << "::info::No specified headers. Checking all module headers.\n";
+		std::cout << "::debug::No specified headers. Checking all module headers.\n";
 
 		auto non_module_headers = std::unordered_set{
 			"common.h"s,
@@ -217,11 +217,11 @@ int main(int argc, char* argv[]) {
 		auto relative_header_path = fs::relative(header_file);
 		auto group = gh_action_group{"Ecsact Module Header: "s + relative_header_path.string()};
 
-		std::cout << "::info::Checking " << header_file.generic_string() << " ...\n";
+		std::cout << "::debug::Checking " << header_file.generic_string() << " ...\n";
 		check_module_header(header_file);
 
 		std::string format_str = clang_format + " -i " + header_file.string();
-		std::cout << "::info::Running " << format_str << " ...\n";
+		std::cout << "::debug::Running " << format_str << " ...\n";
 		auto format_exit_code = std::system(format_str.c_str());
 
 		if(format_exit_code != 0) {
@@ -248,13 +248,14 @@ int main(int argc, char* argv[]) {
 
 			std::cout //
 				<< "::error file=" << relative_header_path.string()
-				<< ",line=" << line_num
+				<< ",line=" << line_num << ",title=Out of date FOR_EACH macro for "
+				<< relative_header_path.string()
 				<< "::When adding or removing an Ecsact function from the API "
 				<< "headers you must also update the FOR_EACH_ macro.\n";
 			exit_code += 1;
 		}
 	}
 
-	std::cout << "::info::Done\n";
+	std::cout << "::debug::Done\n";
 	return exit_code;
 }
