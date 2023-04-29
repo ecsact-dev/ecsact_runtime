@@ -228,6 +228,19 @@ ECSACT_DYNAMIC_API_FN(ecsact_system_id, ecsact_create_system)
 	int32_t           system_name_len
 );
 
+/**
+ * Set a systems 'lazy' execution iteration rate. This affects how many entities
+ * a system is executed on per `ecsact_execute_systems` call.
+ *
+ * By default the iteration rate is `0` which means a system is _not_ lazy and
+ * will run on every entity the system qualifies for.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_lazy_iteration_rate)
+( //
+	ecsact_system_id system_id,
+	int32_t          iteration_rate
+);
+
 ECSACT_DYNAMIC_API_FN(void, ecsact_add_child_system)
 ( //
 	ecsact_system_like_id parent,
@@ -431,6 +444,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_generates_unset_component)
 		fn(ecsact_remove_dependency, __VA_ARGS__);                   \
 		fn(ecsact_destroy_package, __VA_ARGS__);                     \
 		fn(ecsact_create_system, __VA_ARGS__);                       \
+		fn(ecsact_set_system_lazy_iteration_rate, __VA_ARGS__);      \
 		fn(ecsact_add_child_system, __VA_ARGS__);                    \
 		fn(ecsact_remove_child_system, __VA_ARGS__);                 \
 		fn(ecsact_reorder_system, __VA_ARGS__);                      \
