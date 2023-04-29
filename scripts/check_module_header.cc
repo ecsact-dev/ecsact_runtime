@@ -190,8 +190,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(exit_code == 0 && header_files.empty()) {
-		std::cout << "::debug::No specified headers. Checking all module "
-								 "headers.\n";
+		std::cout //
+			<< "::debug::No specified headers. Checking all module headers.\n";
 
 		auto non_module_headers = std::unordered_set{
 			"common.h"s,
