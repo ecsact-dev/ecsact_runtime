@@ -400,8 +400,6 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 	int32_t*               out_systems_count
 );
 
-ECSACT_META_API_FN(void, ecsact_meta_test_123)(ecsact_package_id package_id);
-
 // # BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -455,7 +453,18 @@ ECSACT_META_API_FN(void, ecsact_meta_test_123)(ecsact_package_id package_id);
 		fn(ecsact_meta_get_child_system_ids, __VA_ARGS__);                  \
 		fn(ecsact_meta_get_parent_system_id, __VA_ARGS__);                  \
 		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);               \
-		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__)
+		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__);                 \
+		fn(ecsact_meta_test_123, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
+
+
+
+
+
+
+
+
+
+
