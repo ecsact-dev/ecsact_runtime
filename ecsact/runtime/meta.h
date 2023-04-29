@@ -400,6 +400,8 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 	int32_t*               out_systems_count
 );
 
+ECSACT_META_API_FN(void, ecsact_meta_test_123)(ecsact_package_id package_id);
+
 // # BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
