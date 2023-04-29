@@ -6,6 +6,7 @@
 #include <optional>
 #include <cstdlib>
 #include <string_view>
+#include <unordered_set>
 #include <boost/process.hpp>
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_split.h"
@@ -48,9 +49,9 @@ void check_module_header(fs::path module_header_path) {
 		"FOR_EACH_ECSACT_"s + absl::AsciiStrToUpper(module_name) + "_API_FN"s;
 
 	std::cout //
-		<< "[INFO] Module Name: " << module_name << "\n"
-		<< "[INFO] Module Method Macro Name: " << module_fn_macro_name << "\n"
-		<< "[INFO] For Each Module Method Macro Name: " << for_each_fn_macro_name
+		<< "::info::Module Name: " << module_name << "\n"
+		<< "::info::Module Method Macro Name: " << module_fn_macro_name << "\n"
+		<< "::info::For Each Module Method Macro Name: " << for_each_fn_macro_name
 		<< "\n";
 
 	std::vector<std::string> methods;
@@ -102,7 +103,7 @@ void check_module_header(fs::path module_header_path) {
 		}
 	}
 
-	std::cout << "[INFO] Found " << methods.size() << " methods\n";
+	std::cout << "::info::Found " << methods.size() << " methods\n";
 
 	if(for_each_begin) {
 		fs::resize_file(module_header_path, static_cast<int>(*for_each_begin));
@@ -138,13 +139,14 @@ int main(int argc, char* argv[]) {
 
 	if(bwd == nullptr) {
 		std::cerr //
-			<< "[WARN] BUILD_WORKSPACE_DIRECTORY environment variable not "
+			<< "[ERROR] BUILD_WORKSPACE_DIRECTORY environment variable not "
 				 "found\n";
+		return 1;
 	} else {
 		fs::current_path(bwd);
 	}
 
-	std::string clang_format = "clang-format";
+	auto clang_format = "clang-format"s;
 
 	for(int i = 1; argc > i; ++i) {
 		std::string arg(argv[i]);
@@ -164,6 +166,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	int exit_code = 0;
+	auto header_files = std::vector<fs::path>{};
+	header_files.reserve(argc - 1);
+
 	for(int i = 1; argc > i; ++i) {
 		if(argv[i][0] == '-') {
 			i += 1;
@@ -171,8 +176,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		fs::path arg(argv[i]);
-		
-		auto group = gh_action_group{"Ecsact Module Header: " + argv[i]};
 
 		if(!arg.is_absolute()) {
 			arg = bwd / arg;
@@ -183,11 +186,42 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 
-		std::cout << "[INFO] Checking " << arg.generic_string() << " ...\n";
-		check_module_header(arg);
+		header_files.push_back(arg);
+	}
 
-		std::string format_str = clang_format + " -i " + arg.string();
-		std::cout << "[INFO] Running " << format_str << " ...\n";
+	if(exit_code == 0 && header_files.empty()) {
+		std::cout << "::info::No specified headers. Checking all module headers.\n";
+
+		auto non_module_headers = std::unordered_set{
+			"common.h"s,
+			"definitions.h"s,
+			"dylib.h"s,
+		};
+
+		// Every C header in `ecsact/runtime` is a module header
+		for(auto entry : fs::directory_iterator(fs::path{bwd} / "ecsact/runtime")) {
+			if(non_module_headers.contains(entry.path().filename())) {
+				continue;
+			}
+
+			// Only C headers are module headers
+			if(entry.path().extension() != ".h") {
+				continue;
+			}
+
+			header_files.push_back(entry.path());
+		}
+	}
+
+	for(auto header_file : header_files) {
+		auto relative_header_path = fs::relative(header_file);
+		auto group = gh_action_group{"Ecsact Module Header: "s + relative_header_path.string()};
+
+		std::cout << "::info::Checking " << header_file.generic_string() << " ...\n";
+		check_module_header(header_file);
+
+		std::string format_str = clang_format + " -i " + header_file.string();
+		std::cout << "::info::Running " << format_str << " ...\n";
 		auto format_exit_code = std::system(format_str.c_str());
 
 		if(format_exit_code != 0) {
@@ -200,7 +234,7 @@ int main(int argc, char* argv[]) {
 		auto diff_output = bp::ipstream{};
 		auto diff_proc = bp::child(
 			bp::exe(bp::search_path("git")),
-			bp::args({"diff"s, "-U0", arg.string()}),
+			bp::args({"diff"s, "-U0", header_file.string()}),
 			bp::std_out > diff_output
 		);
 
@@ -213,7 +247,7 @@ int main(int argc, char* argv[]) {
 			auto line_num = line.substr(line_start + 1, line_end - line_start - 1);
 
 			std::cout //
-				<< "::error file=" << fs::relative(fs::current_path(), arg).string()
+				<< "::error file=" << relative_header_path.string()
 				<< ",line=" << line_num
 				<< "::When adding or removing an Ecsact function from the API "
 				<< "headers you must also update the FOR_EACH_ macro.\n";
@@ -221,6 +255,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	std::cout << "[INFO] Done\n";
+	std::cout << "::info::Done\n";
 	return exit_code;
 }
