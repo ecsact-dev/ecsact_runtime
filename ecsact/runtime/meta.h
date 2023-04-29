@@ -458,13 +458,3 @@ ECSACT_META_API_FN(void, ecsact_meta_get_top_level_systems)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
-
-
-
-
-
-
-
-
-
-
