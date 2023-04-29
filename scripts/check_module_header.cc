@@ -16,6 +16,16 @@ using bazel::tools::cpp::runfiles::Runfiles;
 namespace fs = std::filesystem;
 namespace bp = boost::process;
 
+struct gh_action_group {
+	gh_action_group(std::string group_name) {
+		std::cout << "::group::" << group_name << "\n";
+	}
+
+	~gh_action_group() {
+		std::cout << "::endgroup::\n";
+	}
+};
+
 void remove_empties(std::vector<std::string>& str_list) {
 	for(auto itr = str_list.begin(); itr != str_list.end();) {
 		*itr = absl::StripAsciiWhitespace(*itr);
@@ -161,6 +171,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		fs::path arg(argv[i]);
+		
+		auto group = gh_action_group{"Ecsact Module Header: " + argv[i]};
+
 		if(!arg.is_absolute()) {
 			arg = bwd / arg;
 		}
@@ -200,7 +213,8 @@ int main(int argc, char* argv[]) {
 			auto line_num = line.substr(line_start + 1, line_end - line_start - 1);
 
 			std::cout //
-				<< "::error file=" << arg.string() << ",line=" << line_num
+				<< "::error file=" << fs::relative(fs::current_path(), arg).string()
+				<< ",line=" << line_num
 				<< "::When adding or removing an Ecsact function from the API "
 				<< "headers you must also update the FOR_EACH_ macro.\n";
 		}
