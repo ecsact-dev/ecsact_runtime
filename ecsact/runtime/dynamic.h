@@ -420,6 +420,18 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_generates_unset_component)
 	ecsact_component_id        component_id
 );
 
+/**
+ * Sets the current execution status of an entity in relation to the system. It
+ * is an error to set an entity to a status that is not supported by the system
+ * and may cause undefined behaviour.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_entity_execution_status)
+( //
+	ecsact_system_like_id system_like_id,
+	ecsact_entity_id      entity_id,
+	ecsact_ees            execution_status
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
@@ -467,7 +479,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_generates_unset_component)
 		fn(ecsact_add_system_generates, __VA_ARGS__);                \
 		fn(ecsact_remove_system_generates, __VA_ARGS__);             \
 		fn(ecsact_system_generates_set_component, __VA_ARGS__);      \
-		fn(ecsact_system_generates_unset_component, __VA_ARGS__)
+		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
+		fn(ecsact_set_entity_execution_status, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
