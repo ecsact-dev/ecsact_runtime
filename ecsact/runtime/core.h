@@ -229,6 +229,18 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 	const ecsact_execution_events_collector* events_collector
 );
 
+/**
+ * Gets the current execution status of an entity.
+ *
+ * @see ecsact_ees
+ */
+ECSACT_CORE_API_FN(ecsact_ees, ecsact_get_entity_execution_status)
+( //
+	ecsact_registry_id    registry_id,
+	ecsact_entity_id      entity_id,
+	ecsact_system_like_id system_like_id
+);
+
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -251,7 +263,8 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 		fn(ecsact_each_component, __VA_ARGS__);    \
 		fn(ecsact_update_component, __VA_ARGS__);  \
 		fn(ecsact_remove_component, __VA_ARGS__);  \
-		fn(ecsact_execute_systems, __VA_ARGS__)
+		fn(ecsact_execute_systems, __VA_ARGS__);   \
+		fn(ecsact_get_entity_execution_status, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_CORE_H
