@@ -230,29 +230,6 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
 );
 
 /**
- * ees - Entity Execution Status
- *
- * An entitys execution status gives details about how an entity relates to a
- * system or action's execution. By default an entitys execution status is
- * `ECSACT_ESS_IDLE`.
- *
- * @note This detail is exposed mostly for serialization. It is important to
- * maintain this status to properly replicate simulations over something like a
- * network.
- */
-typedef enum {
-	/**
-	 * Entity has no execution status
-	 */
-	ECSACT_EES_IDLE,
-
-	/**
-	 * Entity is waiting to be processed by the specified lazy system
-	 */
-	ECSACT_EES_PENDING_LAZY,
-} ecsact_ees;
-
-/**
  * Gets the current execution status of an entity.
  *
  * @see ecsact_ees
