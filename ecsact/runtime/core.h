@@ -236,8 +236,9 @@ ECSACT_CORE_API_FN(ecsact_execute_systems_error, ecsact_execute_systems)
  */
 ECSACT_CORE_API_FN(ecsact_ees, ecsact_get_entity_execution_status)
 ( //
-	ecsact_system_like_id system_like_id,
-	ecsact_entity_id      entity_id
+	ecsact_registry_id    registry_id,
+	ecsact_entity_id      entity_id,
+	ecsact_system_like_id system_like_id
 );
 
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
