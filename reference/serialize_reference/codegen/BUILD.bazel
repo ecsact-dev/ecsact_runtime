@@ -1,5 +1,5 @@
 load("//bazel:copts.bzl", "copts")
-load("//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
+load("@ecsact_codegen//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
 
 package(default_visibility = ["//visibility:public"])
 

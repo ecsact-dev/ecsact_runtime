@@ -31,6 +31,13 @@ http_archive(
     urls = ["https://github.com/bazelboost/boost/archive/da62319c330d81ef032517cbe13b6f35d97387cb.zip"],
 )
 
+http_archive(
+    name = "ecsact_codegen",
+    sha256 = "5a1a466dbddbe042c2e5910f3b65ca44a5ffcef5831fdd0c3b2e2863c13cfb31",
+    strip_prefix = "ecsact_codegen-0.0.2",
+    urls = ["https://github.com/ecsact-dev/ecsact_codegen/archive/refs/tags/0.0.2.tar.gz"],
+)
+
 load("@boost//:index.bzl", "boost_http_archives")
 
 boost_http_archives()
@@ -58,9 +65,9 @@ http_archive(
 
 http_archive(
     name = "rules_ecsact",
-    sha256 = "e6d888c63aa536b5b7c6af10d217cdb8ad98b2262fa9d02515a99edbd0d94eea",
-    strip_prefix = "rules_ecsact-0.2.1",
-    url = "https://github.com/ecsact-dev/rules_ecsact/archive/refs/tags/0.2.1.tar.gz",
+    sha256 = "3db6d498a681e036dabdcc1bb7e5ee254acadae4ab2ecf19d253f824db88d5e4",
+    strip_prefix = "rules_ecsact-0.3.0",
+    urls = ["https://github.com/ecsact-dev/rules_ecsact/archive/refs/tags/0.3.0.tar.gz"],
 )
 
 load("@rules_ecsact//ecsact:repositories.bzl", "ecsact_register_toolchains", "rules_ecsact_dependencies")
