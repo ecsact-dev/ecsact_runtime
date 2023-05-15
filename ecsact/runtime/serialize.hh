@@ -6,7 +6,6 @@
 #include <type_traits>
 #include "ecsact/runtime/serialize.h"
 #include "ecsact/runtime/core.h"
-#include "serialize.h"
 
 namespace ecsact {
 
