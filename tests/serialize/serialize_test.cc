@@ -459,6 +459,10 @@ TEST(EntityRestore, ExecutionOptions) {
 			auto exec_err =
 				ecsact_execute_systems(vars_ptr->reg_id, 1, &exec_options, nullptr);
 
+			EXPECT_EQ(exec_options.create_entities_length, 2);
+			EXPECT_GE(exec_options.create_entities_components_length[0], 1);
+			EXPECT_GE(exec_options.create_entities_components_length[1], 1);
+
 			ASSERT_EQ(exec_err, ECSACT_EXEC_SYS_OK);
 		},
 		&vars
