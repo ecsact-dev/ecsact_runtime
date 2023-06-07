@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.3.0 - 2023-06-07
+#### Features
+- add parallel execution hint option (#176) - (03412eb) - Ezekiel Warren
+- serialize C++ fns now accept C function as parameters (#171) - (bc89804) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to ceeedcc (#174) - (f296082) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to b397ad2 (#173) - (00853be) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 41ff2a0 (#172) - (cf7eac3) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to 3dddf20 (#170) - (70b4ebb) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to 80ac7ef (#169) - (d412656) - renovate[bot]
+- restore components length test (#175) - (cae3239) - Ezekiel Warren
+#### Refactoring
+- deprecated codegen_plugin.bzl (#168) - (982d9ff) - Ezekiel Warren
+
+- - -
+
 ## 0.2.0 - 2023-04-30
 #### Features
 - new entity execution status core + dynamic API (#167) - (89bf5d9) - Ezekiel Warren
