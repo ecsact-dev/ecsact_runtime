@@ -436,6 +436,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_entity_execution_status)
 	ecsact_ees            execution_status
 );
 
+/**
+ * Set a _hint_ that the system may process entities in parallel. This is
+ * only a _hint_. The runtime implementation may choose to not run in parallel.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_parallel_execution)
+( //
+	ecsact_system_like_id system_like_id,
+	bool                  parallel_execution
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
@@ -484,7 +494,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_entity_execution_status)
 		fn(ecsact_remove_system_generates, __VA_ARGS__);             \
 		fn(ecsact_system_generates_set_component, __VA_ARGS__);      \
 		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
-		fn(ecsact_set_entity_execution_status, __VA_ARGS__)
+		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
+		fn(ecsact_set_system_parallel_execution, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
