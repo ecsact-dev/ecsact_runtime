@@ -1,7 +1,7 @@
 #ifndef ECSACT_CODEGEN_PLUGIN_H
 #define ECSACT_CODEGEN_PLUGIN_H
 
-#include "ecsact/runtime/meta.h"
+#include "ecsact/runtime/common.h"
 
 #ifndef ECSACT_CODEGEN_PLUGIN_API
 #	ifdef __cplusplus
@@ -21,13 +21,26 @@
 #	endif
 #endif // ECSACT_CODEGEN_PLUGIN_API
 
-using ecsact_codegen_write_fn_t = void (*)(const char* str, int32_t str_len);
+/**
+ * Characters passed to this function are written to file or stdout. Characters
+ * that go beyond @p str_len are not read.
+ *
+ * @NOTE: it is _NOT_ assumed that @p str is null-terminated, you must set
+ * @p str_len properly.
+ *
+ * @param str - array of characters of length @p str_len
+ * @param str_len - length of array of characters @p str
+ */
+typedef void (*ecsact_codegen_write_fn_t)( //
+	const char* str,
+	int32_t     str_len
+);
 
 ECSACT_CODEGEN_PLUGIN_API const char* ecsact_codegen_plugin_name();
 
 /**
- * Ecsact codegen plugin entry pointer. Plugin developers implement this
- * function to write code generation output via the `write_fn` parameter.
+ * Ecsact codegen plugin entrypoint. Plugin developers implement this function
+ * to write code generation output via the `write_fn` parameter.
  *
  * It is expected that the implementation uses the runtime meta module
  * functions.
