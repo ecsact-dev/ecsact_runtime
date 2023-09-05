@@ -14,7 +14,7 @@ jobs:
     name: Formatting Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jidicula/clang-format-action@v4.9.0
         with: { clang-format-version: "15" }
 
@@ -27,7 +27,7 @@ jobs:
             /Users/runneradmin/AppData/Local/bazelisk
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazel test --config=ci //...
       - run: bazel test --config=ci //...
         working-directory: tests
@@ -41,7 +41,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazel test --config=ci --config=no-warnings //...
       - run: bazel test --config=ci --config=no-warnings //...
         working-directory: tests
@@ -55,6 +55,6 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check Module Headers
         run: bazel run --config=ci //scripts:check_module_header
