@@ -11,6 +11,7 @@ cc_binary(
         "@abseil-cpp//absl/strings",
         "@bazel_tools//tools/cpp/runfiles",
         "@boost.dll",
+        "@boost.process",
     ],
     data = [
         "@llvm_toolchain//:clang-format",
