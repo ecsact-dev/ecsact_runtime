@@ -1,0 +1,14 @@
+module(name = "ecsact_runtime")
+
+bazel_dep(name = "rules_cc", version = "0.0.8")
+bazel_dep(name = "bazel_skylib", version = "1.4.2")
+bazel_dep(name = "googletest", version = "1.14.0")
+bazel_dep(name = "abseil-cpp", version = "20230802.0")
+bazel_dep(name = "boost.dll", version = "1.83.0.bzl.2")
+bazel_dep(name = "ecsact_codegen")
+
+git_override(
+    module_name = "ecsact_codegen",
+    remote = "https://github.com/ecsact-dev/ecsact_codegen",
+    commit = "d947cb8bef1c488d814dc2b43bd4a0ab982572cd",
+)

@@ -15,7 +15,7 @@ cc_test(
     copts = copts,
     deps = [
         "@ecsact_runtime",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )

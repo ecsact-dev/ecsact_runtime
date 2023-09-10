@@ -8,9 +8,9 @@ cc_binary(
     defines = ["BOOST_ASIO_HAS_STD_INVOKE_RESULT"],  # https://github.com/chriskohlhoff/asio/issues/912
     target_compatible_with = ["@platforms//os:linux"],  # abseil has a linker error on windows
     deps = [
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
         "@bazel_tools//tools/cpp/runfiles",
-        "@boost//libs/process",
+        "@boost.dll",
     ],
     data = [
         "@llvm_toolchain//:clang-format",
