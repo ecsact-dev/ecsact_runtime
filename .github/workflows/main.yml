@@ -23,8 +23,9 @@ jobs:
             /Users/runneradmin/AppData/Local/bazelisk
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazel test --config=ci //...
+        working-directory: test
 
   test-linux:
     runs-on: ubuntu-latest
@@ -35,5 +36,6 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazel test --config=ci //...
+        working-directory: test
