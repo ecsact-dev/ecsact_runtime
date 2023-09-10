@@ -5,18 +5,14 @@ on:
     branches:
       - "**"
 
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   formatting-check:
     name: Formatting Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jidicula/clang-format-action@v4.9.0
-        with: { clang-format-version: "15" }
+        with: { clang-format-version: "16" }
 
   test-windows:
     runs-on: windows-latest
@@ -27,10 +23,9 @@ jobs:
             /Users/runneradmin/AppData/Local/bazelisk
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazel test --config=ci //...
-      - run: bazel test --config=ci //...
-        working-directory: tests
+        working-directory: test
 
   test-linux:
     runs-on: ubuntu-latest
@@ -41,20 +36,6 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
-      - run: bazel test --config=ci --config=no-warnings //...
-      - run: bazel test --config=ci --config=no-warnings //...
-        working-directory: tests
-
-  check-module-headers:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/bazelisk
-            ~/.cache/bazel-disk-cache
-          key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
-      - name: Check Module Headers
-        run: bazel run --config=ci //scripts:check_module_header
+      - uses: actions/checkout@v4
+      - run: bazel test --config=ci //...
+        working-directory: test

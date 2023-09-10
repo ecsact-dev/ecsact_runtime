@@ -142,7 +142,7 @@ cc_library(
     hdrs = ["ecsact/codegen/plugin_validate.hh"],
     copts = copts,
     deps = [
-        "@boost//libs/dll",
+        "@boost.dll",
         "@ecsact_runtime//:dylib",
         "@ecsact_runtime//:meta",
     ],

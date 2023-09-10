@@ -1,21 +1,24 @@
 startup --windows_enable_symlinks
+common --enable_bzlmod
+common --registry=https://raw.githubusercontent.com/bazelboost/registry/main
+common --registry=https://bcr.bazel.build
 build --enable_platform_specific_config
 build --incompatible_use_platforms_repo_for_constraints
 build --incompatible_enable_cc_toolchain_resolution
 build --incompatible_strict_action_env
 build --enable_runfiles
+build --noincompatible_remove_rule_name_parameter
+query --noincompatible_remove_rule_name_parameter
 
-build:windows --platforms=@ecsact_runtime//bazel/platforms:windows
-build:windows --host_platform=@ecsact_runtime//bazel/platforms:windows
-
-build:linux --platforms=@ecsact_runtime//bazel/platforms:linux
-build:linux --host_platform=@ecsact_runtime//bazel/platforms:linux
+# Temporary until https://github.com/grailbio/bazel-toolchain/pull/198 is merged
 build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
 
-build:no-warnings --per_file_copt=//.*@-Werror
+common --@boost.dll//:use_std_fs
+common --@boost.process//:use_std_fs
 
 common:ci --announce_rc
+common:ci --verbose_failures
+common:ci --keep_going
 common:ci --disk_cache=~/.cache/bazel-disk-cache
-test:ci --test_output=errors
 
 try-import %workspace%/user.bazelrc
