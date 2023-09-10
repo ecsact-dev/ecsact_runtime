@@ -14,6 +14,7 @@ query --noincompatible_remove_rule_name_parameter
 build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
 
 common --@boost.dll//:use_std_fs
+common --@boost.process//:use_std_fs
 
 common:ci --announce_rc
 common:ci --verbose_failures
