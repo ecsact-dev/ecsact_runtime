@@ -1,17 +1,9 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@ecsact_runtime//bazel:copts.bzl", "copts")
-load("@ecsact_codegen//:codegen_plugin.bzl", "cc_ecsact_codegen_plugin")
-
-cc_ecsact_codegen_plugin(
-    name = "empty_codegen_plugin",
-    srcs = ["empty_codegen_plugin.cc"],
-    copts = copts,
-    output_extension = "txt",
-)
 
 cc_test(
-    name = "test",
-    srcs = ["test.cc"],
+    name = "for_each_macros_test",
+    srcs = ["for_each_macros_test.cc"],
     copts = copts,
     deps = [
         "@ecsact_runtime",
