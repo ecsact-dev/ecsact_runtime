@@ -2,8 +2,6 @@
 Exports `cc_ecsact_codegen_plugin`
 """
 
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
-load("//bazel:copts.bzl", _copts = "copts")
 load(
     "@ecsact_codegen//:codegen_plugin.bzl",
     _EcsactCodegenPluginInfo = "EcsactCodegenPluginInfo",

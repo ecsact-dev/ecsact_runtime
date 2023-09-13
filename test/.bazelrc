@@ -1,1 +1,3 @@
-import %workspace%/../.bazelrc
+import %workspace%/../bazel/common.bazelrc
+
+try-import %workspace%/user.bazelrc
