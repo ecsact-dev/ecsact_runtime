@@ -1,4 +1,7 @@
-name: CI
+# This file is maintained by ecsact-dev/ecsact_common
+# If changes are required please make them there
+
+name: main
 
 on:
   push:
@@ -24,7 +27,9 @@ jobs:
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v4
-      - run: bazel test --config=ci //...
+      - run: bazelisk build --config=ci //...
+      - if: ${{ hashfiles('test/MODULE.bazel') == '' }}
+        run: bazelisk test --config=ci ...
         working-directory: test
 
   test-linux:
@@ -37,5 +42,7 @@ jobs:
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v4
-      - run: bazel test --config=ci //...
+      - run: bazelisk build --config=ci //...
+      - if: ${{ hashfiles('test/MODULE.bazel') == '' }}
+        run: bazelisk test --config=ci ...
         working-directory: test
