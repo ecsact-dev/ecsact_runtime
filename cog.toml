@@ -1,7 +1,6 @@
 pre_bump_hooks = [
-	"buildozer 'set version {{version}}' //MODULE.bazel:%module",
 	# Ecsact pre 1.0.0 the 0.X.0 is our 'major' version
-	"buildozer -k 'set compatibility_level {{version.minor}}' //MODULE.bazel:%module",
+	"buildozer 'set version {{version}}' 'set compatibility_level {{version.minor}}' //MODULE.bazel:%module",
 ]
 
 post_bump_hooks = [
