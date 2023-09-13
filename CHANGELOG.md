@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.4.0 - 2023-09-13
+#### Features
+- bzlmodify ecsact_runtime (#185) - (30a2b42) - seaubot
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to c217c03 (#188) - (b86cb1b) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 9d8cc8a (#186) - (7ab9342) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to e160627 (#181) - (6395667) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to ecafb96 (#180) - (a919143) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to aaa2fda (#179) - (51ed25d) - renovate[bot]
+- **(deps)** update bazel c++ tooling repositories (#177) - (da32f87) - renovate[bot]
+- cog version.minor - (3205c7a) - Ezekiel Warren
+- bzlmod archive automatic - (38ce46b) - Ezekiel Warren
+- buildozer in cog.toml - (61d0b23) - Ezekiel Warren
+- add version to module file - (8d54764) - Ezekiel Warren
+- codegen header cleanup (#178) - (f32d5f3) - Ezekiel Warren
+
+- - -
+
 ## 0.3.0 - 2023-06-07
 #### Features
 - add parallel execution hint option (#176) - (03412eb) - Ezekiel Warren
