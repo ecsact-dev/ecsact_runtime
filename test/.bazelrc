@@ -1,1 +1,6 @@
-import %workspace%/../.bazelrc
+import %workspace%/../bazel/common.bazelrc
+
+common --@boost.dll//:use_std_fs
+common --@boost.process//:use_std_fs
+
+try-import %workspace%/user.bazelrc
