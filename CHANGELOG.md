@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.4.1 - 2023-09-13
+#### Bug Fixes
+- using ecasct_codegen from registry (#193) - (6d4fab2) - Ezekiel Warren
+#### Miscellaneous Chores
+- prevent failure on buildozer compatibility_level set - (0258ea6) - Ezekiel Warren
+- prevent failure on buildozer compatibility_level set - (1f3f342) - Ezekiel Warren
+- sync with ecsact_common (#191) - (0702247) - seaubot
+- sync with ecsact_common (#190) - (686d9f0) - seaubot
+
+- - -
+
 ## 0.4.0 - 2023-09-13
 #### Features
 - bzlmodify ecsact_runtime (#185) - (30a2b42) - seaubot
