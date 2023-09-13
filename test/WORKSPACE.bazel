@@ -1,44 +1,4 @@
-# NOTE: This workspace file is only necessary to prevent a cyclic dependency
-#       between ecsact_rt_entt and this repository. Once a reference runtime
-#       is built we can remove this nested workspace.
-#       https://github.com/ecsact-dev/ecsact_runtime/issues/32
-workspace(name = "ecsact_runtime_tests")
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "ecsact_rt_entt",
-    sha256 = "d2205423b35acdaf8b80a1ec770c65218e4fa7171830cf80d5b08e9fd1f1164f",
-    strip_prefix = "ecsact_rt_entt-de7a3897b3e6a6b46432b9604cb0469bab620e35",
-    url = "https://github.com/ecsact-dev/ecsact_rt_entt/archive/de7a3897b3e6a6b46432b9604cb0469bab620e35.zip",
-)
-
-http_archive(
-    name = "com_github_skypjack_entt",
-    sha256 = "f7031545130bfc06f5fe6b2f8c87dcbd4c1254fab86657e2788b70dfeea57965",
-    strip_prefix = "entt-3.10.1",
-    url = "https://github.com/skypjack/entt/archive/refs/tags/v3.10.1.tar.gz",
-)
-
-http_archive(
-    name = "ecsact_lang_cpp",
-    sha256 = "2866569ed8d58f3e42b705bf38f77455fe9acf8ab2d1b05f611b847d4c291a67",
-    strip_prefix = "ecsact_lang_cpp-b1fa28b445b98d5ba62ede19cd6a5bdfa51141be",
-    url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/b1fa28b445b98d5ba62ede19cd6a5bdfa51141be.zip",
-)
-
-http_archive(
-    name = "rules_ecsact",
-    sha256 = "3db6d498a681e036dabdcc1bb7e5ee254acadae4ab2ecf19d253f824db88d5e4",
-    strip_prefix = "rules_ecsact-0.3.0",
-    urls = ["https://github.com/ecsact-dev/rules_ecsact/archive/refs/tags/0.3.0.tar.gz"],
-)
-
-load("@rules_ecsact//ecsact:repositories.bzl", "ecsact_register_toolchains", "rules_ecsact_dependencies")
-
-rules_ecsact_dependencies()
-
-ecsact_register_toolchains()
 
 http_archive(
     name = "hedron_compile_commands",
@@ -53,9 +13,9 @@ hedron_compile_commands_setup()
 
 http_archive(
     name = "com_grail_bazel_toolchain",
-    sha256 = "5fb0a6ae0f5bc72a7d80e6de0edad906c9936729734009f1c01dac4b06f966e0",
-    strip_prefix = "bazel-toolchain-f94335f1f5434256b1793dafbb7dd07773b0e76e",
-    url = "https://github.com/grailbio/bazel-toolchain/archive/f94335f1f5434256b1793dafbb7dd07773b0e76e.zip",
+    sha256 = "c53acf847fb52198758635490c5e987aacc7c64a5731a4027824762ba4e3f961",
+    strip_prefix = "bazel-toolchain-c217c03479717279035906273702b8bc3309bbb4",
+    url = "https://github.com/grailbio/bazel-toolchain/archive/c217c03479717279035906273702b8bc3309bbb4.zip",
 )
 
 load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
