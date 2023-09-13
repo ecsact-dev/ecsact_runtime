@@ -1,0 +1,12 @@
+name: Bzlmod Archive
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bzlmod-archive:
+    uses: ecsact-dev/bazel_registry/.github/workflows/bzlmod-archive.yml@main
+    secrets: inherit
+    permissions:
+      contents: write
