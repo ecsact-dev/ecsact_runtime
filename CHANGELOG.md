@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.0 - 2023-09-18
+#### Features
+- removed codegen references (#197) - (ace86cb) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to edc058a (#196) - (b48188e) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to e4fad4e (#195) - (9433edb) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to df8ee5a (#194) - (c3be074) - renovate[bot]
+
+- - -
+
 ## 0.4.1 - 2023-09-13
 #### Bug Fixes
 - using ecasct_codegen from registry (#193) - (6d4fab2) - Ezekiel Warren
