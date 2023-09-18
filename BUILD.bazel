@@ -13,8 +13,6 @@ exports_files([
     "ecsact/runtime/serialize.hh",
     "ecsact/runtime/static.h",
     "ecsact/runtime.h",
-    "codegen_plugin.bzl",
-    "ecsact/codegen/ecsact_codegen_plugin_test.cc",
     "index.bzl",
 ])
 
