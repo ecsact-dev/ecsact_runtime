@@ -13,8 +13,6 @@ exports_files([
     "ecsact/runtime/serialize.hh",
     "ecsact/runtime/static.h",
     "ecsact/runtime.h",
-    "codegen_plugin.bzl",
-    "ecsact/codegen/ecsact_codegen_plugin_test.cc",
     "index.bzl",
 ])
 
@@ -109,43 +107,10 @@ cc_library(
 )
 
 cc_library(
-    name = "codegen_plugin",
-    hdrs = ["ecsact/codegen_plugin.h"],
-    copts = copts,
-    deps = [
-        ":meta",
-    ],
-)
-
-cc_library(
     name = "dylib",
     hdrs = ["ecsact/runtime/dylib.h"],
     copts = copts,
     deps = [":common"],
-)
-
-cc_library(
-    name = "codegen_plugin_cc",
-    hdrs = ["ecsact/codegen_plugin.hh"],
-    copts = copts,
-    deps = [
-        ":codegen_plugin",
-        ":common",
-        ":definitions",
-        ":meta",
-    ],
-)
-
-cc_library(
-    name = "codegen_plugin_validate",
-    srcs = ["ecsact/codegen/plugin_validate.cc"],
-    hdrs = ["ecsact/codegen/plugin_validate.hh"],
-    copts = copts,
-    deps = [
-        "@boost.dll",
-        "@ecsact_runtime//:dylib",
-        "@ecsact_runtime//:meta",
-    ],
 )
 
 cc_library(
