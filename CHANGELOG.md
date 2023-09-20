@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.1 - 2023-09-20
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to 885e692 (#199) - (c5afee1) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 3e6d4d9 (#198) - (2ba2d08) - renovate[bot]
+- sync with ecsact_common (#200) - (0c54f3b) - seaubot
+
+- - -
+
 ## 0.5.0 - 2023-09-18
 #### Features
 - removed codegen references (#197) - (ace86cb) - Ezekiel Warren
