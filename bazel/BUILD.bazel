@@ -1,0 +1,4 @@
+config_setting(
+    name = "compiler_emscripten",
+    flag_values = {"@bazel_tools//tools/cpp:compiler": "emscripten"},
+)
