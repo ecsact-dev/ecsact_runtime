@@ -492,7 +492,9 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
 		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);               \
 		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__);                 \
 		fn(ecsact_meta_get_lazy_iteration_rate, __VA_ARGS__);               \
-		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__)
+		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__);         \
+		fn(ecsact_meta_system_notify_settings_count, __VA_ARGS__);          \
+		fn(ecsact_meta_system_notify_settings, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
