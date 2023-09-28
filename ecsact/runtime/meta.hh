@@ -534,4 +534,46 @@ inline auto system_association_capabilities(
 	return result;
 }
 
+template<typename SystemLikeId>
+auto system_notify_settings_count( //
+	SystemLikeId sys_like_id
+) -> int32_t {
+	return ecsact_meta_system_notify_settings_count(
+		ecsact_id_cast<ecsact_system_like_id>(sys_like_id)
+	);
+}
+
+template<typename SystemLikeId>
+auto system_notify_settings( //
+	SystemLikeId id
+) {
+	const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+
+	using result_t =
+		std::unordered_map<ecsact_component_like_id, ecsact_system_notify_setting>;
+
+	auto count = ecsact_meta_system_notify_settings_count(sys_like_id);
+	auto components = std::vector<ecsact_component_like_id>{};
+	auto notify_settings = std::vector<ecsact_system_notify_setting>{};
+	components.resize(count);
+	notify_settings.resize(count);
+
+	ecsact_meta_notify_settings(
+		sys_like_id,
+		count,
+		components.data(),
+		notify_settings.data(),
+		nullptr
+	);
+
+	result_t result;
+	result.reserve(count);
+
+	for(decltype(count) i = 0; count > i; ++i) {
+		result[components[i]] = notify_settings[i];
+	}
+
+	return result;
+}
+
 } // namespace ecsact::meta

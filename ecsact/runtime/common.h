@@ -272,6 +272,38 @@ typedef enum {
 } ecsact_system_capability;
 
 /**
+ * System notify settings control when a system is executed. These settings are
+ * on a per-component basis.
+ */
+typedef enum {
+	/**
+	 * Default behaviour. System always executes. If any component has this
+	 * setting then all other settings are overwritten.
+	 */
+	ECSACT_SYS_NOTIFY_ALWAYS,
+
+	/**
+	 * System executes when the component is initialized.
+	 */
+	ECSACT_SYS_NOTIFY_ONINIT,
+
+	/**
+	 * System executes when the component is updated with a system update call.
+	 */
+	ECSACT_SYS_NOTIFY_ONUPDATE,
+
+	/**
+	 * System executes when the components fields have changed.
+	 */
+	ECSACT_SYS_NOTIFY_ONCHANGE,
+
+	/**
+	 * System executes when the component has been removed.
+	 */
+	ECSACT_SYS_NOTIFY_ONREMOVE,
+} ecsact_system_notify_setting;
+
+/**
  * Flags for generates component set
  */
 typedef enum {
