@@ -277,6 +277,11 @@ typedef enum {
  */
 typedef enum {
 	/**
+	 * Not a real setting. Used to unset a system notify setting.
+	 */
+	ECSACT_SYS_NOTIFY_NONE,
+
+	/**
 	 * Default behaviour. System always executes. If any component has this
 	 * setting then all other settings are overwritten.
 	 */
