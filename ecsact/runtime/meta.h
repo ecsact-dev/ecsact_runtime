@@ -417,6 +417,26 @@ ECSACT_META_API_FN(bool, ecsact_meta_get_system_parallel_execution)
 	ecsact_system_like_id system_like_id
 );
 
+/**
+ * Count the number of notify settings a system has.
+ */
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_notify_settings_count)
+( //
+	ecsact_system_like_id system_like_id
+);
+
+/**
+ *
+ */
+ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
+( //
+	ecsact_system_like_id         system_like_id,
+	int32_t                       max_notifies_count,
+	ecsact_component_like_id*     out_notify_component_ids,
+	ecsact_system_notify_setting* out_notify_settings,
+	int32_t*                      out_notifies_count
+);
+
 // # BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -472,7 +492,9 @@ ECSACT_META_API_FN(bool, ecsact_meta_get_system_parallel_execution)
 		fn(ecsact_meta_count_top_level_systems, __VA_ARGS__);               \
 		fn(ecsact_meta_get_top_level_systems, __VA_ARGS__);                 \
 		fn(ecsact_meta_get_lazy_iteration_rate, __VA_ARGS__);               \
-		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__)
+		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__);         \
+		fn(ecsact_meta_system_notify_settings_count, __VA_ARGS__);          \
+		fn(ecsact_meta_system_notify_settings, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H

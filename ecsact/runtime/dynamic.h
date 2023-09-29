@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "common.h"
 #include "ecsact/runtime/common.h"
 #include "ecsact/runtime/definitions.h"
 
@@ -446,6 +447,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_parallel_execution)
 	bool                  parallel_execution
 );
 
+/**
+ * Set a system component notify setting. Use `ECSACT_SYS_NOTIFY_NONE` to unset.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
+( //
+	ecsact_system_like_id        system_like_id,
+	ecsact_component_like_id     component_like_id,
+	ecsact_system_notify_setting setting
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
@@ -495,7 +506,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_parallel_execution)
 		fn(ecsact_system_generates_set_component, __VA_ARGS__);      \
 		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
 		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
-		fn(ecsact_set_system_parallel_execution, __VA_ARGS__)
+		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);       \
+		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
