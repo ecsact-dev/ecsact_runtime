@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.3 - 2023-09-29
+#### Bug Fixes
+- typo in system notify settings cpp wrapper - (25397aa) - Ezekiel Warren
+
+- - -
+
 ## 0.5.2 - 2023-09-29
 #### Features
 - system notify settings (#202) - (5bb8737) - Ezekiel Warren
