@@ -558,7 +558,7 @@ auto system_notify_settings( //
 	components.resize(count);
 	notify_settings.resize(count);
 
-	ecsact_meta_notify_settings(
+	ecsact_meta_system_notify_settings(
 		sys_like_id,
 		count,
 		components.data(),
