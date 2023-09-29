@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.2 - 2023-09-29
+#### Features
+- system notify settings (#202) - (5bb8737) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to 2733561 (#201) - (f5e7bef) - renovate[bot]
+
+- - -
+
 ## 0.5.1 - 2023-09-20
 #### Miscellaneous Chores
 - **(deps)** update com_grail_bazel_toolchain digest to 885e692 (#199) - (c5afee1) - renovate[bot]
