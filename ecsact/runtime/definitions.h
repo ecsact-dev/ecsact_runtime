@@ -34,9 +34,19 @@ typedef enum ecsact_builtin_type {
 	ECSACT_ENTITY_TYPE = 0b0010000000100000,
 } ecsact_builtin_type;
 
+/**
+ * Type that refers to another composites field
+ * TODO(zaucy): Confirm type name 'field index'
+ */
+typedef struct ecsact_field_index_type {
+	ecsact_composite_id composite_id;
+	ecsact_field_id field_id;
+} ecsact_field_index_type;
+
 typedef enum ecsact_type_kind {
 	ECSACT_TYPE_KIND_BUILTIN,
 	ECSACT_TYPE_KIND_ENUM,
+	ECSACT_TYPE_KIND_FIELD_INDEX,
 } ecsact_type_kind;
 
 typedef union ecsact_type {
