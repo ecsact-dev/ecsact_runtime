@@ -34,14 +34,24 @@ typedef enum ecsact_builtin_type {
 	ECSACT_ENTITY_TYPE = 0b0010000000100000,
 } ecsact_builtin_type;
 
+/**
+ * Type that refers to another composites field
+ */
+typedef struct ecsact_field_index_type {
+	ecsact_composite_id composite_id;
+	ecsact_field_id     field_id;
+} ecsact_field_index_type;
+
 typedef enum ecsact_type_kind {
 	ECSACT_TYPE_KIND_BUILTIN,
 	ECSACT_TYPE_KIND_ENUM,
+	ECSACT_TYPE_KIND_FIELD_INDEX,
 } ecsact_type_kind;
 
 typedef union ecsact_type {
-	ecsact_builtin_type builtin;
-	ecsact_enum_id      enum_id;
+	ecsact_builtin_type     builtin;
+	ecsact_enum_id          enum_id;
+	ecsact_field_index_type field_index;
 } ecsact_type;
 
 typedef struct ecsact_field_type {
