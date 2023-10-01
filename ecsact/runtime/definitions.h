@@ -36,7 +36,6 @@ typedef enum ecsact_builtin_type {
 
 /**
  * Type that refers to another composites field
- * TODO(zaucy): Confirm type name 'field index'
  */
 typedef struct ecsact_field_index_type {
 	ecsact_composite_id composite_id;
