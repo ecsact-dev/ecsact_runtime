@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.5.4 - 2023-10-01
+#### Features
+- new field index type (#204) - (39e4b62) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update com_grail_bazel_toolchain digest to 91abcad (#205) - (755034e) - renovate[bot]
+
+- - -
+
 ## 0.5.3 - 2023-09-29
 #### Bug Fixes
 - typo in system notify settings cpp wrapper - (25397aa) - Ezekiel Warren
