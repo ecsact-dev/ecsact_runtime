@@ -576,4 +576,12 @@ auto system_notify_settings( //
 	return result;
 }
 
+inline auto main_package() -> std::optional<ecsact_package_id> {
+	auto main_pkg_id = ecsact_meta_main_package();
+	if(main_pkg_id == static_cast<ecsact_package_id>(-1)) {
+		return std::nullopt;
+	}
+	return main_pkg_id;
+}
+
 } // namespace ecsact::meta
