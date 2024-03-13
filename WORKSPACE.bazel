@@ -2,9 +2,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "hedron_compile_commands",
-    sha256 = "05f7fb324290c147ed29361a6a6fef7459c61816084fc07b3676a9639f4fcab7",
-    strip_prefix = "bazel-compile-commands-extractor-eca42c63700fccdc49cf58177e0a96f0f6075a68",
-    url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/eca42c63700fccdc49cf58177e0a96f0f6075a68.tar.gz",
+    sha256 = "b6cf87cf380d08a160d1f726c2cb22a2d6ea52a147c4700d5e5732aaa6675d11",
+    strip_prefix = "bazel-compile-commands-extractor-204aa593e002cbd177d30f11f54cff3559110bb9",
+    url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/204aa593e002cbd177d30f11f54cff3559110bb9.tar.gz",
 )
 
 load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_setup")
@@ -13,9 +13,9 @@ hedron_compile_commands_setup()
 
 http_archive(
     name = "com_grail_bazel_toolchain",
-    sha256 = "afe9154ad85f0c0eb1f68b6036ad4e415ecf938b5e2bc17e4a76707452b48222",
-    strip_prefix = "bazel-toolchain-ade23e0e37c5308162c012a4f4224459c1c4fa22",
-    url = "https://github.com/grailbio/bazel-toolchain/archive/ade23e0e37c5308162c012a4f4224459c1c4fa22.zip",
+    sha256 = "975dffdfeff397d118bf81a27852a88b69b59b3f6888548eb52933427ded2270",
+    strip_prefix = "bazel-toolchain-2b54ee4c2853187c222d07516fd308779c9bf8b6",
+    url = "https://github.com/grailbio/bazel-toolchain/archive/2b54ee4c2853187c222d07516fd308779c9bf8b6.zip",
 )
 
 load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
