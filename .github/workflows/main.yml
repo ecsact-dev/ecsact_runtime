@@ -20,7 +20,7 @@ jobs:
   test-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             /Users/runneradmin/AppData/Local/bazelisk
@@ -35,7 +35,7 @@ jobs:
   test-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cache/bazelisk
