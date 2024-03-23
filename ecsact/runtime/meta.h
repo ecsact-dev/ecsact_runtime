@@ -14,7 +14,7 @@
 #	if defined(ECSACT_META_API)
 #		define ECSACT_META_API_FN(ret, name) ECSACT_META_API ret name
 #	elif defined(ECSACT_META_API_LOAD_AT_RUNTIME)
-#		define ECSACT_META_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		define ECSACT_META_API_FN(ret, name) ECSACT_EXTERN ret(*volatile name)
 #	elif defined(ECSACT_META_API_EXPORT)
 #		define ECSACT_META_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name

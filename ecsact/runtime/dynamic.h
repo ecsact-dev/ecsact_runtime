@@ -16,7 +16,7 @@
 #	if defined(ECSACT_DYNAMIC_API)
 #		define ECSACT_DYNAMIC_API_FN(ret, name) ECSACT_DYNAMIC_API ret name
 #	elif defined(ECSACT_DYNAMIC_API_LOAD_AT_RUNTIME)
-#		define ECSACT_DYNAMIC_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		define ECSACT_DYNAMIC_API_FN(ret, name) ECSACT_EXTERN ret(*volatile name)
 #	elif defined(ECSACT_DYNAMIC_API_EXPORT)
 #		define ECSACT_DYNAMIC_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name
