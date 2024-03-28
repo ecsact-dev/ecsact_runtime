@@ -9,13 +9,20 @@ on:
       - "**"
 
 jobs:
+  typos-check:
+    name: Typos Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crate-ci/typos@v1.19.0
+
   formatting-check:
     name: Formatting Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: jidicula/clang-format-action@v4.9.0
-        with: { clang-format-version: "16" }
+      - uses: jidicula/clang-format-action@v4.11.0
+        with: { clang-format-version: "18" }
 
   test-windows:
     runs-on: windows-latest
