@@ -5,12 +5,14 @@ module(
 )
 
 bazel_dep(name = "rules_cc", version = "0.0.9")
-bazel_dep(name = "platforms", version = "0.0.7")
-bazel_dep(name = "bazel_skylib", version = "1.4.2")
+bazel_dep(name = "platforms", version = "0.0.9")
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "googletest", version = "1.14.0")
 bazel_dep(name = "abseil-cpp", version = "20230802.0")
 bazel_dep(name = "boost.dll", version = "1.83.0.bzl.2")
 bazel_dep(name = "boost.process", version = "1.83.0.bzl.2")
+
+bazel_dep(name = "toolchains_llvm", version = "1.0.0", dev_dependency = True)
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
 
 git_override(
@@ -19,3 +21,11 @@ git_override(
     commit = "204aa593e002cbd177d30f11f54cff3559110bb9",
 )
 
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm", dev_dependency = True)
+llvm.toolchain(llvm_version = "17.0.6")
+use_repo(llvm, "llvm_toolchain")
+
+register_toolchains(
+    "@llvm_toolchain//:all",
+    dev_dependency = True,
+)
