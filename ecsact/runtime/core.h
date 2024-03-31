@@ -94,7 +94,7 @@ ECSACT_CORE_API_FN(void, ecsact_destroy_entity)
 );
 
 /**
- * Count number of entites in registry
+ * Count number of entities in registry
  */
 ECSACT_CORE_API_FN(int, ecsact_count_entities)
 ( //
@@ -215,8 +215,8 @@ ECSACT_CORE_API_FN(void, ecsact_remove_component)
  * against all registered components. System implementations may run in parallel
  * on multiple threads.
  * @param execution_count how many times the systems list should execute
- * @param execution_options_list (optional) Seqential list of execution options.
- *        If set (not NULL), list length is determined by `execution_count`.
+ * @param execution_options_list (optional) Sequential list of execution
+ * options. If set (not NULL), list length is determined by `execution_count`.
  * @param events_collector (optional) Pointer to events collector. If set,
  *        events will be recorded and the callbacks on the collector will be
  *        invoked. Invocations occur on the calling thread.

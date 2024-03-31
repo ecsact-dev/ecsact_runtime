@@ -117,7 +117,7 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
  * Generate a new entity with specified components.
  *
  * @param component_count length of `component_ids` and `components_data`
- * @param component_ids list of component ids associatd with `components_data`.
+ * @param component_ids list of component ids associated with `components_data`.
  * @param components_data list of component data associated with
  *        `component_ids`.
  *
@@ -133,7 +133,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_generate)
 );
 
 /**
- * Get the parent system exeuction context.
+ * Get the parent system execution context.
  *
  * Only available if the currently executing system is a nested system.
  */

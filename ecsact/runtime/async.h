@@ -164,7 +164,7 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
  *        underlying async runtime. This may be a hostname/ip address + port or
  *        some other string deinfed by the implementation. Please review
  *        documentation for your ecsact async api provider. May be NULL to
- *        indiciate wanting to connect to the 'default' if available.
+ *        indicate wanting to connect to the 'default' if available.
  * @returns a request ID representing this async request. Later used in @ref
  * ecsact_async_error_callback if an error occurs
  */

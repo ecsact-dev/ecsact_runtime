@@ -24,7 +24,7 @@
 #endif // ECSACT_SERIALIZE_API_FN
 
 /**
- * Get the amount of bytes an action with id `action_id` requies to serialize.
+ * Get the amount of bytes an action with id `action_id` requires to serialize.
  */
 ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_action_size)
 ( //
@@ -32,7 +32,7 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_action_size)
 );
 
 /**
- * Get the amount of bytes a component with id `component_id` requies to
+ * Get the amount of bytes a component with id `component_id` requires to
  * serialize.
  */
 ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_component_size)
@@ -42,7 +42,7 @@ ECSACT_SERIALIZE_API_FN(int, ecsact_serialize_component_size)
 
 /**
  * Serialize action into implementation defined format suitable for sending over
- * a socket and/or written to a file. Guranteed to be deserializable across
+ * a socket and/or written to a file. Guaranteed to be deserializable across
  * platforms.
  *
  * @param action_id Valid action ID associated with `action_data`
