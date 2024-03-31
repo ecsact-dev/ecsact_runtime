@@ -159,13 +159,13 @@ typedef enum {
 	ECSACT_ADD_OK = 0,
 
 	/**
-	 * An invalid or non-existant entity ID was found in one or more of the
+	 * An invalid or non-existent entity ID was found in one or more of the
 	 * component fields.
 	 */
 	ECSACT_ADD_ERR_ENTITY_INVALID = 1,
 
 	/**
-	 * One or more of the component entity fields constraints were not satisifed.
+	 * One or more of the component entity fields constraints were not satisfied.
 	 */
 	ECSACT_ADD_ERR_ENTITY_CONSTRAINT_BROKEN = 2,
 } ecsact_add_error;
@@ -177,13 +177,13 @@ typedef enum {
 	ECSACT_UPDATE_OK = 0,
 
 	/**
-	 * An invalid or non-existant entity ID was found in one or more of the
+	 * An invalid or non-existent entity ID was found in one or more of the
 	 * component fields.
 	 */
 	ECSACT_UPDATE_ERR_ENTITY_INVALID = 1,
 
 	/**
-	 * One or more of the component entity fields constraints were not satisifed.
+	 * One or more of the component entity fields constraints were not satisfied.
 	 */
 	ECSACT_UPDATE_ERR_ENTITY_CONSTRAINT_BROKEN = 2,
 } ecsact_update_error;
@@ -195,13 +195,13 @@ typedef enum {
 	ECSACT_EXEC_SYS_OK = 0,
 
 	/**
-	 * An invalid or non-existant entity ID was found in one or more of the
+	 * An invalid or non-existent entity ID was found in one or more of the
 	 * action fields.
 	 */
 	ECSACT_EXEC_SYS_ERR_ACTION_ENTITY_INVALID = 1,
 
 	/**
-	 * One or more of the action entity fields constraints were not satisifed.
+	 * One or more of the action entity fields constraints were not satisfied.
 	 */
 	ECSACT_EXEC_SYS_ERR_ACTION_ENTITY_CONSTRAINT_BROKEN = 2,
 } ecsact_execute_systems_error;
@@ -249,7 +249,7 @@ typedef enum {
 
 	/**
 	 * System may only execute on entities where this component is present, but
-	 * the systme may not read or write to the component.
+	 * the system may not read or write to the component.
 	 */
 	ECSACT_SYS_CAP_INCLUDE = 8,
 
@@ -326,8 +326,8 @@ typedef enum {
 /**
  * ees - Entity Execution Status
  *
- * An entitys execution status gives details about how an entity relates to a
- * system or action's execution. By default an entitys execution status is
+ * An entities execution status gives details about how an entity relates to a
+ * system or action's execution. By default an entities execution status is
  * `ECSACT_ESS_IDLE`.
  *
  * @note This detail is exposed mostly for serialization. It is important to
