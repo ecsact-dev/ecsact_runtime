@@ -16,6 +16,8 @@ namespace ecsact {
  * @returns serialized action or component bytes
  */
 template<typename T>
+	requires(!std::is_same_v<std::remove_cvref_t<T>, ecsact_component> &&
+					 !std::is_same_v<std::remove_cvref_t<T>, ecsact_action>)
 ECSACT_ALWAYS_INLINE auto serialize( //
 	const T& component_or_action
 ) -> std::vector<std::byte> {
@@ -55,69 +57,18 @@ ECSACT_ALWAYS_INLINE auto serialize( //
  * fn are passed in to work around various linking configurations.
  * @returns serialized action bytes
  */
-ECSACT_ALWAYS_INLINE auto serialize(
-	const ecsact_component&                   component,
-	decltype(ecsact_serialize_component_size) size_fn,
-	decltype(ecsact_serialize_component)      serialize_fn
+ECSACT_ALWAYS_INLINE auto serialize( //
+	const ecsact_component& component
 ) -> std::vector<std::byte> {
 	std::vector<std::byte> out_component;
-	out_component.resize(size_fn(component.component_id));
+	out_component.resize(ecsact_serialize_component_size(component.component_id));
 
-	serialize_fn(
+	ecsact_serialize_component(
 		component.component_id,
 		component.component_data,
 		reinterpret_cast<uint8_t*>(out_component.data())
 	);
 	return out_component;
-}
-
-/**
- * Serializes an ecsact_component when the type is unknown.
- * @returns serialized action bytes
- */
-ECSACT_ALWAYS_INLINE auto serialize( //
-	const ecsact_component& component
-) -> std::vector<std::byte> {
-	return serialize(
-		component,
-		ecsact_serialize_component_size,
-		ecsact_serialize_component
-	);
-}
-
-/**
- * Serializes an ecsact_action when the type is unknown. Size and serialize
- * fn are passed in to work around various linking configurations.
- * @returns serialized component bytes
- */
-ECSACT_ALWAYS_INLINE auto serialize(
-	const ecsact_action&                   action,
-	decltype(ecsact_serialize_action_size) size_fn,
-	decltype(ecsact_serialize_action)      serialize_fn
-) -> std::vector<std::byte> {
-	std::vector<std::byte> out_action;
-	out_action.resize(size_fn(action.action_id));
-
-	serialize_fn(
-		action.action_id,
-		action.action_data,
-		reinterpret_cast<uint8_t*>(out_action.data())
-	);
-	return out_action;
-}
-
-/**
- * Serializes an ecsact_action when the type is unknown.
- * @returns serialized component bytes
- */
-ECSACT_ALWAYS_INLINE auto serialize( //
-	const ecsact_action& action
-) -> std::vector<std::byte> {
-	return serialize(
-		action,
-		ecsact_serialize_action_size,
-		ecsact_serialize_action
-	);
 }
 
 /**
@@ -198,14 +149,13 @@ ECSACT_ALWAYS_INLINE auto deserialize(
  * @returns an ecsact_action
  */
 ECSACT_ALWAYS_INLINE auto deserialize(
-	const ecsact_action_id&             id,
-	std::vector<std::byte>&             serialized_action,
-	decltype(ecsact_deserialize_action) deserialize_fn
+	const ecsact_action_id& id,
+	std::vector<std::byte>& serialized_action
 ) -> std::vector<std::byte> {
 	std::vector<std::byte> action_data;
 	action_data.resize(serialized_action.size());
 
-	deserialize_fn(
+	ecsact_deserialize_action(
 		id,
 		reinterpret_cast<uint8_t*>(serialized_action.data()),
 		action_data.data()
@@ -218,42 +168,18 @@ ECSACT_ALWAYS_INLINE auto deserialize(
  * @returns an ecsact_action
  */
 ECSACT_ALWAYS_INLINE auto deserialize(
-	const ecsact_action_id& id,
-	std::vector<std::byte>& serialized_action
-) -> std::vector<std::byte> {
-	return deserialize(id, serialized_action, &ecsact_deserialize_action);
-}
-
-/**
- * Deserializes an ecsact_component when the type is unknown.
- * @returns an ecsact_action
- */
-ECSACT_ALWAYS_INLINE auto deserialize(
-	const ecsact_component_id&             id,
-	std::vector<std::byte>&                serialized_component,
-	decltype(ecsact_deserialize_component) deserialize_fn
+	const ecsact_component_id& id,
+	std::vector<std::byte>&    serialized_component
 ) -> std::vector<std::byte> {
 	std::vector<std::byte> component_data;
 	component_data.resize(serialized_component.size());
 
-	deserialize_fn(
+	ecsact_deserialize_component(
 		id,
 		reinterpret_cast<uint8_t*>(serialized_component.data()),
 		component_data.data()
 	);
 	return component_data;
-}
-
-/**
- * Deserializes an ecsact_component when the type is unknown. The deserialize
- * function is passed in to work around various linker configurations.
- * @returns an ecsact_component_id
- */
-ECSACT_ALWAYS_INLINE auto deserialize(
-	const ecsact_component_id& id,
-	std::vector<std::byte>&    serialized_component
-) -> std::vector<std::byte> {
-	return deserialize(id, serialized_component, ecsact_deserialize_component);
 }
 
 } // namespace ecsact
