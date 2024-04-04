@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.1 - 2024-04-04
+#### Bug Fixes
+- always inline with inline keyword (#233) - (392b5df) - Ezekiel Warren
+
+- - -
+
 ## 0.6.0 - 2024-04-04
 #### Bug Fixes
 - force inline for c++ wrappers (#231) - (996d407) - Ezekiel Warren
