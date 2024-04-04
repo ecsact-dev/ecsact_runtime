@@ -53,8 +53,7 @@ ECSACT_ALWAYS_INLINE auto serialize( //
 }
 
 /**
- * Serializes an ecsact_component when the type is unknown. Size and serialize
- * fn are passed in to work around various linking configurations.
+ * Serializes an ecsact_component when the type is unknown.
  * @returns serialized action bytes
  */
 ECSACT_ALWAYS_INLINE auto serialize( //
@@ -62,13 +61,29 @@ ECSACT_ALWAYS_INLINE auto serialize( //
 ) -> std::vector<std::byte> {
 	std::vector<std::byte> out_component;
 	out_component.resize(ecsact_serialize_component_size(component.component_id));
-
 	ecsact_serialize_component(
 		component.component_id,
 		component.component_data,
 		reinterpret_cast<uint8_t*>(out_component.data())
 	);
 	return out_component;
+}
+
+/**
+ * Serializes an ecsact_action when the type is unknown.
+ * @returns serialized action bytes
+ */
+ECSACT_ALWAYS_INLINE auto serialize( //
+	const ecsact_action& action
+) -> std::vector<std::byte> {
+	std::vector<std::byte> out_action;
+	out_action.resize(ecsact_serialize_action_size(action.action_id));
+	ecsact_serialize_action(
+		action.action_id,
+		action.action_data,
+		reinterpret_cast<uint8_t*>(out_action.data())
+	);
+	return out_action;
 }
 
 /**
