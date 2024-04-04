@@ -441,8 +441,9 @@ public:
 
 	template<typename Component>
 		requires(!std::is_empty_v<Component>)
-	ECSACT_ALWAYS_INLINE const Component& get_component(ecsact_entity_id entity_id
-	) {
+	ECSACT_ALWAYS_INLINE auto get_component( //
+		ecsact_entity_id entity_id
+	) -> const Component& {
 		return *reinterpret_cast<const Component*>(
 			ecsact_get_component(_id, entity_id, Component::id)
 		);
@@ -492,7 +493,8 @@ public:
 		return entities;
 	}
 
-	ECSACT_ALWAYS_INLINE auto count_components(ecsact_entity_id entity
+	ECSACT_ALWAYS_INLINE auto count_components( //
+		ecsact_entity_id entity
 	) const -> int32_t {
 		return ecsact_count_components(_id, entity);
 	}
