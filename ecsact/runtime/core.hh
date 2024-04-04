@@ -199,7 +199,8 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_init_callback(init_component_callback_t<C> callback
+	auto set_init_callback( //
+		init_component_callback_t<C> callback
 	) -> execution_events_collector& {
 		_init_cb[C::id] = //
 			[callback = std::move(callback)](
@@ -215,7 +216,8 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_update_callback(update_component_callback_t<C> callback
+	auto set_update_callback( //
+		update_component_callback_t<C> callback
 	) -> execution_events_collector& {
 		_update_cb[C::id] = //
 			[callback = std::move(callback)](
@@ -231,7 +233,8 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_remove_callback(remove_component_callback_t<C> callback
+	auto set_remove_callback( //
+		remove_component_callback_t<C> callback
 	) -> execution_events_collector& {
 		_remove_cb[C::id] = //
 			[callback = std::move(callback)](
@@ -242,13 +245,15 @@ public:
 		return *this;
 	}
 
-	auto set_entity_created_callback(entity_created_callback_t callback
+	auto set_entity_created_callback( //
+		entity_created_callback_t callback
 	) -> execution_events_collector& {
 		_entity_created_cb = callback;
 		return *this;
 	}
 
-	auto set_entity_destroyed_callback(entity_destroyed_callback_t callback
+	auto set_entity_destroyed_callback( //
+		entity_destroyed_callback_t callback
 	) -> execution_events_collector& {
 		_entity_destroyed_cb = callback;
 		return *this;
