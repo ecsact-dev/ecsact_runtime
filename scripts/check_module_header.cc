@@ -125,8 +125,7 @@ void check_module_header(fs::path module_header_path) {
 		stream //
 			<< "#endif\n\n"
 			<< "#endif // ECSACT_RUNTIME_" << absl::AsciiStrToUpper(module_name)
-			<< "_H"
-			<< "\n";
+			<< "_H" << "\n";
 		stream.flush();
 	}
 }
@@ -265,7 +264,8 @@ int main(int argc, char* argv[]) {
 	for(auto header_file : header_files) {
 		auto relative_header_path = fs::relative(header_file);
 		auto group = gh_action_group{
-			"Ecsact Module Header: "s + relative_header_path.string()};
+			"Ecsact Module Header: "s + relative_header_path.string()
+		};
 
 		std::cout << "::debug::Checking " << header_file.generic_string()
 							<< " ...\n";

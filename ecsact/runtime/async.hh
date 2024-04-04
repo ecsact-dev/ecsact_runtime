@@ -26,8 +26,9 @@ public:
 	 * Set async error callback. If callback is already set it will be
 	 * overwritten.
 	 */
-	auto set_async_error_callback(async_error_callback_t callback)
-		-> async_events_collector& {
+	auto set_async_error_callback( //
+		async_error_callback_t callback
+	) -> async_events_collector& {
 		_async_error_cb = std::move(callback);
 		return *this;
 	}
@@ -36,8 +37,9 @@ public:
 	 * Set async error callback. If callback is already set it will be
 	 * overwritten.
 	 */
-	auto set_system_error_callback(system_error_callback_t callback)
-		-> async_events_collector& {
+	auto set_system_error_callback( //
+		system_error_callback_t callback
+	) -> async_events_collector& {
 		_system_error_cb = std::move(callback);
 		return *this;
 	}
@@ -46,8 +48,9 @@ public:
 	 * Set async error callback. If callback is already set it will be
 	 * overwritten.
 	 */
-	auto set_async_requests_done_callback(async_requests_done_callback_t callback)
-		-> async_events_collector& {
+	auto set_async_requests_done_callback( //
+		async_requests_done_callback_t callback
+	) -> async_events_collector& {
 		_async_requests_done_cb = std::move(callback);
 		return *this;
 	}
@@ -136,8 +139,9 @@ private:
 	}
 };
 
-[[nodiscard]] inline auto connect(const std::string& connection_string)
-	-> ecsact_async_request_id {
+[[nodiscard]] inline auto connect( //
+	const std::string& connection_string
+) -> ecsact_async_request_id {
 	return ecsact_async_connect(connection_string.c_str());
 }
 
@@ -161,8 +165,8 @@ inline auto flush_events() -> void {
 
 template<typename ExecutionEventsCollector>
 	requires(std::convertible_to<
-					 decltype(std::declval<ExecutionEventsCollector>().c()),
-					 const ecsact_execution_events_collector>)
+						decltype(std::declval<ExecutionEventsCollector>().c()),
+						const ecsact_execution_events_collector>)
 inline auto flush_events(ExecutionEventsCollector&& evc) -> void {
 	const ecsact_execution_events_collector evc_c = evc.c();
 	ecsact_async_flush_events(&evc_c, nullptr);
@@ -170,8 +174,8 @@ inline auto flush_events(ExecutionEventsCollector&& evc) -> void {
 
 template<typename AsyncEventsCollector>
 	requires(std::convertible_to<
-					 decltype(std::declval<AsyncEventsCollector>().c()),
-					 const ecsact_async_events_collector>)
+						decltype(std::declval<AsyncEventsCollector>().c()),
+						const ecsact_async_events_collector>)
 inline auto flush_events(AsyncEventsCollector&& async_evc) -> void {
 	const ecsact_async_events_collector async_evc_c = async_evc.c();
 	ecsact_async_flush_events(nullptr, &async_evc_c);

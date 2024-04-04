@@ -199,8 +199,9 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_init_callback(init_component_callback_t<C> callback)
-		-> execution_events_collector& {
+	auto set_init_callback( //
+		init_component_callback_t<C> callback
+	) -> execution_events_collector& {
 		_init_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -215,8 +216,9 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_update_callback(update_component_callback_t<C> callback)
-		-> execution_events_collector& {
+	auto set_update_callback( //
+		update_component_callback_t<C> callback
+	) -> execution_events_collector& {
 		_update_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -231,8 +233,9 @@ public:
 	 * for @tp C if one exists.
 	 */
 	template<typename C>
-	auto set_remove_callback(remove_component_callback_t<C> callback)
-		-> execution_events_collector& {
+	auto set_remove_callback( //
+		remove_component_callback_t<C> callback
+	) -> execution_events_collector& {
 		_remove_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -242,14 +245,16 @@ public:
 		return *this;
 	}
 
-	auto set_entity_created_callback(entity_created_callback_t callback)
-		-> execution_events_collector& {
+	auto set_entity_created_callback( //
+		entity_created_callback_t callback
+	) -> execution_events_collector& {
 		_entity_created_cb = callback;
 		return *this;
 	}
 
-	auto set_entity_destroyed_callback(entity_destroyed_callback_t callback)
-		-> execution_events_collector& {
+	auto set_entity_destroyed_callback( //
+		entity_destroyed_callback_t callback
+	) -> execution_events_collector& {
 		_entity_destroyed_cb = callback;
 		return *this;
 	}
@@ -502,8 +507,8 @@ public:
 	 * in @p execution_options range.
 	 */
 	template<typename ExecutionOptionsRange>
-	[[nodiscard]] auto execute_systems(ExecutionOptionsRange&& execution_options)
-		-> ecsact_execute_systems_error {
+	[[nodiscard]] auto execute_systems(ExecutionOptionsRange&& execution_options
+	) -> ecsact_execute_systems_error {
 		auto        execution_count = std::size(execution_options);
 		const auto* execution_options_list_data = std::data(execution_options);
 
