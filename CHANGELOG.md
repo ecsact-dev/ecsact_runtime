@@ -2,6 +2,33 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.0 - 2024-04-04
+#### Bug Fixes
+- force inline for c++ wrappers (#231) - (996d407) - Ezekiel Warren
+#### Features
+- **(meta)** add main package C++ method (#206) - (24f5963) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update hedron_compile_commands digest to eca42c6 (#218) - (7e86b7e) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to ade23e0 (#217) - (f3c3590) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 7500623 (#213) - (6c1a752) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 1e5f3c6 (#211) - (01866b8) - renovate[bot]
+- **(deps)** update hedron_compile_commands digest to ac6411f (#210) - (a1b1335) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 0a9feb7 (#209) - (a66efba) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to 42fa12b (#208) - (c9df3b6) - renovate[bot]
+- **(deps)** update com_grail_bazel_toolchain digest to a76d197 (#207) - (c4d7aa8) - renovate[bot]
+- formatting (#232) - (d568662) - Ezekiel Warren
+- enable github merge queue - (77c4df8) - Ezekiel Warren
+- update bazel version - (7789f64) - Ezekiel Warren
+- update clang-format version - (db044b8) - Ezekiel Warren
+- update build deps (#230) - (7ac2a3b) - Ezekiel Warren
+- fix typos (#229) - (5365dda) - Ezekiel Warren
+- fix line endings - (c306068) - Ezekiel Warren
+- bzlmod updates - (be0647a) - Ezekiel Warren
+- sync with ecsact_common (#224) - (745d7e3) - seaubot
+- sync with ecsact_common (#203) - (91ce6b8) - seaubot
+
+- - -
+
 ## 0.5.4 - 2023-10-01
 #### Features
 - new field index type (#204) - (39e4b62) - Ezekiel Warren
