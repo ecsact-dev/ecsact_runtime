@@ -30,7 +30,7 @@
 #ifdef _MSC_VER
 #	define ECSACT_ALWAYS_INLINE __forceinline
 #else
-#	define ECSACT_ALWAYS_INLINE __attribute__((always_inline))
+#	define ECSACT_ALWAYS_INLINE inline __attribute__((always_inline))
 #endif
 
 ECSACT_TYPED_ID(ecsact_package_id);
