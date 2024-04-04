@@ -14,7 +14,7 @@ class builder_entity {
 
 public:
 	template<typename C>
-	inline builder_entity& add_component(C* component) {
+	ECSACT_ALWAYS_INLINE auto add_component(C* component) -> builder_entity& {
 		components.push_back(ecsact_component{
 			.component_id = C::id,
 			.component_data = component,
@@ -58,12 +58,12 @@ public:
 	}
 
 	template<typename C>
-	inline void remove_component(ecsact_entity_id entity_id) {
+	ECSACT_ALWAYS_INLINE void remove_component(ecsact_entity_id entity_id) {
 		remove_component_ids_container.push_back(C::id);
 		remove_entities_container.push_back(entity_id);
 	}
 
-	inline void remove_component(
+	ECSACT_ALWAYS_INLINE void remove_component(
 		ecsact_entity_id    entity_id,
 		ecsact_component_id component_id
 	) {
@@ -71,15 +71,15 @@ public:
 		remove_entities_container.push_back(entity_id);
 	}
 
-	inline builder_entity& create_entity(
+	ECSACT_ALWAYS_INLINE auto create_entity(
 		ecsact_placeholder_entity_id placeholder_entity_id = {}
-	) {
+	) -> builder_entity& {
 		auto& builder = create_entities.emplace_back();
 		builder.placeholder_entity_id = placeholder_entity_id;
 		return builder;
 	}
 
-	inline void destroy_entity(const ecsact_entity_id& entity_id) {
+	ECSACT_ALWAYS_INLINE void destroy_entity(const ecsact_entity_id& entity_id) {
 		destroy_entities.push_back(entity_id);
 	}
 
@@ -88,11 +88,11 @@ public:
 	 * `ecsact::core::execution_options` destructor occurs or `clear()` occurs.
 	 */
 	template<typename Action>
-	inline void push_action(const Action* action) {
+	ECSACT_ALWAYS_INLINE void push_action(const Action* action) {
 		actions.push_back(ecsact_action{Action::id, action});
 	}
 
-	inline void clear() {
+	ECSACT_ALWAYS_INLINE void clear() {
 		add_entities_container.clear();
 		add_components_container.clear();
 
@@ -111,7 +111,7 @@ public:
 		actions.clear();
 	}
 
-	inline ecsact_execution_options c() {
+	ECSACT_ALWAYS_INLINE auto c() -> ecsact_execution_options {
 		auto options = ecsact_execution_options{};
 
 		options.add_components_length = add_components_container.size();
@@ -441,25 +441,27 @@ public:
 
 	template<typename Component>
 		requires(!std::is_empty_v<Component>)
-	inline const Component& get_component(ecsact_entity_id entity_id) {
+	ECSACT_ALWAYS_INLINE auto get_component( //
+		ecsact_entity_id entity_id
+	) -> const Component& {
 		return *reinterpret_cast<const Component*>(
 			ecsact_get_component(_id, entity_id, Component::id)
 		);
 	}
 
 	template<typename Component>
-	inline bool has_component(ecsact_entity_id entity_id) {
+	ECSACT_ALWAYS_INLINE bool has_component(ecsact_entity_id entity_id) {
 		return ecsact_has_component(_id, entity_id, Component::id);
 	}
 
 	template<typename Component>
 		requires(std::is_empty_v<Component>)
-	inline auto add_component(ecsact_entity_id entity_id) {
+	ECSACT_ALWAYS_INLINE auto add_component(ecsact_entity_id entity_id) {
 		return ecsact_add_component(_id, entity_id, Component::id, nullptr);
 	}
 
 	template<typename Component>
-	inline auto add_component(
+	ECSACT_ALWAYS_INLINE auto add_component(
 		ecsact_entity_id entity_id,
 		const Component& component
 	) {
@@ -471,18 +473,19 @@ public:
 	}
 
 	template<typename Component>
-	inline auto update_component(
+	ECSACT_ALWAYS_INLINE auto update_component(
 		ecsact_entity_id entity_id,
 		const Component& component
 	) {
 		return ecsact_update_component(_id, entity_id, Component::id, &component);
 	}
 
-	inline auto count_entities() const -> int32_t {
+	ECSACT_ALWAYS_INLINE auto count_entities() const -> int32_t {
 		return ecsact_count_entities(_id);
 	}
 
-	inline auto get_entities() const -> std::vector<ecsact_entity_id> {
+	ECSACT_ALWAYS_INLINE auto get_entities() const
+		-> std::vector<ecsact_entity_id> {
 		const auto entities_count = count_entities();
 		auto       entities = std::vector<ecsact_entity_id>{};
 		entities.resize(entities_count);
@@ -490,7 +493,9 @@ public:
 		return entities;
 	}
 
-	inline auto count_components(ecsact_entity_id entity) const -> int32_t {
+	ECSACT_ALWAYS_INLINE auto count_components( //
+		ecsact_entity_id entity
+	) const -> int32_t {
 		return ecsact_count_components(_id, entity);
 	}
 
@@ -507,7 +512,8 @@ public:
 	 * in @p execution_options range.
 	 */
 	template<typename ExecutionOptionsRange>
-	[[nodiscard]] auto execute_systems(ExecutionOptionsRange&& execution_options
+	[[nodiscard]] auto execute_systems( //
+		ExecutionOptionsRange&& execution_options
 	) -> ecsact_execute_systems_error {
 		auto        execution_count = std::size(execution_options);
 		const auto* execution_options_list_data = std::data(execution_options);
@@ -545,16 +551,16 @@ public:
 	}
 
 	template<typename ExecutionEventsCollector>
-	auto execute_systems(
+	ECSACT_ALWAYS_INLINE auto execute_systems( //
 		int32_t                    execution_count,
 		ExecutionEventsCollector&& evc
-	) {
+	) -> void {
 		const ecsact_execution_events_collector evc_c = evc.c();
 		execute_systems(execution_count, evc_c);
 	}
 
 	template<typename ExecutionOptionsRange, typename ExecutionEventsCollector>
-	[[nodiscard]] auto execute_systems(
+	[[nodiscard]] ECSACT_ALWAYS_INLINE auto execute_systems(
 		ExecutionOptionsRange&&    execution_options,
 		ExecutionEventsCollector&& evc
 	) -> ecsact_execute_systems_error {

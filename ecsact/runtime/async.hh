@@ -139,27 +139,27 @@ private:
 	}
 };
 
-[[nodiscard]] inline auto connect( //
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto connect(
 	const std::string& connection_string
 ) -> ecsact_async_request_id {
 	return ecsact_async_connect(connection_string.c_str());
 }
 
-inline auto disconnect() -> void {
+ECSACT_ALWAYS_INLINE auto disconnect() -> void {
 	ecsact_async_disconnect();
 }
 
-[[nodiscard]] inline auto get_current_tick() -> int32_t {
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto get_current_tick() -> int32_t {
 	return ecsact_async_get_current_tick();
 }
 
-[[nodiscard]] inline auto enqueue_execution_options(
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto enqueue_execution_options(
 	ecsact::core::execution_options& options
 ) -> ecsact_async_request_id {
 	return ecsact_async_enqueue_execution_options(options.c());
 }
 
-inline auto flush_events() -> void {
+ECSACT_ALWAYS_INLINE auto flush_events() -> void {
 	ecsact_async_flush_events(nullptr, nullptr);
 }
 
@@ -167,7 +167,9 @@ template<typename ExecutionEventsCollector>
 	requires(std::convertible_to<
 						decltype(std::declval<ExecutionEventsCollector>().c()),
 						const ecsact_execution_events_collector>)
-inline auto flush_events(ExecutionEventsCollector&& evc) -> void {
+ECSACT_ALWAYS_INLINE auto flush_events( //
+	ExecutionEventsCollector&& evc
+) -> void {
 	const ecsact_execution_events_collector evc_c = evc.c();
 	ecsact_async_flush_events(&evc_c, nullptr);
 }
@@ -176,13 +178,15 @@ template<typename AsyncEventsCollector>
 	requires(std::convertible_to<
 						decltype(std::declval<AsyncEventsCollector>().c()),
 						const ecsact_async_events_collector>)
-inline auto flush_events(AsyncEventsCollector&& async_evc) -> void {
+ECSACT_ALWAYS_INLINE auto flush_events( //
+	AsyncEventsCollector&& async_evc
+) -> void {
 	const ecsact_async_events_collector async_evc_c = async_evc.c();
 	ecsact_async_flush_events(nullptr, &async_evc_c);
 }
 
 template<typename ExecutionEventsCollector, typename AsyncEventsCollector>
-inline auto flush_events(
+ECSACT_ALWAYS_INLINE auto flush_events(
 	ExecutionEventsCollector&& evc,
 	AsyncEventsCollector&&     async_evc
 ) -> void {

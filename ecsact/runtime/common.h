@@ -27,6 +27,12 @@
 #	define ECSACT_IMPORT(ImportModule, ImportName)
 #endif
 
+#ifdef _MSC_VER
+#	define ECSACT_ALWAYS_INLINE __forceinline
+#else
+#	define ECSACT_ALWAYS_INLINE __attribute__((always_inline))
+#endif
+
 ECSACT_TYPED_ID(ecsact_package_id);
 ECSACT_TYPED_ID(ecsact_system_id);
 ECSACT_TYPED_ID(ecsact_action_id);
@@ -50,13 +56,13 @@ ECSACT_TYPED_ID(ecsact_component_like_id);
 #ifdef __cplusplus
 template<typename To, typename From>
 To ecsact_id_cast(From);
-#	define ECSACT_CAST_ID_FN(From, To)             \
-		template<>                                    \
-		inline To ecsact_id_cast<To, From>(From id) { \
-			return (To)id;                              \
+#	define ECSACT_CAST_ID_FN(From, To)                           \
+		template<>                                                  \
+		ECSACT_ALWAYS_INLINE To ecsact_id_cast<To, From>(From id) { \
+			return (To)id;                                            \
 		}
 #else
-inline int32_t ecsact_id_cast(int32_t id) {
+ECSACT_ALWAYS_INLINE int32_t ecsact_id_cast(int32_t id) {
 	return id;
 }
 
@@ -361,9 +367,8 @@ typedef int (*ecsact_action_compare_fn_t)(const void* a, const void* b);
  * necessary function. Any 32 bit integer >=0 is a valid placeholder entity ID.
  * Integers <0 are reserved as special placeholder IDs.
  */
-inline ecsact_placeholder_entity_id ecsact_util_make_placeholder_entity_id(
-	int32_t id
-) {
+ECSACT_ALWAYS_INLINE ecsact_placeholder_entity_id
+ecsact_util_make_placeholder_entity_id(int32_t id) {
 	return (ecsact_placeholder_entity_id)id;
 }
 
