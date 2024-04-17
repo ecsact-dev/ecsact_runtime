@@ -54,8 +54,17 @@ ECSACT_TYPED_ID(ecsact_system_like_id);
 ECSACT_TYPED_ID(ecsact_component_like_id);
 
 #ifdef __cplusplus
+template<typename, typename>
+constexpr bool ecsact_id_invalid_cast_v = false;
+
 template<typename To, typename From>
-To ecsact_id_cast(From);
+ECSACT_ALWAYS_INLINE To ecsact_id_cast(From) {
+	static_assert(
+		ecsact_id_invalid_cast_v<From, To>,
+		"Invalid ecsact_id_cast - Incompatible ID Types"
+	);
+}
+
 #	define ECSACT_CAST_ID_FN(From, To)                           \
 		template<>                                                  \
 		ECSACT_ALWAYS_INLINE To ecsact_id_cast<To, From>(From id) { \
