@@ -10,9 +10,6 @@ build --enable_runfiles
 build --noincompatible_remove_rule_name_parameter
 query --noincompatible_remove_rule_name_parameter
 
-# Temporary until https://github.com/grailbio/bazel-toolchain/pull/198 is merged
-build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
-
 common:ci --announce_rc
 common:ci --verbose_failures
 common:ci --keep_going
