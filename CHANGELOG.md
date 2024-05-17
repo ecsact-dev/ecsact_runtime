@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.2 - 2024-05-17
+#### Features
+- add 'any' component callback to cpp wrapper (#238) - (e8eadfd) - Ezekiel Warren
+- better invalid cast error (#234) - (b3979f6) - Ezekiel Warren
+#### Miscellaneous Chores
+- **(deps)** update dependency platforms to v0.0.10 (#236) - (aa8c7d2) - renovate[bot]
+- **(deps)** update dependency googletest to v1.14.0.bcr.1 (#220) - (11be759) - renovate[bot]
+- **(deps)** update dependency bazel_skylib to v1.6.1 (#235) - (51a8bab) - renovate[bot]
+- ignore bazel lock files - (fe198c7) - Ezekiel Warren
+- fixed typos - (af4c774) - Ezekiel Warren
+- sync with ecsact_common (#228) - (606630e) - seaubot
+
+- - -
+
 ## 0.6.1 - 2024-04-04
 #### Bug Fixes
 - always inline with inline keyword (#233) - (392b5df) - Ezekiel Warren
