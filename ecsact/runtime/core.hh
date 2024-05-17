@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 #include <optional>
+#include <cassert>
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
@@ -173,10 +174,37 @@ private:
 	std::vector<ecsact_action> actions;
 };
 
+class any_component_view {
+	ecsact_component_id _component_id;
+	const void*         _component_data;
+
+public:
+	inline any_component_view(ecsact_component_id id, const void* data)
+		: _component_id(id), _component_data(data) {
+	}
+
+	inline any_component_view(const any_component_view&) = default;
+	inline ~any_component_view() = default;
+
+	template<typename C>
+	auto is() const -> bool {
+		return _component_id == C::id;
+	}
+
+	template<typename C>
+	auto as() const -> const C& {
+		assert(is<C>());
+		return *static_cast<const C*>(_component_data);
+	}
+};
+
 template<
 	template<class R, class... Args> typename CallbackContainer = std::function>
 class execution_events_collector {
 public:
+	using any_component_callback_t =
+		CallbackContainer<void(ecsact_entity_id, any_component_view)>;
+
 	template<typename C>
 	using init_component_callback_t =
 		CallbackContainer<void(ecsact_entity_id, const C&)>;
@@ -202,6 +230,7 @@ public:
 	auto set_init_callback( //
 		init_component_callback_t<C> callback
 	) -> execution_events_collector& {
+		_current_init_callback = &execution_events_collector::typed_init_callback;
 		_init_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -219,6 +248,8 @@ public:
 	auto set_update_callback( //
 		update_component_callback_t<C> callback
 	) -> execution_events_collector& {
+		_current_update_callback =
+			&execution_events_collector::typed_update_callback;
 		_update_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -236,6 +267,8 @@ public:
 	auto set_remove_callback( //
 		remove_component_callback_t<C> callback
 	) -> execution_events_collector& {
+		_current_remove_callback =
+			&execution_events_collector::typed_remove_callback;
 		_remove_cb[C::id] = //
 			[callback = std::move(callback)](
 				ecsact_entity_id    entity,
@@ -259,20 +292,77 @@ public:
 		return *this;
 	}
 
+	/**
+	 * Set the init callback for when _any_ component is initialized. Overwrites
+	 * existing init callbacks, including the typed ones.
+	 *
+	 * NOTE: You should prefer @ref set_init_callback over this function.
+	 */
+	auto set_any_init_callback( //
+		any_component_callback_t callback
+	) -> execution_events_collector& {
+		if constexpr(std::is_convertible_v<any_component_callback_t, bool>) {
+			if(!callback) {
+				return;
+			}
+		}
+		_current_init_callback = &execution_events_collector::any_init_callback;
+		_any_init_component_cb = callback;
+		return *this;
+	}
+
+	/**
+	 * Set the update callback for when _any_ component is updated. Overwrites
+	 * existing update callbacks, including the typed ones.
+	 *
+	 * NOTE: You should prefer @ref set_update_callback over this function.
+	 */
+	auto set_any_update_callback( //
+		any_component_callback_t callback
+	) -> execution_events_collector& {
+		if constexpr(std::is_convertible_v<any_component_callback_t, bool>) {
+			if(!callback) {
+				return;
+			}
+		}
+		_current_update_callback = &execution_events_collector::any_update_callback;
+		_any_update_component_cb = callback;
+		return *this;
+	}
+
+	/**
+	 * Set the remove callback for when _any_ component is removed. Overwrites
+	 * existing remove callbacks, including the typed ones.
+	 *
+	 * NOTE: You should prefer @ref set_remove_callback over this function.
+	 */
+	auto set_any_remove_callback( //
+		any_component_callback_t callback
+	) -> execution_events_collector& {
+		if constexpr(std::is_convertible_v<any_component_callback_t, bool>) {
+			if(!callback) {
+				return;
+			}
+		}
+		_current_remove_callback = &execution_events_collector::any_remove_callback;
+		_any_remove_component_cb = callback;
+		return *this;
+	}
+
 	auto c() const -> const ecsact_execution_events_collector {
 		auto evc = ecsact_execution_events_collector{};
 		auto user_data =
 			static_cast<void*>(const_cast<execution_events_collector*>(this));
 
-		if(!_init_cb.empty()) {
+		if(_current_init_callback != nullptr) {
 			evc.init_callback = &execution_events_collector::init_callback;
 			evc.init_callback_user_data = user_data;
 		}
-		if(!_update_cb.empty()) {
+		if(_current_update_callback != nullptr) {
 			evc.update_callback = &execution_events_collector::update_callback;
 			evc.update_callback_user_data = user_data;
 		}
-		if(!_remove_cb.empty()) {
+		if(_current_remove_callback != nullptr) {
 			evc.remove_callback = &execution_events_collector::remove_callback;
 			evc.remove_callback_user_data = user_data;
 		}
@@ -291,6 +381,9 @@ public:
 	}
 
 	auto clear() -> void {
+		_current_init_callback = nullptr;
+		_current_remove_callback = nullptr;
+		_current_update_callback = nullptr;
 		_init_cb.clear();
 		_update_cb.clear();
 		_remove_cb.clear();
@@ -299,8 +392,10 @@ public:
 	}
 
 	auto empty() const noexcept -> bool {
-		return _init_cb.empty() && _update_cb.empty() && _remove_cb.empty() &&
-			!_entity_created_cb.has_value() && !_entity_destroyed_cb.has_value();
+		return _current_init_callback == nullptr &&
+			_current_remove_callback == nullptr &&
+			_current_update_callback == nullptr && !_entity_created_cb.has_value() &&
+			!_entity_destroyed_cb.has_value();
 	}
 
 private:
@@ -308,6 +403,29 @@ private:
 	using _component_cb_t =
 		std::function<void(ecsact_entity_id, ecsact_component_id, const void*)>;
 	using _component_cb_map_t = std::map<ecsact_component_id, _component_cb_t>;
+
+	void (execution_events_collector::*_current_init_callback)(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) = nullptr;
+
+	void (execution_events_collector::*_current_update_callback)(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) = nullptr;
+
+	void (execution_events_collector::*_current_remove_callback)(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) = nullptr;
+
+	any_component_callback_t _any_init_component_cb;
+	any_component_callback_t _any_update_component_cb;
+	any_component_callback_t _any_remove_component_cb;
+
 	_component_cb_map_t _init_cb;
 	_component_cb_map_t _update_cb;
 	_component_cb_map_t _remove_cb;
@@ -315,18 +433,88 @@ private:
 	std::optional<entity_created_callback_t>   _entity_created_cb;
 	std::optional<entity_destroyed_callback_t> _entity_destroyed_cb;
 
+	auto typed_init_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		auto itr = _init_cb.find(component_id);
+		if(itr != _init_cb.end()) {
+			itr->second(entity_id, component_id, component_data);
+		}
+	}
+
+	auto any_init_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		_any_init_component_cb(
+			entity_id,
+			any_component_view{component_id, component_data}
+		);
+	}
+
+	auto typed_update_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		auto itr = _update_cb.find(component_id);
+		if(itr != _update_cb.end()) {
+			itr->second(entity_id, component_id, component_data);
+		}
+	}
+
+	auto any_update_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		_any_update_component_cb(
+			entity_id,
+			any_component_view{component_id, component_data}
+		);
+	}
+
+	auto typed_remove_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		auto itr = _remove_cb.find(component_id);
+		if(itr != _remove_cb.end()) {
+			itr->second(entity_id, component_id, component_data);
+		}
+	}
+
+	auto any_remove_callback(
+		ecsact_entity_id    entity_id,
+		ecsact_component_id component_id,
+		const void*         component_data
+	) -> void {
+		_any_remove_component_cb(
+			entity_id,
+			any_component_view{component_id, component_data}
+		);
+	}
+
 	static void init_callback(
-		ecsact_event        event,
+		ecsact_event,
 		ecsact_entity_id    entity_id,
 		ecsact_component_id component_id,
 		const void*         component_data,
 		void*               callback_user_data
 	) {
 		auto self = static_cast<execution_events_collector*>(callback_user_data);
-
-		auto itr = self->_init_cb.find(component_id);
-		if(itr != self->_init_cb.end()) {
-			itr->second(entity_id, component_id, component_data);
+		if(self->_current_init_callback) {
+			std::invoke(
+				self->_current_init_callback,
+				*self,
+				entity_id,
+				component_id,
+				component_data
+			);
 		}
 	}
 
@@ -338,10 +526,14 @@ private:
 		void*               callback_user_data
 	) {
 		auto self = static_cast<execution_events_collector*>(callback_user_data);
-
-		auto itr = self->_update_cb.find(component_id);
-		if(itr != self->_update_cb.end()) {
-			itr->second(entity_id, component_id, component_data);
+		if(self->_current_update_callback) {
+			std::invoke(
+				self->_current_update_callback,
+				*self,
+				entity_id,
+				component_id,
+				component_data
+			);
 		}
 	}
 
@@ -353,10 +545,14 @@ private:
 		void*               callback_user_data
 	) {
 		auto self = static_cast<execution_events_collector*>(callback_user_data);
-
-		auto itr = self->_remove_cb.find(component_id);
-		if(itr != self->_remove_cb.end()) {
-			itr->second(entity_id, component_id, component_data);
+		if(self->_current_remove_callback) {
+			std::invoke(
+				self->_current_remove_callback,
+				*self,
+				entity_id,
+				component_id,
+				component_data
+			);
 		}
 	}
 
