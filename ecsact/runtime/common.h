@@ -392,7 +392,7 @@ typedef struct ecsact_action {
 	ecsact_action_id action_id;
 
 	/**
-	 * Pointer to action data. Size is determined by the registerd action
+	 * Pointer to action data. Size is determined by the registered action
 	 * associated with the `action_id`.
 	 */
 	const void* action_data;
@@ -409,7 +409,7 @@ typedef struct ecsact_component {
 	ecsact_component_id component_id;
 
 	/**
-	 * Pointer to component data. Size is determined by the registerd component
+	 * Pointer to component data. Size is determined by the registered component
 	 * associated with the `component_id`.
 	 */
 	const void* component_data;
