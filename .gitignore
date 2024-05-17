@@ -2,6 +2,7 @@
 /bazel-*
 /tests/bazel-*
 user.bazelrc
+*.bazel.lock
 
 # dev stuff
 /compile_commands.json
