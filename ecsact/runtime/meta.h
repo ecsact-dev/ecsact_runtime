@@ -284,12 +284,62 @@ ECSACT_META_API_FN(void, ecsact_meta_system_capabilities)
 	int32_t*                  out_capabilities_count
 );
 
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_assoc_count)
+( //
+	ecsact_system_like_id system_id
+);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_assoc_ids)
+( //
+	ecsact_system_like_id   system_id,
+	int32_t                 max_assoc_count,
+	ecsact_system_assoc_id* out_assoc_ids,
+	int32_t*                out_assoc_count
+);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_assoc_fields_count)
+( //
+	ecsact_system_like_id  system_id,
+	ecsact_system_assoc_id assoc_id
+);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_assoc_fields)
+( //
+	ecsact_system_like_id  system_id,
+	ecsact_system_assoc_id assoc_id,
+	int32_t                max_fields_count,
+	ecsact_field_id*       out_fields,
+	int32_t*               out_fields_count
+);
+
+ECSACT_META_API_FN(int32_t, ecsact_meta_system_assoc_capabilities_count)
+( //
+	ecsact_system_like_id  system_id,
+	ecsact_system_assoc_id assoc_id
+);
+
+ECSACT_META_API_FN(void, ecsact_meta_system_assoc_capabilities)
+( //
+	ecsact_system_like_id     system_id,
+	ecsact_system_assoc_id    assoc_id,
+	int32_t                   max_capabilities_count,
+	ecsact_component_like_id* out_capability_component_ids,
+	ecsact_system_capability* out_capabilities,
+	int32_t*                  out_capabilities_count
+);
+
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_fields_count)
 ( //
 	ecsact_system_like_id    system_id,
 	ecsact_component_like_id component_id
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(void, ecsact_meta_system_association_fields)
 ( //
 	ecsact_system_like_id    system_id,
@@ -299,6 +349,9 @@ ECSACT_META_API_FN(void, ecsact_meta_system_association_fields)
 	int32_t*                 out_fields_count
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_capabilities_count)
 ( //
 	ecsact_system_like_id    system_id,
@@ -306,6 +359,9 @@ ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_capabilities_count)
 	ecsact_field_id          field_id
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(void, ecsact_meta_system_association_capabilities)
 ( //
 	ecsact_system_like_id     system_id,
@@ -477,6 +533,12 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
 		fn(ecsact_meta_system_name, __VA_ARGS__);                           \
 		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);             \
 		fn(ecsact_meta_system_capabilities, __VA_ARGS__);                   \
+		fn(ecsact_meta_system_assoc_count, __VA_ARGS__);                    \
+		fn(ecsact_meta_system_assoc_ids, __VA_ARGS__);                      \
+		fn(ecsact_meta_system_assoc_fields_count, __VA_ARGS__);             \
+		fn(ecsact_meta_system_assoc_fields, __VA_ARGS__);                   \
+		fn(ecsact_meta_system_assoc_capabilities_count, __VA_ARGS__);       \
+		fn(ecsact_meta_system_assoc_capabilities, __VA_ARGS__);             \
 		fn(ecsact_meta_system_association_fields_count, __VA_ARGS__);       \
 		fn(ecsact_meta_system_association_fields, __VA_ARGS__);             \
 		fn(ecsact_meta_system_association_capabilities_count, __VA_ARGS__); \

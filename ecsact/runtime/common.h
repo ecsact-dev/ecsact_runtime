@@ -41,6 +41,7 @@ ECSACT_TYPED_ID(ecsact_transient_id);
 ECSACT_TYPED_ID(ecsact_enum_id);
 ECSACT_TYPED_ID(ecsact_enum_value_id);
 ECSACT_TYPED_ID(ecsact_field_id);
+ECSACT_TYPED_ID(ecsact_system_assoc_id);
 ECSACT_TYPED_ID(ecsact_variant_id);
 ECSACT_TYPED_ID(ecsact_registry_id);
 ECSACT_TYPED_ID(ecsact_entity_id);
@@ -222,6 +223,11 @@ typedef enum {
 } ecsact_execute_systems_error;
 
 typedef enum {
+	/**
+	 * System has no capabilities for this component.
+	 */
+	ECSACT_SYS_CAP_NONE = 0,
+
 	/**
 	 * System may read component
 	 */
