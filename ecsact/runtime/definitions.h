@@ -78,6 +78,13 @@ typedef struct ecsact_field_definitions {
 	ecsact_field_type type;
 } ecsact_field_definition;
 
+typedef struct ecsact_system_assoc_info {
+	ecsact_composite_id composite_id;
+	int32_t             field_count;
+	ecsact_field_id     field_ids[32];
+
+} ecsact_system_assoc_info;
+
 typedef struct ecsact_component_definition {
 	/**
 	 * Name of component. Null-terminated string. May be empty.
