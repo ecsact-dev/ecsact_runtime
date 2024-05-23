@@ -538,6 +538,11 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 		fn(ecsact_remove_enum_value, __VA_ARGS__);                   \
 		fn(ecsact_set_system_capability, __VA_ARGS__);               \
 		fn(ecsact_unset_system_capability, __VA_ARGS__);             \
+		fn(ecsact_add_system_assoc, __VA_ARGS__);                    \
+		fn(ecsact_remove_system_assoc, __VA_ARGS__);                 \
+		fn(ecsact_add_system_assoc_field, __VA_ARGS__);              \
+		fn(ecsact_remove_system_assoc_field, __VA_ARGS__);           \
+		fn(ecsact_set_system_assoc_capbility, __VA_ARGS__);          \
 		fn(ecsact_set_system_association_capability, __VA_ARGS__);   \
 		fn(ecsact_unset_system_association_capability, __VA_ARGS__); \
 		fn(ecsact_add_system_generates, __VA_ARGS__);                \

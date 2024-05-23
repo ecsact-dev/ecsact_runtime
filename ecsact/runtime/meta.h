@@ -525,6 +525,12 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
 		fn(ecsact_meta_system_name, __VA_ARGS__);                           \
 		fn(ecsact_meta_system_capabilities_count, __VA_ARGS__);             \
 		fn(ecsact_meta_system_capabilities, __VA_ARGS__);                   \
+		fn(ecsact_meta_system_assoc_count, __VA_ARGS__);                    \
+		fn(ecsact_meta_system_assoc_ids, __VA_ARGS__);                      \
+		fn(ecsact_meta_system_assoc_fields_count, __VA_ARGS__);             \
+		fn(ecsact_meta_system_assoc_fields, __VA_ARGS__);                   \
+		fn(ecsact_meta_system_assoc_capabilities_count, __VA_ARGS__);       \
+		fn(ecsact_meta_system_assoc_capabilities, __VA_ARGS__);             \
 		fn(ecsact_meta_system_association_fields_count, __VA_ARGS__);       \
 		fn(ecsact_meta_system_association_fields, __VA_ARGS__);             \
 		fn(ecsact_meta_system_association_capabilities_count, __VA_ARGS__); \
