@@ -33,12 +33,6 @@
 #	define ECSACT_ALWAYS_INLINE inline __attribute__((always_inline))
 #endif
 
-#ifdef __cplusplus
-#	define ECSACT_DEPRECATED(Reason) [[deprecated(Reason)]]
-#else
-#	define ECSACT_DEPRECATED(Reason)
-#endif
-
 ECSACT_TYPED_ID(ecsact_package_id);
 ECSACT_TYPED_ID(ecsact_system_id);
 ECSACT_TYPED_ID(ecsact_action_id);

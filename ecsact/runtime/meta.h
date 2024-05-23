@@ -328,15 +328,19 @@ ECSACT_META_API_FN(void, ecsact_meta_system_assoc_capabilities)
 	int32_t*                  out_capabilities_count
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_fields_count)
-ECSACT_DEPRECATED("use ecsact_meta_system_assoc_* fns instead")
 ( //
 	ecsact_system_like_id    system_id,
 	ecsact_component_like_id component_id
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(void, ecsact_meta_system_association_fields)
-ECSACT_DEPRECATED("use ecsact_meta_system_assoc_* fns instead")
 ( //
 	ecsact_system_like_id    system_id,
 	ecsact_component_like_id component_id,
@@ -345,16 +349,20 @@ ECSACT_DEPRECATED("use ecsact_meta_system_assoc_* fns instead")
 	int32_t*                 out_fields_count
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(int32_t, ecsact_meta_system_association_capabilities_count)
-ECSACT_DEPRECATED("use ecsact_meta_system_assoc_* fns instead")
 ( //
 	ecsact_system_like_id    system_id,
 	ecsact_component_like_id component_id,
 	ecsact_field_id          field_id
 );
 
+/**
+ * @deprecated use ecsact_meta_system_assoc_* fns instead
+ */
 ECSACT_META_API_FN(void, ecsact_meta_system_association_capabilities)
-ECSACT_DEPRECATED("use ecsact_meta_system_assoc_* fns instead")
 ( //
 	ecsact_system_like_id     system_id,
 	ecsact_component_like_id  component_id,
