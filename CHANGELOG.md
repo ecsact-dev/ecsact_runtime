@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.3 - 2024-05-23
+#### Features
+- multi field association API (#243) - (e3682e8) - Ezekiel Warren
+#### Miscellaneous Chores
+- sync with ecsact_common (#239) - (95ffc34) - seaubot
+
+- - -
+
 ## 0.6.2 - 2024-05-17
 #### Features
 - add 'any' component callback to cpp wrapper (#238) - (e8eadfd) - Ezekiel Warren
