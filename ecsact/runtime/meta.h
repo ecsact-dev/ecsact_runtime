@@ -297,8 +297,11 @@ ECSACT_META_API_FN(void, ecsact_meta_system_assoc_ids)
 	int32_t*                out_assoc_count
 );
 
-ECSACT_META_API_FN(ecsact_component_like_id, ecsact_meta_system_assoc_component_id)
-(
+ECSACT_META_API_FN(
+	ecsact_component_like_id,
+	ecsact_meta_system_assoc_component_id
+)
+( //
 	ecsact_system_like_id  system_id,
 	ecsact_system_assoc_id assoc_id
 );
