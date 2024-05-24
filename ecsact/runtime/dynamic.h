@@ -380,7 +380,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_unset_system_capability)
 
 ECSACT_DYNAMIC_API_FN(ecsact_system_assoc_id, ecsact_add_system_assoc)
 ( //
-	ecsact_system_like_id
+	ecsact_system_like_id,
+	ecsact_component_like_id
 );
 
 ECSACT_DYNAMIC_API_FN(void, ecsact_remove_system_assoc)
@@ -393,7 +394,6 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_add_system_assoc_field)
 ( //
 	ecsact_system_like_id,
 	ecsact_system_assoc_id,
-	ecsact_component_like_id,
 	ecsact_field_id
 );
 
@@ -401,7 +401,6 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_remove_system_assoc_field)
 ( //
 	ecsact_system_like_id,
 	ecsact_system_assoc_id,
-	ecsact_component_like_id,
 	ecsact_field_id
 );
 
@@ -409,7 +408,6 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_assoc_capbility)
 ( //
 	ecsact_system_like_id,
 	ecsact_system_assoc_id,
-	ecsact_component_like_id,
 	ecsact_system_capability
 );
 
