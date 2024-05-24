@@ -4,6 +4,14 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
+#	define ECSACT_DEPRECATED(Reason) [[deprecated(Reason)]]
+#else
+#	define ECSACT_DEPRECATED(Reason)
+#endif
+
+#define ECSACT_INVALID_ID(ID_TYPE) ((ecsact_##ID_TYPE##_id)(-1))
+
+#ifdef __cplusplus
 #	define ECSACT_TYPED_ID(name) enum class name : int32_t
 #else
 #	define ECSACT_TYPED_ID(name) typedef int32_t name
@@ -146,15 +154,21 @@ typedef void (*ecsact_system_execution_impl)(//
 	struct ecsact_system_execution_context*
 );
 
-static const ecsact_system_id ecsact_invalid_system_id = (ecsact_system_id)-1;
+ECSACT_DEPRECATED("use ECSACT_INVALID_ID(system) instead")
+static const ecsact_system_id ecsact_invalid_system_id =
+	ECSACT_INVALID_ID(system);
 
+ECSACT_DEPRECATED("use ECSACT_INVALID_ID(registry) instead")
 static const ecsact_registry_id ecsact_invalid_registry_id =
-	(ecsact_registry_id)-1;
+	ECSACT_INVALID_ID(registry);
 
+ECSACT_DEPRECATED("use ECSACT_INVALID_ID(component) instead")
 static const ecsact_component_id ecsact_invalid_component_id =
-	(ecsact_component_id)-1;
+	ECSACT_INVALID_ID(component);
 
-static const ecsact_entity_id ecsact_invalid_entity_id = (ecsact_entity_id)-1;
+ECSACT_DEPRECATED("use ECSACT_INVALID_ID(entity) instead")
+static const ecsact_entity_id ecsact_invalid_entity_id =
+	ECSACT_INVALID_ID(entity);
 
 /**
  * Entity is from a generator system.
