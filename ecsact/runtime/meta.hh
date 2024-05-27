@@ -5,6 +5,7 @@
 #include <optional>
 #include <filesystem>
 #include <unordered_map>
+#include "ecsact/runtime/common.h"
 #include "ecsact/runtime/meta.h"
 
 namespace ecsact::meta {
@@ -177,6 +178,17 @@ ECSACT_ALWAYS_INLINE std::vector<ecsact_field_id> get_field_ids(
 	ecsact_meta_get_field_ids(compo_id, max_size, field_ids.data(), &max_size);
 	field_ids.resize(max_size);
 	return field_ids;
+}
+
+template<typename CompositeID>
+ECSACT_ALWAYS_INLINE auto get_field_type(
+	CompositeID     id,
+	ecsact_field_id field_id
+) -> ecsact_field_type {
+	return ecsact_meta_field_type(
+		ecsact_id_cast<ecsact_composite_id>(id),
+		field_id
+	);
 }
 
 ECSACT_ALWAYS_INLINE std::vector<ecsact_system_id> get_system_ids(
@@ -484,56 +496,74 @@ ECSACT_ALWAYS_INLINE auto get_system_generates_components(
 	return result;
 }
 
-template<typename SystemLikeID, typename ComponentLikeID>
-ECSACT_ALWAYS_INLINE auto system_association_fields(
-	SystemLikeID    system_id,
-	ComponentLikeID component_id
-) {
-	auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(system_id);
-	auto comp_like_id = ecsact_id_cast<ecsact_component_like_id>(component_id);
+template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto system_assoc_ids( //
+	SystemLikeID system_id
+) -> std::vector<ecsact_system_assoc_id> {
+	auto result = std::vector<ecsact_system_assoc_id>{};
+	result.resize(32);
+	auto assoc_count = int32_t{};
 
-	std::vector<ecsact_field_id> field_ids;
-	field_ids.resize(
-		ecsact_meta_system_association_fields_count(sys_like_id, comp_like_id)
+	ecsact_meta_system_assoc_ids(
+		ecsact_id_cast<ecsact_system_like_id>(system_id),
+		static_cast<int32_t>(result.size()),
+		result.data(),
+		&assoc_count
 	);
 
-	ecsact_meta_system_association_fields(
-		sys_like_id,
-		comp_like_id,
-		static_cast<int32_t>(field_ids.size()),
-		field_ids.data(),
-		nullptr
-	);
+	result.resize(assoc_count);
 
-	return field_ids;
+	return result;
 }
 
-template<typename SystemLikeID, typename ComponentLikeID>
-ECSACT_ALWAYS_INLINE auto system_association_capabilities(
-	SystemLikeID    system_id,
-	ComponentLikeID component_id,
-	ecsact_field_id field_id
+template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto system_assoc_component_id( //
+	SystemLikeID           system_id,
+	ecsact_system_assoc_id assoc_id
+) -> ecsact_component_like_id {
+	return ecsact_meta_system_assoc_component_id(
+		ecsact_id_cast<ecsact_system_like_id>(system_id),
+		assoc_id
+	);
+}
+
+template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto system_assoc_fields(
+	SystemLikeID           system_id,
+	ecsact_system_assoc_id assoc_id
+) -> std::vector<ecsact_field_id> {
+	auto result = std::vector<ecsact_field_id>{};
+	result.resize(32);
+	auto fields_count = int32_t{};
+	ecsact_meta_system_assoc_fields(
+		system_id,
+		assoc_id,
+		result.size(),
+		result.data(),
+		&fields_count
+	);
+	result.resize(fields_count);
+	return result;
+}
+
+template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto system_assoc_capabilities(
+	SystemLikeID           id,
+	ecsact_system_assoc_id assoc_id
 ) {
 	using result_t =
-		std::unordered_map<ecsact_component_like_id, ecsact_system_capability>;
+		std::vector<std::pair<ecsact_component_like_id, ecsact_system_capability>>;
 
-	auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(system_id);
-	auto comp_like_id = ecsact_id_cast<ecsact_component_like_id>(component_id);
-
-	auto count = ecsact_meta_system_association_capabilities_count(
-		sys_like_id,
-		comp_like_id,
-		field_id
-	);
+	const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+	auto       count = ecsact_meta_system_capabilities_count(sys_like_id);
 	std::vector<ecsact_component_like_id> components;
 	std::vector<ecsact_system_capability> capabilities;
 	components.resize(count);
 	capabilities.resize(count);
 
-	ecsact_meta_system_association_capabilities(
+	ecsact_meta_system_assoc_capabilities(
 		sys_like_id,
-		comp_like_id,
-		field_id,
+		assoc_id,
 		count,
 		components.data(),
 		capabilities.data(),
@@ -541,10 +571,10 @@ ECSACT_ALWAYS_INLINE auto system_association_capabilities(
 	);
 
 	result_t result;
-	result.reserve(count);
+	result.resize(count);
 
 	for(decltype(count) i = 0; count > i; ++i) {
-		result[components[i]] = capabilities[i];
+		result[i] = {components[i], capabilities[i]};
 	}
 
 	return result;
@@ -590,6 +620,17 @@ auto system_notify_settings( //
 	}
 
 	return result;
+}
+
+template<typename CompositeID>
+ECSACT_ALWAYS_INLINE auto field_name( //
+	CompositeID     id,
+	ecsact_field_id field_id
+) -> std::string {
+	return ecsact_meta_field_name(
+		ecsact_id_cast<ecsact_composite_id>(id),
+		field_id
+	);
 }
 
 ECSACT_ALWAYS_INLINE auto main_package() -> std::optional<ecsact_package_id> {
