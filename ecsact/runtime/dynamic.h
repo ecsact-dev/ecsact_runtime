@@ -404,10 +404,11 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_remove_system_assoc_field)
 	ecsact_field_id
 );
 
-ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_assoc_capbility)
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_assoc_capability)
 ( //
 	ecsact_system_like_id,
 	ecsact_system_assoc_id,
+	ecsact_component_like_id,
 	ecsact_system_capability
 );
 

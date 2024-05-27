@@ -74,10 +74,27 @@ ECSACT_ALWAYS_INLINE To ecsact_id_cast(From) {
 	);
 }
 
+template<typename From, typename To>
+constexpr auto ecsact_id_castable() -> bool {
+	return false;
+}
+
 #	define ECSACT_CAST_ID_FN(From, To)                           \
 		template<>                                                  \
 		ECSACT_ALWAYS_INLINE To ecsact_id_cast<To, From>(From id) { \
 			return (To)id;                                            \
+		}                                                           \
+		template<>                                                  \
+		constexpr auto ecsact_id_castable<From, To>() -> bool {     \
+			return true;                                              \
+		}
+
+#	define ECSACT_COMPARE_ID_FN(From, To)                               \
+		ECSACT_ALWAYS_INLINE bool operator==(const From& a, const To& b) { \
+			return ecsact_id_cast<To>(a) == b;                               \
+		}                                                                  \
+		ECSACT_ALWAYS_INLINE bool operator!=(const From& a, const To& b) { \
+			return ecsact_id_cast<To>(a) != b;                               \
 		}
 #else
 ECSACT_ALWAYS_INLINE int32_t ecsact_id_cast(int32_t id) {
@@ -85,6 +102,7 @@ ECSACT_ALWAYS_INLINE int32_t ecsact_id_cast(int32_t id) {
 }
 
 #	define ECSACT_CAST_ID_FN(From, To)
+#	define ECSACT_COMPARE_ID_FN(From, To)
 #endif
 
 ECSACT_CAST_ID_FN(ecsact_system_id, ecsact_system_like_id)
@@ -122,8 +140,28 @@ ECSACT_CAST_ID_FN(ecsact_system_like_id, ecsact_system_like_id)
 ECSACT_CAST_ID_FN(ecsact_transient_id, ecsact_transient_id)
 ECSACT_CAST_ID_FN(ecsact_component_like_id, ecsact_component_like_id)
 
+ECSACT_COMPARE_ID_FN(ecsact_system_id, ecsact_system_like_id)
+ECSACT_COMPARE_ID_FN(ecsact_action_id, ecsact_system_like_id)
+ECSACT_COMPARE_ID_FN(ecsact_action_id, ecsact_composite_id)
+ECSACT_COMPARE_ID_FN(ecsact_component_id, ecsact_composite_id)
+ECSACT_COMPARE_ID_FN(ecsact_transient_id, ecsact_composite_id)
+ECSACT_COMPARE_ID_FN(ecsact_component_like_id, ecsact_composite_id)
+
+ECSACT_COMPARE_ID_FN(ecsact_component_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_transient_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_system_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_action_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_variant_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_system_like_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_composite_id, ecsact_decl_id)
+ECSACT_COMPARE_ID_FN(ecsact_component_like_id, ecsact_decl_id)
+
+ECSACT_COMPARE_ID_FN(ecsact_component_id, ecsact_component_like_id)
+ECSACT_COMPARE_ID_FN(ecsact_transient_id, ecsact_component_like_id)
+
 #undef ECSACT_TYPED_ID
 #undef ECSACT_CAST_ID_FN
+#undef ECSACT_COMPARE_ID_FN
 
 #if defined(_WIN32) && (!defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL)
 #	define ECSACT_MSVC_TRADITIONAL
