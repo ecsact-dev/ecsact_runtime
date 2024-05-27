@@ -159,12 +159,7 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_same)
 );
 
 /**
- * Get execution context for a different entity
- *
- * Only available if has one of these capabilities:
- *  - `ECSACT_SYS_CAP_OPTIONAL_READONLY`
- *  - `ECSACT_SYS_CAP_OPTIONAL_WRITEONLY`
- *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
+ * Get execution context for a different entity associated with this system.
  */
 ECSACT_DYNAMIC_API_FN(
 	struct ecsact_system_execution_context*,
@@ -172,7 +167,7 @@ ECSACT_DYNAMIC_API_FN(
 )
 ( //
 	struct ecsact_system_execution_context* context,
-	ecsact_entity_id                        entity_id
+	ecsact_system_assoc_id                  assoc_id
 );
 
 /**
