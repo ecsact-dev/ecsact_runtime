@@ -5,7 +5,7 @@
 #include <optional>
 #include <filesystem>
 #include <unordered_map>
-#include "common.h"
+#include "ecsact/runtime/common.h"
 #include "ecsact/runtime/meta.h"
 
 namespace ecsact::meta {
