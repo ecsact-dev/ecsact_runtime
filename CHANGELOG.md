@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.4 - 2024-05-27
+#### Features
+- improve assoc api + C++ wrappers (#246) - (9288773) - Ezekiel Warren
+- invalid id macro (#245) - (d97a63b) - Ezekiel Warren
+- more multi assoc api adjustments (#244) - (82e37e2) - Ezekiel Warren
+
+- - -
+
 ## 0.6.3 - 2024-05-23
 #### Features
 - multi field association API (#243) - (e3682e8) - Ezekiel Warren
