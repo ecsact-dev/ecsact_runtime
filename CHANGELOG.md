@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.5 - 2024-05-31
+#### Features
+- more parallel execution options (#249) - (675c334) - Ezekiel Warren
+- using assoc id in 'other' context api (#247) - (2f27be4) - Ezekiel Warren
+
+- - -
+
 ## 0.6.4 - 2024-05-27
 #### Features
 - improve assoc api + C++ wrappers (#246) - (9288773) - Ezekiel Warren
