@@ -477,7 +477,10 @@ ECSACT_META_API_FN(int32_t, ecsact_meta_get_lazy_iteration_rate)
  * Check if a system/action can run on multiple entities in parallel. This is
  * only a _hint_. The runtime implementation may choose to not run in parallel.
  */
-ECSACT_META_API_FN(bool, ecsact_meta_get_system_parallel_execution)
+ECSACT_META_API_FN(
+	ecsact_parallel_execution,
+	ecsact_meta_get_system_parallel_execution
+)
 ( //
 	ecsact_system_like_id system_like_id
 );

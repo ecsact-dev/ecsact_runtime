@@ -381,6 +381,23 @@ typedef enum {
 	ECSACT_SYS_NOTIFY_ONREMOVE,
 } ecsact_system_notify_setting;
 
+typedef enum ecsact_parallel_execution {
+	/**
+	 * Let implementation decide parallel execution.
+	 */
+	ECSACT_PAR_EXEC_AUTO = 0,
+
+	/**
+	 * Hint to implementation that parallel execution is preferred.
+	 */
+	ECSACT_PAR_EXEC_PREFERRED = 1,
+
+	/**
+	 * Disallow implementation to use parallel execution.
+	 */
+	ECSACT_PAR_EXEC_DENY = 2,
+} ecsact_parallel_execution;
+
 /**
  * Flags for generates component set
  */

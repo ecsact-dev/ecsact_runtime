@@ -474,13 +474,13 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_entity_execution_status)
 );
 
 /**
- * Set a _hint_ that the system may process entities in parallel. This is
- * only a _hint_. The runtime implementation may choose to not run in parallel.
+ * Sets the systems parallel execution setting.
+ * @SEE: ecsact_parallel_execution
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_parallel_execution)
 ( //
-	ecsact_system_like_id system_like_id,
-	bool                  parallel_execution
+	ecsact_system_like_id     system_like_id,
+	ecsact_parallel_execution parallel_execution
 );
 
 /**

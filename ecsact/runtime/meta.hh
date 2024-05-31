@@ -641,4 +641,13 @@ ECSACT_ALWAYS_INLINE auto main_package() -> std::optional<ecsact_package_id> {
 	return main_pkg_id;
 }
 
+template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto get_system_parallel_execution( //
+	SystemLikeID id
+) -> ecsact_parallel_execution {
+	return ecsact_meta_get_system_parallel_execution(
+		ecsact_id_cast<ecsact_system_like_id>(id)
+	);
+}
+
 } // namespace ecsact::meta
