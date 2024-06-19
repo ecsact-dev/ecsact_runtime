@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.6 - 2024-06-19
+#### Bug Fixes
+- **(meta)** c++ wrapper using wrong assoc cap count (#251) - (9f29536) - Ezekiel Warren
+
+- - -
+
 ## 0.6.5 - 2024-05-31
 #### Features
 - more parallel execution options (#249) - (675c334) - Ezekiel Warren
