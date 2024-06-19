@@ -555,7 +555,8 @@ ECSACT_ALWAYS_INLINE auto system_assoc_capabilities(
 		std::vector<std::pair<ecsact_component_like_id, ecsact_system_capability>>;
 
 	const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
-	auto       count = ecsact_meta_system_capabilities_count(sys_like_id);
+	auto       count =
+		ecsact_meta_system_assoc_capabilities_count(sys_like_id, assoc_id);
 	std::vector<ecsact_component_like_id> components;
 	std::vector<ecsact_system_capability> capabilities;
 	components.resize(count);
