@@ -441,7 +441,7 @@ ECSACT_ALWAYS_INLINE auto system_capabilities(SystemLikeID id) {
 	result.reserve(count);
 
 	for(decltype(count) i = 0; count > i; ++i) {
-		result[components[i]] = capabilities[i];
+		result.insert({components[i], capabilities[i]});
 	}
 
 	return result;
