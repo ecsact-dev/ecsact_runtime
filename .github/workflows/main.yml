@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crate-ci/typos@v1.19.0
+      - uses: crate-ci/typos@cfe759ac8dd421e203cc293a373396fbc6fe0d4b # v1.22.7
 
   formatting-check:
     name: Formatting Check
@@ -25,7 +25,9 @@ jobs:
         with: { clang-format-version: "18" }
 
   test-windows:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]') || (github.event_name == 'merge_group' && github.event.pull_request.user.login != 'renovate[bot]')
+    if: >-
+      (github.event_name == 'pull_request' && (github.event.pull_request.user.login == 'renovate[bot]' || github.event.pull_request.user.login == 'seaubot'))
+      || (github.event_name == 'merge_group' && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'seaubot')
     runs-on: windows-latest
     steps:
       - uses: actions/cache@v4
@@ -41,7 +43,9 @@ jobs:
         working-directory: test
 
   test-linux:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]') || (github.event_name == 'merge_group' && github.event.pull_request.user.login != 'renovate[bot]')
+    if: >-
+      (github.event_name == 'pull_request' && (github.event.pull_request.user.login == 'renovate[bot]' || github.event.pull_request.user.login == 'seaubot'))
+      || (github.event_name == 'merge_group' && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'seaubot')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/cache@v4
