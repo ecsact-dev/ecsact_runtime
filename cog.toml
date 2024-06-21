@@ -1,11 +1,11 @@
 pre_bump_hooks = [
-	# Ecsact pre 1.0.0 the 0.X.0 is our 'major' version
-	"buildozer 'set version {{version}}' 'set compatibility_level {{version.minor}}' //MODULE.bazel:%module",
-	"bazel mod tidy",
+  # Ecsact pre 1.0.0 the 0.X.0 is our 'major' version
+  "buildozer 'set version {{version}}' 'set compatibility_level {{version.minor}}' //MODULE.bazel:%module",
+  "bazel mod tidy",
 ]
 
 post_bump_hooks = [
-	"git push",
-	"git push origin {{version}}",
-	"gh release create {{version}} --generate-notes --latest -t {{version}} --verify-tag",
+  "git push",
+  "git push origin {{version}}",
+  "gh release create {{version}} --generate-notes --latest -t {{version}} --verify-tag",
 ]
