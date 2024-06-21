@@ -143,7 +143,6 @@ ECSACT_CORE_API_FN(bool, ecsact_has_component)
 /**
  * @param ... if the component has indexed fields then those fields must be
  *        supplied to the variadic arguments in declaration order.
- *
  * @returns non-owning pointer of the component data
  * NOTE: This method should be avoided if possible.
  */
@@ -194,7 +193,10 @@ ECSACT_CORE_API_FN(void, ecsact_each_component)
 /**
  * Update a component for the specified entity.
  *
- * @note This method should be avoided if possible. Updating a component in a
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ *
+ * NOTE: This method should be avoided if possible. Updating a component in a
  *       system or system execution options is preferred.
  *       SEE: `ecsact_execute_systems`
  */
@@ -203,13 +205,17 @@ ECSACT_CORE_API_FN(ecsact_update_error, ecsact_update_component)
 	ecsact_registry_id  registry_id,
 	ecsact_entity_id    entity_id,
 	ecsact_component_id component_id,
-	const void*         component_data
+	const void*         component_data,
+	...
 );
 
 /**
  * Removes a component from the specified entity.
  *
- * @note This method should be avoided if possible. Removing a component in a
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ *
+ * NOTE: This method should be avoided if possible. Removing a component in a
  *       system or system execution options is preferred.
  *       SEE: `ecsact_execute_systems`
  */
@@ -217,7 +223,8 @@ ECSACT_CORE_API_FN(void, ecsact_remove_component)
 ( //
 	ecsact_registry_id  registry_id,
 	ecsact_entity_id    entity_id,
-	ecsact_component_id component_id
+	ecsact_component_id component_id,
+	...
 );
 
 /**
