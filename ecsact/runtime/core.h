@@ -115,7 +115,7 @@ ECSACT_CORE_API_FN(void, ecsact_get_entities)
 /**
  * Adds a component to the specified entity.
  *
- * @note This method should be avoided if possible. Adding a component in a
+ * NOTE: This method should be avoided if possible. Adding a component in a
  *       system or system execution options is preferred.
  *       SEE: `ecsact_execute_systems`
  */
@@ -127,22 +127,32 @@ ECSACT_CORE_API_FN(ecsact_add_error, ecsact_add_component)
 	const void*         component_data
 );
 
+/**
+ * Checks if a given entity has component with id @p component_id
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ */
 ECSACT_CORE_API_FN(bool, ecsact_has_component)
 ( //
 	ecsact_registry_id  registry_id,
 	ecsact_entity_id    entity_id,
-	ecsact_component_id component_id
+	ecsact_component_id component_id,
+	...
 );
 
 /**
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ *
  * @returns non-owning pointer of the component data
- * @note This method should be avoided if possible.
+ * NOTE: This method should be avoided if possible.
  */
 ECSACT_CORE_API_FN(const void*, ecsact_get_component)
 ( //
 	ecsact_registry_id  registry_id,
 	ecsact_entity_id    entity_id,
-	ecsact_component_id component_id
+	ecsact_component_id component_id,
+	...
 );
 
 /**
