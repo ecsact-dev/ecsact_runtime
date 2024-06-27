@@ -57,11 +57,15 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
  *
  * Only available if has one of these capabilities:
  *  - `ECSACT_SYS_CAP_REMOVES`
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
 ( //
 	struct ecsact_system_execution_context* context,
-	ecsact_component_like_id                component_id
+	ecsact_component_like_id                component_id,
+	...
 );
 
 /**
@@ -76,12 +80,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
  *  - `ECSACT_SYS_CAP_READWRITE`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
-	void*                                   out_component_data
+	void*                                   out_component_data,
+	...
 );
 
 /**
@@ -90,12 +98,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
  *  - `ECSACT_SYS_CAP_READWRITE`
  *  - `ECSACT_SYS_CAP_OPTIONAL_WRITEONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
-	const void*                             component_data
+	const void*                             component_data,
+	...
 );
 
 /**
@@ -106,11 +118,15 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
  *  - `ECSACT_SYS_CAP_OPTIONAL_READONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_WRITEONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 ( //
 	struct ecsact_system_execution_context* context,
-	ecsact_component_like_id                component_id
+	ecsact_component_like_id                component_id,
+	...
 );
 
 /**

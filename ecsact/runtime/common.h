@@ -533,6 +533,13 @@ typedef struct ecsact_execution_options {
 	ecsact_component* update_components;
 
 	/**
+	 * Sequential list of indexed field values for the given `update_components`.
+	 * Length is determined by `update_components_length *
+	 * update-components-total-indexed-fields-count`.
+	 */
+	const void** update_components_indexed_fields;
+
+	/**
 	 * Length of `remove_components_entities` and `remove_components` sequential
 	 * lists.
 	 */
@@ -551,6 +558,13 @@ typedef struct ecsact_execution_options {
 	 * `remove_components_length`.
 	 */
 	ecsact_component_id* remove_components;
+
+	/**
+	 * Sequential list of indexed field values for the given `remove_components`.
+	 * Length is determined by `remove_components_length *
+	 * remove-components-total-indexed-fields-count`.
+	 */
+	const void** remove_components_indexed_fields;
 
 	/**
 	 * Length of `actions` sequential list.
