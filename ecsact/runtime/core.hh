@@ -648,9 +648,12 @@ public:
 			);
 		}
 
-		return *reinterpret_cast<const Component*>(
-			ecsact_get_component(_id, entity_id, Component::id, std::forward<AssocFields>(assoc_fields)...)
-		);
+		return *reinterpret_cast<const Component*>(ecsact_get_component(
+			_id,
+			entity_id,
+			Component::id,
+			std::forward<AssocFields>(assoc_fields)...
+		));
 	}
 
 	template<typename Component, typename... AssocFields>
