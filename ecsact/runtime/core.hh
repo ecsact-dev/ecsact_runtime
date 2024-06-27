@@ -635,19 +635,42 @@ public:
 		return ecsact_create_entity(_id);
 	}
 
-	template<typename Component>
+	template<typename Component, typename... AssocFields>
 		requires(!std::is_empty_v<Component>)
 	ECSACT_ALWAYS_INLINE auto get_component( //
-		ecsact_entity_id entity_id
+		ecsact_entity_id entity_id,
+		AssocFields&&... assoc_fields
 	) -> const Component& {
+		if constexpr(Component::has_assoc_fields) {
+			static_assert(
+				sizeof...(AssocFields) > 0,
+				"must be called with assoc fields"
+			);
+		}
+
 		return *reinterpret_cast<const Component*>(
-			ecsact_get_component(_id, entity_id, Component::id)
+			ecsact_get_component(_id, entity_id, Component::id, std::forward<AssocFields>(assoc_fields)...)
 		);
 	}
 
-	template<typename Component>
-	ECSACT_ALWAYS_INLINE bool has_component(ecsact_entity_id entity_id) {
-		return ecsact_has_component(_id, entity_id, Component::id);
+	template<typename Component, typename... AssocFields>
+	ECSACT_ALWAYS_INLINE bool has_component(
+		ecsact_entity_id entity_id,
+		AssocFields&&... assoc_fields
+	) {
+		if constexpr(Component::has_assoc_fields) {
+			static_assert(
+				sizeof...(AssocFields) > 0,
+				"must be called with assoc fields"
+			);
+		}
+
+		return ecsact_has_component(
+			_id,
+			entity_id,
+			Component::id,
+			std::forward<AssocFields>(assoc_fields)...
+		);
 	}
 
 	template<typename Component>
@@ -668,12 +691,46 @@ public:
 		}
 	}
 
-	template<typename Component>
+	template<typename Component, typename... AssocFields>
 	ECSACT_ALWAYS_INLINE auto update_component(
 		ecsact_entity_id entity_id,
-		const Component& component
+		const Component& component,
+		AssocFields&&... assoc_fields
 	) {
-		return ecsact_update_component(_id, entity_id, Component::id, &component);
+		if constexpr(Component::has_assoc_fields) {
+			static_assert(
+				sizeof...(AssocFields) > 0,
+				"must be called with assoc fields"
+			);
+		}
+
+		return ecsact_update_component(
+			_id,
+			entity_id,
+			Component::id,
+			&component,
+			std::forward<AssocFields>(assoc_fields)...
+		);
+	}
+
+	template<typename Component, typename... AssocFields>
+	ECSACT_ALWAYS_INLINE auto remove_component(
+		ecsact_entity_id entity_id,
+		AssocFields&&... assoc_fields
+	) -> void {
+		if constexpr(Component::has_assoc_fields) {
+			static_assert(
+				sizeof...(AssocFields) > 0,
+				"must be called with assoc fields"
+			);
+		}
+
+		return ecsact_remove_component(
+			_id,
+			entity_id,
+			Component::id,
+			std::forward<AssocFields>(assoc_fields)...
+		);
 	}
 
 	ECSACT_ALWAYS_INLINE auto count_entities() const -> int32_t {
