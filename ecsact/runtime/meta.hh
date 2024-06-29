@@ -448,6 +448,36 @@ ECSACT_ALWAYS_INLINE auto system_capabilities(SystemLikeID id) {
 }
 
 template<typename SystemLikeID>
+ECSACT_ALWAYS_INLINE auto system_capabilities_list(SystemLikeID id) {
+	using result_t =
+		std::vector<std::pair<ecsact_component_like_id, ecsact_system_capability>>;
+
+	const auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
+	auto       count = ecsact_meta_system_capabilities_count(sys_like_id);
+	std::vector<ecsact_component_like_id> components;
+	std::vector<ecsact_system_capability> capabilities;
+	components.resize(count);
+	capabilities.resize(count);
+
+	ecsact_meta_system_capabilities(
+		sys_like_id,
+		count,
+		components.data(),
+		capabilities.data(),
+		nullptr
+	);
+
+	result_t result;
+	result.reserve(count);
+
+	for(decltype(count) i = 0; count > i; ++i) {
+		result.emplace_back(components[i], capabilities[i]);
+	}
+
+	return result;
+}
+
+template<typename SystemLikeID>
 ECSACT_ALWAYS_INLINE auto get_system_generates_ids(SystemLikeID id) {
 	auto sys_like_id = ecsact_id_cast<ecsact_system_like_id>(id);
 	std::vector<ecsact_system_generates_id> result;
