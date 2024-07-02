@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.7 - 2024-07-02
+#### Bug Fixes
+- **(meta)** c++ wrapper bad container access (#252) - (2677d39) - Ezekiel Warren
+#### Features
+- get system caps as a list (#256) - (7122196) - Ezekiel Warren
+- indexed fields multi-add api (#255) - (64b81d7) - Ezekiel Warren
+#### Miscellaneous Chores
+- sync with ecsact_common (#253) - (5d9f5e6) - seaubot
+- sync with ecsact_common (#240) - (3de9dc1) - seaubot
+
+- - -
+
 ## 0.6.6 - 2024-06-19
 #### Bug Fixes
 - **(meta)** c++ wrapper using wrong assoc cap count (#251) - (9f29536) - Ezekiel Warren
