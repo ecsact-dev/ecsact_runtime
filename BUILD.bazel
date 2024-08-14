@@ -123,5 +123,6 @@ cc_library(
         ":meta",
         ":serialize",
         ":static",
+        ":async",
     ],
 )
