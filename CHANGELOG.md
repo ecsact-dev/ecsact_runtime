@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.8 - 2024-08-14
+#### Bug Fixes
+- add missing 'async to FOR_EACH_ECSACT_API_FN macro (#259) - (5df4132) - Ezekiel Warren
+#### Miscellaneous Chores
+- update readme logo - (877ed85) - Ezekiel Warren
+
+- - -
+
 ## 0.6.7 - 2024-07-02
 #### Bug Fixes
 - **(meta)** c++ wrapper bad container access (#252) - (2677d39) - Ezekiel Warren
