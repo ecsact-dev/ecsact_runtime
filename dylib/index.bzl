@@ -26,7 +26,8 @@ def cc_ecsact_dylib(name = None, srcs = [], ecsact_modules = [], deps = [], defi
         name = name,
         deps = deps + ["@ecsact_runtime//:dylib", "@ecsact_runtime//dylib:util"] + ["@ecsact_runtime//:{}".format(m) for m in ecsact_modules],
         srcs = srcs + ["@ecsact_runtime//dylib:dylib.cc"],
-        defines = defines +
-                  ["ECSACT_{}_API_LOAD_AT_RUNTIME".format(m.upper()) for m in ecsact_modules],
+        defines =  #
+            defines +
+            ["ECSACT_{}_API_LOAD_AT_RUNTIME".format(m.upper()) for m in ecsact_modules],
         **kwargs
     )
