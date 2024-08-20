@@ -53,6 +53,21 @@ typedef enum {
 	 * A request was made before connection was established
 	 */
 	ECSACT_ASYNC_ERR_NOT_CONNECTED,
+
+	/**
+	 * Internal error has occured
+	 */
+	ECSACT_ASYNC_ERR_INTERNAL = 99,
+
+	/**
+	 * Start of custom implementation specific error codes
+	 */
+	ECSACT_ASYNC_ERR_CUSTOM_BEGIN = 100,
+
+	/**
+	 * End of custom implementation specific error codes
+	 */
+	ECSACT_ASYNC_ERR_CUSTOM_END = 200,
 } ecsact_async_error;
 
 /**
