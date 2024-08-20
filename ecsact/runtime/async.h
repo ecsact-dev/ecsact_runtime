@@ -55,7 +55,7 @@ typedef enum {
 	ECSACT_ASYNC_ERR_NOT_CONNECTED,
 
 	/**
-	 * Internal error has occured
+	 * Internal error has occurred
 	 */
 	ECSACT_ASYNC_ERR_INTERNAL = 99,
 
