@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.6.9 - 2024-08-26
+#### Features
+- reserve error async codes for custom implementations (#260) - (83c5955) - Ezekiel Warren
+#### Miscellaneous Chores
+- sync with ecsact_common (#257) - (61846c4) - seaubot
+
+- - -
+
 ## 0.6.8 - 2024-08-14
 #### Bug Fixes
 - add missing 'async to FOR_EACH_ECSACT_API_FN macro (#259) - (5df4132) - Ezekiel Warren
