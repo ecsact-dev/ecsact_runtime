@@ -244,6 +244,7 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
 	fn(ecsact_async_flush_events, __VA_ARGS__);              \
 	fn(ecsact_async_connect, __VA_ARGS__);                   \
 	fn(ecsact_async_disconnect, __VA_ARGS__);                \
+	fn(ecsact_async_get_status, __VA_ARGS__);                \
 	fn(ecsact_async_get_current_tick, __VA_ARGS__);
 
 #undef ECSACT_ASYNC_API
