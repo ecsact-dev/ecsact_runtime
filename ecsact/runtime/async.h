@@ -70,6 +70,23 @@ typedef enum {
 	ECSACT_ASYNC_ERR_CUSTOM_END = 200,
 } ecsact_async_error;
 
+typedef enum {
+	/**
+	 * No status. Not connected.
+	 */
+	ECSACT_ASYNC_STATUS_NONE = 0,
+
+	/**
+	 * Connected. No issues.
+	 */
+	ECSACT_ASYNC_STATUS_CONNECTED = 1,
+
+	/**
+	 * Connection in progress.
+	 */
+	ECSACT_ASYNC_STATUS_PENDING = 1,
+} ecsact_async_status;
+
 /**
  * When an error occurs due to an async request this callback is invoked.
  *
@@ -109,6 +126,14 @@ typedef void (*ecsact_async_request_done_callback)( //
 	void*                    callback_user_data
 );
 
+/**
+ * Callback for a status change event
+ */
+typedef void (*ecsact_async_status_change_callback)( //
+	ecsact_async_status new_status,
+	void*               callback_user_data
+);
+
 typedef struct ecsact_async_events_collector {
 	/**
 	 * invoked when an async request failed.
@@ -145,6 +170,16 @@ typedef struct ecsact_async_events_collector {
 	 * `callback_user_data` passed to `async_request_done_callback`
 	 */
 	void* async_request_done_callback_user_data;
+
+	/**
+	 * invoked when the async status has changed
+	 */
+	ecsact_async_status_change_callback async_status_change_callback;
+
+	/**
+	 * `callback_user_data` passed to `ecsact_async_status_change_callback`
+	 */
+	void* async_status_change_callback_user_data;
 } ecsact_async_events_collector;
 
 /**
@@ -193,6 +228,11 @@ ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
  * disconnect before any new @ref ecsact_async_connect resolves.
  */
 ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
+
+/**
+ * Get the current async status.
+ */
+ECSACT_ASYNC_API_FN(void, ecsact_async_get_status)(void);
 
 /**
  * Gets the current tick
