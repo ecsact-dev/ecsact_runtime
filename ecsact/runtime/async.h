@@ -232,7 +232,7 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
 /**
  * Get the current async status.
  */
-ECSACT_ASYNC_API_FN(void, ecsact_async_get_status)(void);
+ECSACT_ASYNC_API_FN(ecsact_async_status, ecsact_async_get_status)(void);
 
 /**
  * Gets the current tick
