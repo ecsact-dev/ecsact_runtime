@@ -580,7 +580,7 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
 		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
 		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);       \
 		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__); \
-		fn(ecsact_set_component_type, __VA_ARGS__); \
+		fn(ecsact_set_component_type, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
