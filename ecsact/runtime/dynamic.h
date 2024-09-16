@@ -515,9 +515,12 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 	ecsact_system_notify_setting setting
 );
 
+/**
+ * Sets a components type
+ */
 ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
 ( //
-	ecsact_component_id   comopnent_id,
+	ecsact_component_id   component_id,
 	ecsact_component_type component_type
 );
 
@@ -576,7 +579,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
 		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
 		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
 		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);       \
-		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__)
+		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__); \
+		fn(ecsact_set_component_type, __VA_ARGS__); \
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
