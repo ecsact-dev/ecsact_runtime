@@ -584,7 +584,7 @@ ECSACT_META_API_FN(ecsact_component_type, ecsact_meta_component_type)
 		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__);         \
 		fn(ecsact_meta_system_notify_settings_count, __VA_ARGS__);          \
 		fn(ecsact_meta_system_notify_settings, __VA_ARGS__);                \
-		fn(ecsact_meta_component_stream, __VA_ARGS__)
+		fn(ecsact_meta_component_type, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H
