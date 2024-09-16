@@ -136,6 +136,19 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 );
 
 /**
+ * Enable or disable streaming data for the given component.
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_stream_toggle)
+( //
+	struct ecsact_system_execution_context* context,
+	ecsact_component_id                     component_id,
+	bool                                    streaming_enabled,
+	...
+);
+
+/**
  * Generate a new entity with specified components.
  *
  * @param component_count length of `component_ids` and `components_data`
