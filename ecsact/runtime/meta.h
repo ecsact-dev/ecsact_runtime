@@ -516,7 +516,7 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
  */
 ECSACT_META_API_FN(ecsact_component_type, ecsact_meta_component_type)
 ( //
-	ecsact_component_id component_id
+	ecsact_component_like_id component_id
 );
 
 // # BEGIN FOR_EACH_ECSACT_META_API_FN
