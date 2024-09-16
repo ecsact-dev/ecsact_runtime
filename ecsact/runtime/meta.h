@@ -511,6 +511,14 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
 	int32_t*                      out_notifies_count
 );
 
+/**
+ * Check the type of a component.
+ */
+ECSACT_META_API_FN(ecsact_component_type, ecsact_meta_component_type)
+( //
+	ecsact_component_id component_id
+);
+
 // # BEGIN FOR_EACH_ECSACT_META_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_META_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -575,7 +583,8 @@ ECSACT_META_API_FN(void, ecsact_meta_system_notify_settings)
 		fn(ecsact_meta_get_lazy_iteration_rate, __VA_ARGS__);               \
 		fn(ecsact_meta_get_system_parallel_execution, __VA_ARGS__);         \
 		fn(ecsact_meta_system_notify_settings_count, __VA_ARGS__);          \
-		fn(ecsact_meta_system_notify_settings, __VA_ARGS__)
+		fn(ecsact_meta_system_notify_settings, __VA_ARGS__);                \
+		fn(ecsact_meta_component_stream, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_META_H

@@ -275,6 +275,15 @@ typedef enum {
 } ecsact_execute_systems_error;
 
 typedef enum {
+	ECSACT_STREAM_OK = 0,
+
+	/**
+	 * An invalid or non-stream component ID was passed into the stream.
+	 */
+	ECSACT_STREAM_INVALID_COMPONENT_ID = 1,
+} ecsact_stream_error;
+
+typedef enum {
 	/**
 	 * System has no capabilities for this component.
 	 */
@@ -287,7 +296,8 @@ typedef enum {
 
 	/**
 	 * System may only write to component.
-	 * NOTE: This flag is only valid if accompanied by `ECSACT_SYS_CAP_READONLY`.
+	 * NOTE: This flag is only valid if accompanied by
+	 * `ECSACT_SYS_CAP_READONLY`.
 	 */
 	ECSACT_SYS_CAP_WRITEONLY = 2,
 
@@ -342,6 +352,11 @@ typedef enum {
 	 * `ECSACT_SYS_CAP_INCLUDE`
 	 */
 	ECSACT_SYS_CAP_REMOVES = 64 | ECSACT_SYS_CAP_INCLUDE,
+
+	/**
+	 * System may enable or disable streaming data for this component.
+	 */
+	ECSACT_SYS_CAP_STREAM_TOGGLE = 128,
 } ecsact_system_capability;
 
 /**
@@ -660,6 +675,32 @@ typedef enum {
 	 */
 	ECSACT_EVENT_DESTROY_ENTITY = 4,
 } ecsact_event;
+
+typedef enum ecsact_component_type {
+	/**
+	 * The component has no unique type
+	 */
+	ECSACT_COMPONENT_TYPE_NONE = 0,
+
+	/*
+	 * The component takes in a continuous feed of data. Look at stream toggle to
+	 * see how you can set the component to receive updates from either
+	 * ecsact_stream or systems.
+	 */
+	ECSACT_COMPONENT_TYPE_STREAM = 1,
+
+	/*
+	 * The component is a stream component (@see ECSACT_COMPONENT_TYPE_STREAM) but
+	 * may be updated overtime instead of all at once.
+	 */
+	ECSACT_COMPONENT_TYPE_LAZY_STREAM = 2,
+
+	/**
+	 * The component only lives during system execution and is automatically
+	 * removed.
+	 */
+	ECSACT_COMPONENT_TYPE_TRANSIENT = 3
+} ecsact_component_stream;
 
 /**
  * Component event callback

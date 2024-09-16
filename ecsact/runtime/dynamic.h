@@ -515,6 +515,12 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 	ecsact_system_notify_setting setting
 );
 
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
+( //
+	ecsact_component_id   comopnent_id,
+	ecsact_component_type component_type
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
