@@ -277,7 +277,8 @@ ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
 	ecsact_registry_id  registry_id,
 	ecsact_entity_id    entity,
 	ecsact_component_id component_id,
-	const void*         component_data
+	const void*         component_data,
+	...
 );
 
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
