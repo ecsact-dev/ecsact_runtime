@@ -266,15 +266,18 @@ ECSACT_CORE_API_FN(ecsact_ees, ecsact_get_entity_execution_status)
 
 /**
  * Sends Ecsact stream data to the specified registry. Stream data will be
- * applied on the next ecsact_execute_systems call.
+ * applied on the next ecsact_execute_systems call. The last set of stream data
+ * is always used.
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
  */
 ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
 ( //
-	ecsact_registry_id         registry_id,
-	int32_t                    count,
-	const ecsact_entity_id*    entities,
-	const ecsact_component_id* component_ids,
-	const void**               components_data
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity,
+	ecsact_component_id component_id,
+	const void*         component_data
 );
 
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
