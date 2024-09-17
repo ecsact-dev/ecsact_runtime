@@ -214,7 +214,7 @@ ECSACT_CORE_API_FN(ecsact_async_request_id, ecsact_async_stream)
 	int32_t                    count,
 	const ecsact_entity_id*    entities,
 	const ecsact_component_id* component_ids,
-	const void*                components_data
+	const void**               components_data
 );
 
 #define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \

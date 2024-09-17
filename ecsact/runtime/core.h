@@ -274,7 +274,7 @@ ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
 	int32_t                    count,
 	const ecsact_entity_id*    entities,
 	const ecsact_component_id* component_ids,
-	const void*                components_data
+	const void**               components_data
 );
 
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
