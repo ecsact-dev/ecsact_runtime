@@ -264,6 +264,23 @@ ECSACT_CORE_API_FN(ecsact_ees, ecsact_get_entity_execution_status)
 	ecsact_system_like_id system_like_id
 );
 
+/**
+ * Sends Ecsact stream data to the specified registry. Stream data will be
+ * applied on the next ecsact_execute_systems call. The last set of stream data
+ * is always used.
+ *
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ */
+ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
+( //
+	ecsact_registry_id  registry_id,
+	ecsact_entity_id    entity,
+	ecsact_component_id component_id,
+	const void*         component_data,
+	...
+);
+
 // # BEGIN FOR_EACH_ECSACT_CORE_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
@@ -287,6 +304,7 @@ ECSACT_CORE_API_FN(ecsact_ees, ecsact_get_entity_execution_status)
 		fn(ecsact_update_component, __VA_ARGS__);  \
 		fn(ecsact_remove_component, __VA_ARGS__);  \
 		fn(ecsact_execute_systems, __VA_ARGS__);   \
+		fn(ecsact_stream, __VA_ARGS__);            \
 		fn(ecsact_get_entity_execution_status, __VA_ARGS__)
 #endif
 

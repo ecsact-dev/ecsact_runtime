@@ -136,6 +136,19 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 );
 
 /**
+ * Enable or disable streaming data for the given component.
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_stream_toggle)
+( //
+	struct ecsact_system_execution_context* context,
+	ecsact_component_id                     component_id,
+	bool                                    streaming_enabled,
+	...
+);
+
+/**
  * Generate a new entity with specified components.
  *
  * @param component_count length of `component_ids` and `components_data`
@@ -515,6 +528,15 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 	ecsact_system_notify_setting setting
 );
 
+/**
+ * Sets a components type
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
+( //
+	ecsact_component_id   component_id,
+	ecsact_component_type component_type
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
@@ -570,7 +592,8 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
 		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
 		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);       \
-		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__)
+		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__); \
+		fn(ecsact_set_component_type, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
