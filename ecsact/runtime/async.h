@@ -13,7 +13,13 @@
 #	if defined(ECSACT_ASYNC_API)
 #		define ECSACT_ASYNC_API_FN(ret, name) ECSACT_ASYNC_API ret name
 #	elif defined(ECSACT_ASYNC_API_LOAD_AT_RUNTIME)
-#		define ECSACT_ASYNC_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		if defined(ECSACT_ASYNC_API_EXPORT)
+#			define ECSACT_ASYNC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_EXPORT(#name) ret(*name)
+#		else
+#			define ECSACT_ASYNC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret(*name)
+#		endif
 #	elif defined(ECSACT_ASYNC_API_EXPORT)
 #		define ECSACT_ASYNC_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name

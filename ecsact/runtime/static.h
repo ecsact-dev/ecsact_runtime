@@ -13,7 +13,13 @@
 #	if defined(ECSACT_STATIC_API)
 #		define ECSACT_STATIC_API_FN(ret, name) ECSACT_STATIC_API ret name
 #	elif defined(ECSACT_STATIC_API_LOAD_AT_RUNTIME)
-#		define ECSACT_STATIC_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		if defined(ECSACT_STATIC_API_EXPORT)
+#			define ECSACT_STATIC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_EXPORT(#name) ret(*name)
+#		else
+#			define ECSACT_STATIC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret(*name)
+#		endif
 #	elif defined(ECSACT_STATIC_API_EXPORT)
 #		define ECSACT_STATIC_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name

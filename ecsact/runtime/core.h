@@ -14,7 +14,13 @@
 #	if defined(ECSACT_CORE_API)
 #		define ECSACT_CORE_API_FN(ret, name) ECSACT_CORE_API ret name
 #	elif defined(ECSACT_CORE_API_LOAD_AT_RUNTIME)
-#		define ECSACT_CORE_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		if defined(ECSACT_CORE_API_EXPORT)
+#			define ECSACT_CORE_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_EXPORT(#name) ret(*name)
+#		else
+#			define ECSACT_CORE_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret(*name)
+#		endif
 #	elif defined(ECSACT_CORE_API_EXPORT)
 #		define ECSACT_CORE_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name
