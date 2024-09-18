@@ -16,7 +16,13 @@
 #	if defined(ECSACT_DYNAMIC_API)
 #		define ECSACT_DYNAMIC_API_FN(ret, name) ECSACT_DYNAMIC_API ret name
 #	elif defined(ECSACT_DYNAMIC_API_LOAD_AT_RUNTIME)
-#		define ECSACT_DYNAMIC_API_FN(ret, name) ECSACT_EXTERN ret(*name)
+#		if defined(ECSACT_DYNAMIC_API_EXPORT)
+#			define ECSACT_DYNAMIC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_EXPORT(#name) ret(*name)
+#		else
+#			define ECSACT_DYNAMIC_API_FN(ret, name) \
+				ECSACT_EXTERN ECSACT_IMPORT("env", #name) ret(*name)
+#		endif
 #	elif defined(ECSACT_DYNAMIC_API_EXPORT)
 #		define ECSACT_DYNAMIC_API_FN(ret, name) \
 			ECSACT_EXTERN ECSACT_EXPORT(#name) ret name
