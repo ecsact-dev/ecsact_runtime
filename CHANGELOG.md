@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.7.0 - 2024-10-14
+#### Bug Fixes
+- use correct macro in async header (#265) - (dbce850) - Ezekiel Warren
+#### Features
+- remove use of variadic arguments in api due to wasm limitation (#264) - (b034c85) - Ezekiel Warren
+- API for streaming components (#262) - (bf7b0d9) - Austin Kelway
+- allow export load at runtime (#263) - (e811be1) - Ezekiel Warren
+
+- - -
+
 ## 0.6.9 - 2024-08-26
 #### Features
 - reserve error async codes for custom implementations (#260) - (83c5955) - Ezekiel Warren
