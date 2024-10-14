@@ -213,7 +213,7 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
  * fields must be supplied as a sequential array in declaration order,
  * otherwise may be NULL.
  */
-ECSACT_CORE_API_FN(ecsact_async_request_id, ecsact_async_stream)
+ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_stream)
 ( //
 	ecsact_entity_id    entity,
 	ecsact_component_id component_id,
@@ -221,14 +221,16 @@ ECSACT_CORE_API_FN(ecsact_async_request_id, ecsact_async_stream)
 	const void*         indexed_field_values
 );
 
-#define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
-	fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
-	fn(ecsact_async_flush_events, __VA_ARGS__);              \
-	fn(ecsact_async_connect, __VA_ARGS__);                   \
-	fn(ecsact_async_disconnect, __VA_ARGS__);                \
-	fn(ecsact_async_get_current_tick, __VA_ARGS__);          \
-	fn(ecsact_async_stream, __VA_ARGS__)
+#ifdef ECSACT_MSVC_TRADITIONAL
+#	define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#else
+#	define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
+		fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
+		fn(ecsact_async_flush_events, __VA_ARGS__);              \
+		fn(ecsact_async_connect, __VA_ARGS__);                   \
+		fn(ecsact_async_disconnect, __VA_ARGS__);                \
+		fn(ecsact_async_get_current_tick, __VA_ARGS__);          \
+		fn(ecsact_async_stream, __VA_ARGS__)
+#endif
 
-#undef ECSACT_ASYNC_API
-#undef ECSACT_ASYNC_API_FN
 #endif // ECSACT_RUNTIME_ASYNC_H
