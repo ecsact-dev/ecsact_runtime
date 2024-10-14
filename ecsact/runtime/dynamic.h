@@ -136,6 +136,19 @@ ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 );
 
 /**
+ * Enable or disable streaming data for the given component.
+ * @param ... if the component has indexed fields then those fields must be
+ *        supplied to the variadic arguments in declaration order.
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_stream_toggle)
+( //
+	struct ecsact_system_execution_context* context,
+	ecsact_component_id                     component_id,
+	bool                                    streaming_enabled,
+	...
+);
+
+/**
  * Generate a new entity with specified components.
  *
  * @param component_count length of `component_ids` and `components_data`
@@ -515,62 +528,73 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_set_system_notify_component_setting)
 	ecsact_system_notify_setting setting
 );
 
+/**
+ * Sets a components type
+ */
+ECSACT_DYNAMIC_API_FN(void, ecsact_set_component_type)
+( //
+	ecsact_component_id   component_id,
+	ecsact_component_type component_type
+);
+
 // # BEGIN FOR_EACH_ECSACT_DYNAMIC_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
 #	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...) \
 		ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
-#	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...)                \
-		fn(ecsact_system_execution_context_action, __VA_ARGS__);     \
-		fn(ecsact_system_execution_context_add, __VA_ARGS__);        \
-		fn(ecsact_system_execution_context_remove, __VA_ARGS__);     \
-		fn(ecsact_system_execution_context_get, __VA_ARGS__);        \
-		fn(ecsact_system_execution_context_update, __VA_ARGS__);     \
-		fn(ecsact_system_execution_context_has, __VA_ARGS__);        \
-		fn(ecsact_system_execution_context_generate, __VA_ARGS__);   \
-		fn(ecsact_system_execution_context_parent, __VA_ARGS__);     \
-		fn(ecsact_system_execution_context_same, __VA_ARGS__);       \
-		fn(ecsact_system_execution_context_other, __VA_ARGS__);      \
-		fn(ecsact_system_execution_context_entity, __VA_ARGS__);     \
-		fn(ecsact_system_execution_context_id, __VA_ARGS__);         \
-		fn(ecsact_create_package, __VA_ARGS__);                      \
-		fn(ecsact_set_package_source_file_path, __VA_ARGS__);        \
-		fn(ecsact_add_dependency, __VA_ARGS__);                      \
-		fn(ecsact_remove_dependency, __VA_ARGS__);                   \
-		fn(ecsact_destroy_package, __VA_ARGS__);                     \
-		fn(ecsact_create_system, __VA_ARGS__);                       \
-		fn(ecsact_set_system_lazy_iteration_rate, __VA_ARGS__);      \
-		fn(ecsact_add_child_system, __VA_ARGS__);                    \
-		fn(ecsact_remove_child_system, __VA_ARGS__);                 \
-		fn(ecsact_reorder_system, __VA_ARGS__);                      \
-		fn(ecsact_set_system_execution_impl, __VA_ARGS__);           \
-		fn(ecsact_create_action, __VA_ARGS__);                       \
-		fn(ecsact_create_component, __VA_ARGS__);                    \
-		fn(ecsact_create_transient, __VA_ARGS__);                    \
-		fn(ecsact_add_field, __VA_ARGS__);                           \
-		fn(ecsact_remove_field, __VA_ARGS__);                        \
-		fn(ecsact_destroy_component, __VA_ARGS__);                   \
-		fn(ecsact_destroy_transient, __VA_ARGS__);                   \
-		fn(ecsact_create_enum, __VA_ARGS__);                         \
-		fn(ecsact_destroy_enum, __VA_ARGS__);                        \
-		fn(ecsact_add_enum_value, __VA_ARGS__);                      \
-		fn(ecsact_remove_enum_value, __VA_ARGS__);                   \
-		fn(ecsact_set_system_capability, __VA_ARGS__);               \
-		fn(ecsact_unset_system_capability, __VA_ARGS__);             \
-		fn(ecsact_add_system_assoc, __VA_ARGS__);                    \
-		fn(ecsact_remove_system_assoc, __VA_ARGS__);                 \
-		fn(ecsact_add_system_assoc_field, __VA_ARGS__);              \
-		fn(ecsact_remove_system_assoc_field, __VA_ARGS__);           \
-		fn(ecsact_set_system_assoc_capability, __VA_ARGS__);         \
-		fn(ecsact_set_system_association_capability, __VA_ARGS__);   \
-		fn(ecsact_unset_system_association_capability, __VA_ARGS__); \
-		fn(ecsact_add_system_generates, __VA_ARGS__);                \
-		fn(ecsact_remove_system_generates, __VA_ARGS__);             \
-		fn(ecsact_system_generates_set_component, __VA_ARGS__);      \
-		fn(ecsact_system_generates_unset_component, __VA_ARGS__);    \
-		fn(ecsact_set_entity_execution_status, __VA_ARGS__);         \
-		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);       \
-		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__)
+#	define FOR_EACH_ECSACT_DYNAMIC_API_FN(fn, ...)                   \
+		fn(ecsact_system_execution_context_action, __VA_ARGS__);        \
+		fn(ecsact_system_execution_context_add, __VA_ARGS__);           \
+		fn(ecsact_system_execution_context_remove, __VA_ARGS__);        \
+		fn(ecsact_system_execution_context_get, __VA_ARGS__);           \
+		fn(ecsact_system_execution_context_update, __VA_ARGS__);        \
+		fn(ecsact_system_execution_context_has, __VA_ARGS__);           \
+		fn(ecsact_system_execution_context_stream_toggle, __VA_ARGS__); \
+		fn(ecsact_system_execution_context_generate, __VA_ARGS__);      \
+		fn(ecsact_system_execution_context_parent, __VA_ARGS__);        \
+		fn(ecsact_system_execution_context_same, __VA_ARGS__);          \
+		fn(ecsact_system_execution_context_other, __VA_ARGS__);         \
+		fn(ecsact_system_execution_context_entity, __VA_ARGS__);        \
+		fn(ecsact_system_execution_context_id, __VA_ARGS__);            \
+		fn(ecsact_create_package, __VA_ARGS__);                         \
+		fn(ecsact_set_package_source_file_path, __VA_ARGS__);           \
+		fn(ecsact_add_dependency, __VA_ARGS__);                         \
+		fn(ecsact_remove_dependency, __VA_ARGS__);                      \
+		fn(ecsact_destroy_package, __VA_ARGS__);                        \
+		fn(ecsact_create_system, __VA_ARGS__);                          \
+		fn(ecsact_set_system_lazy_iteration_rate, __VA_ARGS__);         \
+		fn(ecsact_add_child_system, __VA_ARGS__);                       \
+		fn(ecsact_remove_child_system, __VA_ARGS__);                    \
+		fn(ecsact_reorder_system, __VA_ARGS__);                         \
+		fn(ecsact_set_system_execution_impl, __VA_ARGS__);              \
+		fn(ecsact_create_action, __VA_ARGS__);                          \
+		fn(ecsact_create_component, __VA_ARGS__);                       \
+		fn(ecsact_create_transient, __VA_ARGS__);                       \
+		fn(ecsact_add_field, __VA_ARGS__);                              \
+		fn(ecsact_remove_field, __VA_ARGS__);                           \
+		fn(ecsact_destroy_component, __VA_ARGS__);                      \
+		fn(ecsact_destroy_transient, __VA_ARGS__);                      \
+		fn(ecsact_create_enum, __VA_ARGS__);                            \
+		fn(ecsact_destroy_enum, __VA_ARGS__);                           \
+		fn(ecsact_add_enum_value, __VA_ARGS__);                         \
+		fn(ecsact_remove_enum_value, __VA_ARGS__);                      \
+		fn(ecsact_set_system_capability, __VA_ARGS__);                  \
+		fn(ecsact_unset_system_capability, __VA_ARGS__);                \
+		fn(ecsact_add_system_assoc, __VA_ARGS__);                       \
+		fn(ecsact_remove_system_assoc, __VA_ARGS__);                    \
+		fn(ecsact_add_system_assoc_field, __VA_ARGS__);                 \
+		fn(ecsact_remove_system_assoc_field, __VA_ARGS__);              \
+		fn(ecsact_set_system_assoc_capability, __VA_ARGS__);            \
+		fn(ecsact_set_system_association_capability, __VA_ARGS__);      \
+		fn(ecsact_unset_system_association_capability, __VA_ARGS__);    \
+		fn(ecsact_add_system_generates, __VA_ARGS__);                   \
+		fn(ecsact_remove_system_generates, __VA_ARGS__);                \
+		fn(ecsact_system_generates_set_component, __VA_ARGS__);         \
+		fn(ecsact_system_generates_unset_component, __VA_ARGS__);       \
+		fn(ecsact_set_entity_execution_status, __VA_ARGS__);            \
+		fn(ecsact_set_system_parallel_execution, __VA_ARGS__);          \
+		fn(ecsact_set_system_notify_component_setting, __VA_ARGS__);    \
+		fn(ecsact_set_component_type, __VA_ARGS__)
 #endif
 
 #endif // ECSACT_RUNTIME_DYNAMIC_H
