@@ -64,14 +64,15 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_add)
  * Only available if has one of these capabilities:
  *  - `ECSACT_SYS_CAP_REMOVES`
  *
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
-	...
+	const void*                             indexed_field_values
 );
 
 /**
@@ -87,15 +88,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_remove)
  *  - `ECSACT_SYS_CAP_OPTIONAL_READONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
  *
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
 	void*                                   out_component_data,
-	...
+	const void*                             indexed_field_values
 );
 
 /**
@@ -105,15 +107,16 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_get)
  *  - `ECSACT_SYS_CAP_OPTIONAL_WRITEONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
  *
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
 	const void*                             component_data,
-	...
+	const void*                             indexed_field_values
 );
 
 /**
@@ -125,27 +128,30 @@ ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_update)
  *  - `ECSACT_SYS_CAP_OPTIONAL_WRITEONLY`
  *  - `ECSACT_SYS_CAP_OPTIONAL_READWRITE`
  *
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_DYNAMIC_API_FN(bool, ecsact_system_execution_context_has)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_like_id                component_id,
-	...
+	const void*                             indexed_field_values
 );
 
 /**
  * Enable or disable streaming data for the given component.
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ *
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_DYNAMIC_API_FN(void, ecsact_system_execution_context_stream_toggle)
 ( //
 	struct ecsact_system_execution_context* context,
 	ecsact_component_id                     component_id,
 	bool                                    streaming_enabled,
-	...
+	const void*                             indexed_field_values
 );
 
 /**

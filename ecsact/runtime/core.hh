@@ -648,12 +648,19 @@ public:
 			);
 		}
 
-		return *reinterpret_cast<const Component*>(ecsact_get_component(
-			_id,
-			entity_id,
-			Component::id,
-			std::forward<AssocFields>(assoc_fields)...
-		));
+		if constexpr(sizeof...(AssocFields) > 0) {
+			const void* assoc_field_values[sizeof...(AssocFields)] = {
+				&assoc_fields...,
+			};
+
+			return *reinterpret_cast<const Component*>(
+				ecsact_get_component(_id, entity_id, Component::id, assoc_field_values)
+			);
+		} else {
+			return *reinterpret_cast<const Component*>(
+				ecsact_get_component(_id, entity_id, Component::id, nullptr)
+			);
+		}
 	}
 
 	template<typename Component, typename... AssocFields>
@@ -668,12 +675,19 @@ public:
 			);
 		}
 
-		return ecsact_has_component(
-			_id,
-			entity_id,
-			Component::id,
-			std::forward<AssocFields>(assoc_fields)...
-		);
+		if constexpr(sizeof...(AssocFields) > 0) {
+			const void* assoc_field_values[sizeof...(AssocFields)] = {
+				&assoc_fields...,
+			};
+			return ecsact_has_component(
+				_id,
+				entity_id,
+				Component::id,
+				assoc_field_values
+			);
+		} else {
+			return ecsact_has_component(_id, entity_id, Component::id, nullptr);
+		}
 	}
 
 	template<typename Component>
@@ -707,13 +721,26 @@ public:
 			);
 		}
 
-		return ecsact_update_component(
-			_id,
-			entity_id,
-			Component::id,
-			&component,
-			std::forward<AssocFields>(assoc_fields)...
-		);
+		if constexpr(sizeof...(AssocFields) > 0) {
+			const void* assoc_field_values[sizeof...(AssocFields)] = {
+				&assoc_fields...,
+			};
+			return ecsact_update_component(
+				_id,
+				entity_id,
+				Component::id,
+				&component,
+				assoc_field_values
+			);
+		} else {
+			return ecsact_update_component(
+				_id,
+				entity_id,
+				Component::id,
+				&component,
+				nullptr
+			);
+		}
 	}
 
 	template<typename Component, typename... AssocFields>
@@ -728,12 +755,20 @@ public:
 			);
 		}
 
-		return ecsact_remove_component(
-			_id,
-			entity_id,
-			Component::id,
-			std::forward<AssocFields>(assoc_fields)...
-		);
+		if constexpr(sizeof...(AssocFields) > 0) {
+			const void* assoc_field_values[sizeof...(AssocFields)] = {
+				&assoc_fields...,
+			};
+
+			return ecsact_remove_component(
+				_id,
+				entity_id,
+				Component::id,
+				assoc_field_values
+			);
+		} else {
+			return ecsact_remove_component(_id, entity_id, Component::id, nullptr);
+		}
 	}
 
 	ECSACT_ALWAYS_INLINE auto count_entities() const -> int32_t {
