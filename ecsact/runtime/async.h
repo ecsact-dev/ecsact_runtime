@@ -209,15 +209,16 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
  * Sends Ecsact stream data to the specified registry. Stream data will be
  * applied on the next ecsact_execute_systems call.
  *
- * @param ... if the component has indexed fields then those fields must be
- *        supplied to the variadic arguments in declaration order.
+ * @param indexed_field_values if the component has indexed fields then those
+ * fields must be supplied as a sequential array in declaration order,
+ * otherwise may be NULL.
  */
 ECSACT_CORE_API_FN(ecsact_async_request_id, ecsact_async_stream)
 ( //
 	ecsact_entity_id    entity,
 	ecsact_component_id component_id,
 	const void*         component_data,
-	...
+	const void*         indexed_field_values
 );
 
 #define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
