@@ -729,10 +729,35 @@ typedef void (*ecsact_entity_event_callback)( //
 	void*                        callback_user_data
 );
 
+typedef enum ecsact_events_invoke_method {
+	/**
+	 * Disallow runtime implementation from invoking
+	 * @ref ecsact_execution_events_collector callbacks in multiple threads and
+	 * instead _must_ be invoked on the calling thread.
+	 *
+	 * NOTE: This is the default behaviour
+	 */
+	ECSACT_EVENTS_INVOKE_METHOD_SYNC = 0,
+
+	/**
+	 * Permits runtime implementation to invoke
+	 * @ref ecsact_execution_events_collector callbacks in multiple threads.
+	 * Runtime implementations may choose to ignore this setting and should only
+	 * be used as a _hint_.
+	 */
+	ECSACT_EVENTS_INVOKE_METHOD_CONCURRENT = 1,
+} ecsact_execution_events_collector_invoke_method;
+
 /**
  * Holds event handler callbacks and their user data
  */
 typedef struct ecsact_execution_events_collector {
+	/**
+	 * Events collector configuration option that changes how callbacks are
+	 * invocated.
+	 */
+	ecsact_execution_events_collector_invoke_method invoke_method;
+
 	/**
 	 * Invoked after system executions are finished for every component that is
 	 * new. The component_data is the last value given for the component, not the
