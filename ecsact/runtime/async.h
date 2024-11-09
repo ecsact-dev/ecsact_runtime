@@ -213,7 +213,7 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
  * fields must be supplied as a sequential array in declaration order,
  * otherwise may be NULL.
  */
-ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_stream)
+ECSACT_ASYNC_API_FN(void, ecsact_async_stream)
 ( //
 	ecsact_entity_id    entity,
 	ecsact_component_id component_id,
