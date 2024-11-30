@@ -54,7 +54,7 @@ ECSACT_CORE_API_FN(void, ecsact_destroy_registry)
  * Creates a new registry from an existing one with all its entities and
  * components intact.
  */
-ECSACT_CORE_API_FN(void, ecsact_clone_registry)
+ECSACT_CORE_API_FN(ecsact_registry_id, ecsact_clone_registry)
 ( //
 	ecsact_registry_id registry,
 	const char*        registry_name

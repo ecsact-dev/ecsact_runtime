@@ -635,6 +635,13 @@ public:
 		return ecsact_create_entity(_id);
 	}
 
+	ECSACT_ALWAYS_INLINE auto clone(const char* name) const -> registry {
+		auto cloned_registry_id = ecsact_clone_registry(_id, name);
+		auto cloned_registry = registry{cloned_registry_id};
+		cloned_registry._owned = true;
+		return cloned_registry;
+	}
+
 	template<typename Component, typename... AssocFields>
 		requires(!std::is_empty_v<Component>)
 	ECSACT_ALWAYS_INLINE auto get_component( //
