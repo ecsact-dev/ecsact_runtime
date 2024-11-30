@@ -305,8 +305,8 @@ ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
 #else
 #	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...)           \
 		fn(ecsact_create_registry, __VA_ARGS__);             \
-		fn(ecsact_clone_registry, __VA_ARGS__);              \
 		fn(ecsact_destroy_registry, __VA_ARGS__);            \
+		fn(ecsact_clone_registry, __VA_ARGS__);              \
 		fn(ecsact_clear_registry, __VA_ARGS__);              \
 		fn(ecsact_create_entity, __VA_ARGS__);               \
 		fn(ecsact_ensure_entity, __VA_ARGS__);               \
