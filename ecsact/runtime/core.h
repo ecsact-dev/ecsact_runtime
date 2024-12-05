@@ -51,6 +51,16 @@ ECSACT_CORE_API_FN(void, ecsact_destroy_registry)
 );
 
 /**
+ * Creates a new registry from an existing one with all its entities and
+ * components intact.
+ */
+ECSACT_CORE_API_FN(ecsact_registry_id, ecsact_clone_registry)
+( //
+	ecsact_registry_id registry,
+	const char*        registry_name
+);
+
+/**
  * Destroy all entities
  */
 ECSACT_CORE_API_FN(void, ecsact_clear_registry)
@@ -296,6 +306,7 @@ ECSACT_CORE_API_FN(ecsact_stream_error, ecsact_stream)
 #	define FOR_EACH_ECSACT_CORE_API_FN(fn, ...)           \
 		fn(ecsact_create_registry, __VA_ARGS__);             \
 		fn(ecsact_destroy_registry, __VA_ARGS__);            \
+		fn(ecsact_clone_registry, __VA_ARGS__);              \
 		fn(ecsact_clear_registry, __VA_ARGS__);              \
 		fn(ecsact_create_entity, __VA_ARGS__);               \
 		fn(ecsact_ensure_entity, __VA_ARGS__);               \
