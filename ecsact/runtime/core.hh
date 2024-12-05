@@ -642,6 +642,10 @@ public:
 		return cloned_registry;
 	}
 
+	ECSACT_ALWAYS_INLINE auto hash() const -> uint64_t {
+		return ecsact_hash_registry(_id);
+	}
+
 	template<typename Component, typename... AssocFields>
 		requires(!std::is_empty_v<Component>)
 	ECSACT_ALWAYS_INLINE auto get_component( //
