@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.7.1 - 2024-12-06
+#### Features
+- std::format for ecsact IDs (#271) - (0b9d377) - Ezekiel Warren
+- registry hash method (#270) - (6e7f0f9) - Ezekiel Warren
+- new clone registry core function (#269) - (732177c) - Ezekiel Warren
+
+- - -
+
 ## 0.7.0 - 2024-10-14
 #### Bug Fixes
 - use correct macro in async header (#265) - (dbce850) - Ezekiel Warren
