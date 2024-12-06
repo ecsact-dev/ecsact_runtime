@@ -1,5 +1,5 @@
-load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@ecsact_runtime//bazel:copts.bzl", "copts")
+load("@rules_cc//cc:defs.bzl", "cc_test")
 
 cc_test(
     name = "for_each_macros_test",
@@ -9,5 +9,24 @@ cc_test(
         "@ecsact_runtime",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "c-compliant",
+    srcs = ["c-compliant.c"],
+    # intentionally not set! shouldn't need any flags for c compile
+    # copts = copts,
+    deps = [
+        "@ecsact_runtime",
+    ],
+)
+
+cc_test(
+    name = "ecsact-id-std-format",
+    srcs = ["ecsact-id-std-format.cc"],
+    copts = copts,
+    deps = [
+        "@ecsact_runtime",
     ],
 )
