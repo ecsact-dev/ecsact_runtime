@@ -2,6 +2,9 @@
 #define ECSACT_RUNTIME_COMMON_H
 
 #include <stdint.h>
+#ifdef __cplusplus
+#	include <format>
+#endif
 
 #ifdef __cplusplus
 #	define ECSACT_DEPRECATED(Reason) [[deprecated(Reason)]]
@@ -12,7 +15,17 @@
 #define ECSACT_INVALID_ID(ID_TYPE) ((ecsact_##ID_TYPE##_id)(-1))
 
 #ifdef __cplusplus
-#	define ECSACT_TYPED_ID(name) enum class name : int32_t
+#	define ECSACT_TYPED_ID(name)                                 \
+		enum class name : int32_t;                                  \
+		template<>                                                  \
+		struct std::formatter<name> : std::formatter<std::string> { \
+			auto format(name v, format_context& ctx) const {          \
+				return formatter<string>::format(                       \
+					std::format(#name "({})", static_cast<int32_t>(v)),   \
+					ctx                                                   \
+				);                                                      \
+			}                                                         \
+		}
 #else
 #	define ECSACT_TYPED_ID(name) typedef int32_t name
 #endif
