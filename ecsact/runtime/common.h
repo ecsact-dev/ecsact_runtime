@@ -19,7 +19,8 @@
 		enum class name : int32_t;                                  \
 		template<>                                                  \
 		struct std::formatter<name> : std::formatter<std::string> { \
-			auto format(name v, format_context& ctx) const {          \
+			template<typename FormatContext>                          \
+			auto format(name v, FormatContext& ctx) const {           \
 				return formatter<string>::format(                       \
 					std::format(#name "({})", static_cast<int32_t>(v)),   \
 					ctx                                                   \
