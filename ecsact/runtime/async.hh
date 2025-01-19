@@ -139,6 +139,10 @@ private:
 	}
 };
 
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto start() -> ecsact_async_session_id {
+	return ecsact_async_start(0, nullptr);
+}
+
 [[nodiscard]] ECSACT_ALWAYS_INLINE auto start( //
 	int32_t     size,
 	const void* data
