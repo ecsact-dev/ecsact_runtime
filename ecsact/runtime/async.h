@@ -79,6 +79,8 @@ typedef enum {
 /**
  * When an error occurs due to an async request this callback is invoked.
  *
+ * @param session_id the session that received the error
+ *
  * @param async_err when there is no async error this will be @ref
  * ECSACT_ASYNC_OK otherwise @see ecsact_async_error
 
@@ -89,6 +91,7 @@ typedef enum {
  * ecsact_async_events_collector::error_callback_user_data
  */
 typedef void (*ecsact_async_error_callback)( //
+	ecsact_async_session_id  session_id,
 	ecsact_async_error       async_err,
 	int                      request_ids_length,
 	ecsact_async_request_id* request_ids,
@@ -98,10 +101,12 @@ typedef void (*ecsact_async_error_callback)( //
 /**
  * When an occurs from the system execution this callback is invoked.
  *
+ * @param session_id the session that received the error
  * @param execute_err when there is no system execution error, this will be
  * @ref ECSACT_EXEC_SYS_OK other @see ecsact_execute_systems_error
  */
 typedef void (*ecsact_execute_sys_error_callback)( //
+	ecsact_async_session_id      session_id,
 	ecsact_execute_systems_error execute_err,
 	void*                        callback_user_data
 );
@@ -110,6 +115,7 @@ typedef void (*ecsact_execute_sys_error_callback)( //
  * Handler for when a request is done (error or success)
  */
 typedef void (*ecsact_async_request_done_callback)( //
+	ecsact_async_session_id  session_id,
 	int                      request_ids_length,
 	ecsact_async_request_id* request_ids,
 	void*                    callback_user_data
@@ -166,6 +172,7 @@ ECSACT_ASYNC_API_FN(
 	ecsact_async_enqueue_execution_options
 )
 ( //
+	ecsact_async_session_id        session_id,
 	const ecsact_execution_options options
 );
 
@@ -181,29 +188,38 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
 );
 
 /**
- * @param connection_string - null-terminated string used to connect to the
- *        underlying async runtime. This may be a hostname/ip address + port or
- *        some other string deinfed by the implementation. Please review
- *        documentation for your ecsact async api provider. May be NULL to
- *        indicate wanting to connect to the 'default' if available.
- * @returns a request ID representing this async request. Later used in @ref
- * ecsact_async_error_callback if an error occurs
+ * @param option_data implementation defined options used to start the async
+ * session. This usually contains information such as the host/ip, port, and
+ * authentication for a network connection or various settings that affect the
+ * simulation. It is recommended that all implementations handle `NULL` as the
+ * 'default' options. You should refer to the implementations documentation for
+ * what should be passed here.
+ *
+ * @param option_data_size length (in bytes) of @p option_data
+ *
+ * @returns an ID that represents the session that all other async functions
+ * take in
  */
-ECSACT_ASYNC_API_FN(ecsact_async_request_id, ecsact_async_connect)
+ECSACT_ASYNC_API_FN(ecsact_async_session_id, ecsact_async_start)
 ( //
-	const char* connection_string
+	const void* option_data,
+	int32_t     option_data_size
 );
 
 /**
- * Starts a disconnect. May happen in background, but is guaranteed to
- * disconnect before any new @ref ecsact_async_connect resolves.
+ * Begins stopping the session. May happen in background.
+ * @param session_id the session that should stop
  */
-ECSACT_ASYNC_API_FN(void, ecsact_async_disconnect)(void);
+ECSACT_ASYNC_API_FN(void, ecsact_async_stop)( //
+	ecsact_async_session_id session_id
+);
 
 /**
  * Gets the current tick
  */
-ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
+ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)( //
+	ecsact_async_session_id session_id
+);
 
 /**
  * Sends Ecsact stream data to the specified registry. Stream data will be
@@ -215,10 +231,11 @@ ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)(void);
  */
 ECSACT_ASYNC_API_FN(void, ecsact_async_stream)
 ( //
-	ecsact_entity_id    entity,
-	ecsact_component_id component_id,
-	const void*         component_data,
-	const void*         indexed_field_values
+	ecsact_async_session_id session_id,
+	ecsact_entity_id        entity,
+	ecsact_component_id     component_id,
+	const void*             component_data,
+	const void*             indexed_field_values
 );
 
 #ifdef ECSACT_MSVC_TRADITIONAL
@@ -227,8 +244,8 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_stream)
 #	define FOR_EACH_ECSACT_ASYNC_API_FN(fn, ...)              \
 		fn(ecsact_async_enqueue_execution_options, __VA_ARGS__); \
 		fn(ecsact_async_flush_events, __VA_ARGS__);              \
-		fn(ecsact_async_connect, __VA_ARGS__);                   \
-		fn(ecsact_async_disconnect, __VA_ARGS__);                \
+		fn(ecsact_async_start, __VA_ARGS__);                     \
+		fn(ecsact_async_stop, __VA_ARGS__);                      \
 		fn(ecsact_async_get_current_tick, __VA_ARGS__);          \
 		fn(ecsact_async_stream, __VA_ARGS__)
 #endif
