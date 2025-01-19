@@ -16,8 +16,7 @@ namespace ecsact {
  * @returns serialized action or component bytes
  */
 template<typename T>
-	requires(!std::is_same_v<std::remove_cvref_t<T>, ecsact_component> &&
-					 !std::is_same_v<std::remove_cvref_t<T>, ecsact_action>)
+	requires(!std::is_same_v<std::remove_cvref_t<T>, ecsact_component> && !std::is_same_v<std::remove_cvref_t<T>, ecsact_action>)
 ECSACT_ALWAYS_INLINE auto serialize( //
 	const T& component_or_action
 ) -> std::vector<std::byte> {
