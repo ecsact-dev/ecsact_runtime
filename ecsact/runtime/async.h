@@ -76,6 +76,18 @@ typedef enum {
 	ECSACT_ASYNC_ERR_CUSTOM_END = 200,
 } ecsact_async_error;
 
+typedef enum {
+	/**
+	 * The session has started
+	 */
+	ECSACT_ASYNC_SESSION_STARTED = 0,
+
+	/**
+	 * The session has stopped
+	 */
+	ECSACT_ASYNC_SESSION_STOPPED = 1,
+} ecsact_async_session_event;
+
 /**
  * When an error occurs due to an async request this callback is invoked.
  *
@@ -121,6 +133,15 @@ typedef void (*ecsact_async_request_done_callback)( //
 	void*                    callback_user_data
 );
 
+/**
+ * Handler async session events
+ */
+typedef void (*ecsact_async_session_event_callback)( //
+	ecsact_async_session_id    session_id,
+	ecsact_async_session_event event,
+	void*                      callback_user_data
+);
+
 typedef struct ecsact_async_events_collector {
 	/**
 	 * invoked when an async request failed.
@@ -157,6 +178,16 @@ typedef struct ecsact_async_events_collector {
 	 * `callback_user_data` passed to `async_request_done_callback`
 	 */
 	void* async_request_done_callback_user_data;
+
+	/**
+	 * invoked when a session event has occured. @see ecsact_async_session_event
+	 */
+	ecsact_async_session_event_callback async_session_event_callback;
+
+	/**
+	 * `callback_user_data` passed to `async_session_event_callback`
+	 */
+	void* async_session_event_callback_user_data;
 } ecsact_async_events_collector;
 
 /**
