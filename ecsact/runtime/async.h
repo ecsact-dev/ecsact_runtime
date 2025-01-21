@@ -183,6 +183,7 @@ ECSACT_ASYNC_API_FN(
  */
 ECSACT_ASYNC_API_FN(void, ecsact_async_flush_events)
 ( //
+	ecsact_async_session_id                  session_id,
 	const ecsact_execution_events_collector* execution_events,
 	const ecsact_async_events_collector*     async_events
 );
@@ -210,14 +211,16 @@ ECSACT_ASYNC_API_FN(ecsact_async_session_id, ecsact_async_start)
  * Begins stopping the session. May happen in background.
  * @param session_id the session that should stop
  */
-ECSACT_ASYNC_API_FN(void, ecsact_async_stop)( //
+ECSACT_ASYNC_API_FN(void, ecsact_async_stop)
+( //
 	ecsact_async_session_id session_id
 );
 
 /**
  * Gets the current tick
  */
-ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)( //
+ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)
+( //
 	ecsact_async_session_id session_id
 );
 
