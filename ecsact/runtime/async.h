@@ -78,14 +78,19 @@ typedef enum {
 
 typedef enum {
 	/**
-	 * The session has started
-	 */
-	ECSACT_ASYNC_SESSION_STARTED = 0,
-
-	/**
 	 * The session has stopped
 	 */
-	ECSACT_ASYNC_SESSION_STOPPED = 1,
+	ECSACT_ASYNC_SESSION_STOPPED = 0,
+
+	/**
+	 * The session is attempting to start but hasn't yet.
+	 */
+	ECSACT_ASYNC_SESSION_PENDING = 1,
+
+	/**
+	 * The session has started
+	 */
+	ECSACT_ASYNC_SESSION_START = 2,
 } ecsact_async_session_event;
 
 /**
