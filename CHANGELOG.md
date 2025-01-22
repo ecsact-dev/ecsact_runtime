@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.8.0 - 2025-01-22
+#### Features
+- async session api (#273) - (6582788) - Ezekiel Warren
+- Remove request id from ecsact_async_stream (#266) - (22010eb) - Austin Kelway
+
+- - -
+
 ## 0.7.1 - 2024-12-06
 #### Features
 - std::format for ecsact IDs (#271) - (0b9d377) - Ezekiel Warren
