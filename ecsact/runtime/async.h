@@ -258,6 +258,14 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_stop)
 ECSACT_ASYNC_API_FN(void, ecsact_async_stop_all)();
 
 /**
+ * Stops all active sessions immediately making all session IDs invalid.
+ *
+ * NOTE: `ecsact_async_stop_all` is a more graceful option and should be
+ * preferred.
+ */
+ECSACT_ASYNC_API_FN(void, ecsact_async_force_reset)();
+
+/**
  * Gets the current tick
  */
 ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)
@@ -290,6 +298,8 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_stream)
 		fn(ecsact_async_flush_events, __VA_ARGS__);              \
 		fn(ecsact_async_start, __VA_ARGS__);                     \
 		fn(ecsact_async_stop, __VA_ARGS__);                      \
+		fn(ecsact_async_stop_all, __VA_ARGS__);                  \
+		fn(ecsact_async_force_reset, __VA_ARGS__);               \
 		fn(ecsact_async_get_current_tick, __VA_ARGS__);          \
 		fn(ecsact_async_stream, __VA_ARGS__)
 #endif
