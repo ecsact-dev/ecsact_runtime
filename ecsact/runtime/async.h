@@ -185,7 +185,7 @@ typedef struct ecsact_async_events_collector {
 	void* async_request_done_callback_user_data;
 
 	/**
-	 * invoked when a session event has occured. @see ecsact_async_session_event
+	 * invoked when a session event has occurred. @see ecsact_async_session_event
 	 */
 	ecsact_async_session_event_callback async_session_event_callback;
 
