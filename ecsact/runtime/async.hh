@@ -139,24 +139,32 @@ private:
 	}
 };
 
-[[nodiscard]] ECSACT_ALWAYS_INLINE auto connect(
-	const std::string& connection_string
-) -> ecsact_async_request_id {
-	return ecsact_async_connect(connection_string.c_str());
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto start() -> ecsact_async_session_id {
+	return ecsact_async_start(0, nullptr);
 }
 
-ECSACT_ALWAYS_INLINE auto disconnect() -> void {
-	ecsact_async_disconnect();
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto start( //
+	int32_t     size,
+	const void* data
+) -> ecsact_async_session_id {
+	return ecsact_async_start(size, data);
 }
 
-[[nodiscard]] ECSACT_ALWAYS_INLINE auto get_current_tick() -> int32_t {
-	return ecsact_async_get_current_tick();
+ECSACT_ALWAYS_INLINE auto stop(ecsact_async_session_id id) -> void {
+	ecsact_async_stop(id);
+}
+
+[[nodiscard]] ECSACT_ALWAYS_INLINE auto get_current_tick(
+	ecsact_async_session_id id
+) -> int32_t {
+	return ecsact_async_get_current_tick(id);
 }
 
 [[nodiscard]] ECSACT_ALWAYS_INLINE auto enqueue_execution_options(
+	ecsact_async_session_id          id,
 	ecsact::core::execution_options& options
 ) -> ecsact_async_request_id {
-	return ecsact_async_enqueue_execution_options(options.c());
+	return ecsact_async_enqueue_execution_options(id, options.c());
 }
 
 ECSACT_ALWAYS_INLINE auto flush_events() -> void {
@@ -165,8 +173,8 @@ ECSACT_ALWAYS_INLINE auto flush_events() -> void {
 
 template<typename ExecutionEventsCollector>
 	requires(std::convertible_to<
-						decltype(std::declval<ExecutionEventsCollector>().c()),
-						const ecsact_execution_events_collector>)
+					 decltype(std::declval<ExecutionEventsCollector>().c()),
+					 const ecsact_execution_events_collector>)
 ECSACT_ALWAYS_INLINE auto flush_events( //
 	ExecutionEventsCollector&& evc
 ) -> void {
@@ -176,8 +184,8 @@ ECSACT_ALWAYS_INLINE auto flush_events( //
 
 template<typename AsyncEventsCollector>
 	requires(std::convertible_to<
-						decltype(std::declval<AsyncEventsCollector>().c()),
-						const ecsact_async_events_collector>)
+					 decltype(std::declval<AsyncEventsCollector>().c()),
+					 const ecsact_async_events_collector>)
 ECSACT_ALWAYS_INLINE auto flush_events( //
 	AsyncEventsCollector&& async_evc
 ) -> void {
