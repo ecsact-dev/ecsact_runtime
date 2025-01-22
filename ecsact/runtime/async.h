@@ -253,6 +253,11 @@ ECSACT_ASYNC_API_FN(void, ecsact_async_stop)
 );
 
 /**
+ * Begins stopping all active sessions. May happen in background.
+ */
+ECSACT_ASYNC_API_FN(void, ecsact_async_stop_all)();
+
+/**
  * Gets the current tick
  */
 ECSACT_ASYNC_API_FN(int32_t, ecsact_async_get_current_tick)
