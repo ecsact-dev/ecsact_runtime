@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.8.1 - 2025-01-30
+#### Bug Fixes
+- added missing session IDs to async C++ wrapper fns - (847ef2f) - Ezekiel Warren
+
+- - -
+
 ## 0.8.0 - 2025-01-22
 #### Features
 - async session api (#273) - (6582788) - Ezekiel Warren
