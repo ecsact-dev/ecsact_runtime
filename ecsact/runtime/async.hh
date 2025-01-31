@@ -19,6 +19,9 @@ public:
 	using async_requests_done_callback_t = CallbackContainer<
 		void(ecsact_async_session_id, std::span<ecsact_async_request_id>)>;
 
+	using async_session_event_callback_t = CallbackContainer<
+		void(ecsact_async_session_id, ecsact_async_session_event)>;
+
 	using system_error_callback_t = CallbackContainer<
 		void(ecsact_async_session_id, ecsact_execute_systems_error)>;
 
@@ -55,6 +58,17 @@ public:
 		return *this;
 	}
 
+	/**
+	 * Set async session event callback. If callback is already set it will be
+	 * overwritten.
+	 */
+	auto set_async_session_event_callback( //
+		async_requests_done_callback_t callback
+	) -> async_events_collector& {
+		_async_session_event_cb = std::move(callback);
+		return *this;
+	}
+
 	auto c() const -> const ecsact_async_events_collector {
 		auto evc = ecsact_async_events_collector{};
 		auto user_data =
@@ -77,6 +91,12 @@ public:
 			evc.async_request_done_callback_user_data = user_data;
 		}
 
+		if(_async_session_event_cb.has_value()) {
+			evc.async_session_event_callback =
+				&async_events_collector::async_session_event_callback;
+			evc.async_session_event_callback_user_data = user_data;
+		}
+
 		return evc;
 	}
 
@@ -93,6 +113,7 @@ private:
 	std::optional<async_error_callback_t>         _async_error_cb;
 	std::optional<system_error_callback_t>        _system_error_cb;
 	std::optional<async_requests_done_callback_t> _async_requests_done_cb;
+	std::optional<async_session_event_callback_t> _async_session_event_cb;
 
 	static void async_error_callback(
 		ecsact_async_session_id  session_id,
@@ -138,6 +159,18 @@ private:
 				static_cast<size_t>(request_ids_length),
 			};
 			self->_async_requests_done_cb.value()(session_id, request_ids_span);
+		}
+	}
+
+	static void async_session_event_callback(
+		ecsact_async_session_id    session_id,
+		ecsact_async_session_event event,
+		void*                      callback_user_data
+	) {
+		auto self = static_cast<async_events_collector*>(callback_user_data);
+
+		if(self->_async_requests_done_cb.has_value()) {
+			self->_async_session_event_cb.value()(session_id, event);
 		}
 	}
 };
