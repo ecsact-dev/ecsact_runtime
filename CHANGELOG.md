@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.8.2 - 2025-01-31
+#### Features
+- wasm system implementation headers (#275) - (6791ff1) - Ezekiel Warren
+- add async session event callback to c++ wrapper - (6a0b119) - Ezekiel Warren
+#### Miscellaneous Chores
+- formatting - (c92655e) - Ezekiel Warren
+
+- - -
+
 ## 0.8.1 - 2025-01-30
 #### Bug Fixes
 - added missing session IDs to async C++ wrapper fns - (847ef2f) - Ezekiel Warren
