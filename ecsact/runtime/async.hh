@@ -211,8 +211,8 @@ ECSACT_ALWAYS_INLINE auto flush_events( //
 
 template<typename ExecutionEventsCollector>
 	requires(std::convertible_to<
-						decltype(std::declval<ExecutionEventsCollector>().c()),
-						const ecsact_execution_events_collector>)
+					 decltype(std::declval<ExecutionEventsCollector>().c()),
+					 const ecsact_execution_events_collector>)
 ECSACT_ALWAYS_INLINE auto flush_events( //
 	ecsact_async_session_id    session_id,
 	ExecutionEventsCollector&& evc
@@ -223,8 +223,8 @@ ECSACT_ALWAYS_INLINE auto flush_events( //
 
 template<typename AsyncEventsCollector>
 	requires(std::convertible_to<
-						decltype(std::declval<AsyncEventsCollector>().c()),
-						const ecsact_async_events_collector>)
+					 decltype(std::declval<AsyncEventsCollector>().c()),
+					 const ecsact_async_events_collector>)
 ECSACT_ALWAYS_INLINE auto flush_events( //
 	ecsact_async_session_id session_id,
 	AsyncEventsCollector&&  async_evc
