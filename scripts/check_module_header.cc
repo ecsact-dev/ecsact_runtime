@@ -5,6 +5,7 @@
 #include <fstream>
 #include <optional>
 #include <cstdlib>
+#include <format>
 #include <string_view>
 #include <unordered_set>
 #include <boost/process.hpp>
@@ -38,11 +39,23 @@ void remove_empties(std::vector<std::string>& str_list) {
 	}
 }
 
+auto get_module_name_from_path(fs::path p) -> std::string {
+	auto parent_dirname = p.parent_path().filename().string();
+	auto header_basename = p.filename().replace_extension("").string();
+	if(parent_dirname == "runtime") {
+		return header_basename;
+	} else if(parent_dirname == "si") {
+		return std::format("si_{}", header_basename);
+	}
+
+	throw std::logic_error{"unhandled parent name: " + parent_dirname};
+}
+
 void check_module_header(fs::path module_header_path) {
 	using namespace std::string_literals;
 
-	const std::string module_name =
-		module_header_path.filename().replace_extension("").string();
+	auto module_name = get_module_name_from_path(module_header_path);
+
 	const std::string module_fn_macro_name =
 		"ECSACT_"s + absl::AsciiStrToUpper(module_name) + "_API_FN";
 	const std::string for_each_fn_macro_name =
@@ -122,10 +135,17 @@ void check_module_header(fs::path module_header_path) {
 		if(methods_count > 0) {
 			stream << "\t\tfn(" << methods[methods_count - 1] << ", __VA_ARGS__)\n";
 		}
-		stream //
-			<< "#endif\n\n"
-			<< "#endif // ECSACT_RUNTIME_" << absl::AsciiStrToUpper(module_name)
-			<< "_H" << "\n";
+		if(module_name.starts_with("si_")) {
+			stream //
+				<< "#endif\n\n"
+				<< "#endif // ECSACT_" << absl::AsciiStrToUpper(module_name) << "_H"
+				<< "\n";
+		} else {
+			stream //
+				<< "#endif\n\n"
+				<< "#endif // ECSACT_RUNTIME_" << absl::AsciiStrToUpper(module_name)
+				<< "_H" << "\n";
+		}
 		stream.flush();
 	}
 }
@@ -248,6 +268,20 @@ int main(int argc, char* argv[]) {
 
 		// Every C header in `ecsact/runtime` is a module header
 		for(auto entry : fs::directory_iterator(fs::path{bwd} / "ecsact/runtime")) {
+			if(non_module_headers.contains(entry.path().filename())) {
+				continue;
+			}
+
+			// Only C headers are module headers
+			if(entry.path().extension() != ".h") {
+				continue;
+			}
+
+			header_files.push_back(entry.path());
+		}
+
+		// Every C header in `ecsact/si` is a system implementation module header
+		for(auto entry : fs::directory_iterator(fs::path{bwd} / "ecsact/si")) {
 			if(non_module_headers.contains(entry.path().filename())) {
 				continue;
 			}
