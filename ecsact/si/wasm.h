@@ -106,8 +106,8 @@ ECSACT_SI_WASM_API_FN(int32_t, ecsact_si_wasm_last_error_message_length)();
  * @param wasm_exports Sequential array of wasm export names used as system
  *        implementations in the same order as `system_ids`. Length is
  *        determined by `systems_count`.
- * @return `ECSACT_SI_WASM_OK` if no error. If there is an error for _any_ of the
- *         systems then **none of the systems are loaded**.
+ * @return `ECSACT_SI_WASM_OK` if no error. If there is an error for _any_ of
+ * the systems then **none of the systems are loaded**.
  */
 ECSACT_SI_WASM_API_FN(ecsact_si_wasm_error, ecsact_si_wasm_load_file)
 ( //
@@ -174,9 +174,9 @@ typedef enum ecsact_si_wasm_log_level {
 
 typedef void (*ecsact_si_wasm_log_consumer)( //
 	ecsact_si_wasm_log_level log_level,
-	const char*             message,
-	int32_t                 message_length,
-	void*                   user_data
+	const char*              message,
+	int32_t                  message_length,
+	void*                    user_data
 );
 
 /**
@@ -187,7 +187,7 @@ typedef void (*ecsact_si_wasm_log_consumer)( //
 ECSACT_SI_WASM_API_FN(void, ecsact_si_wasm_consume_logs)
 ( //
 	ecsact_si_wasm_log_consumer consumer,
-	void*                      consumer_user_data
+	void*                       consumer_user_data
 );
 
 /**
@@ -203,7 +203,8 @@ ECSACT_SI_WASM_API_FN(int32_t, ecsact_si_wasm_allow_file_read_access)
 
 // # BEGIN FOR_EACH_ECSACT_SI_WASM_API_FN
 #ifdef ECSACT_MSVC_TRADITIONAL
-#	define FOR_EACH_ECSACT_SI_WASM_API_FN(fn, ...) ECSACT_MSVC_TRADITIONAL_ERROR()
+#	define FOR_EACH_ECSACT_SI_WASM_API_FN(fn, ...) \
+		ECSACT_MSVC_TRADITIONAL_ERROR()
 #else
 #	define FOR_EACH_ECSACT_SI_WASM_API_FN(fn, ...)              \
 		fn(ecsact_si_wasm_last_error_message, __VA_ARGS__);        \
