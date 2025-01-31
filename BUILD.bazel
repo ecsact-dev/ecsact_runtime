@@ -96,12 +96,25 @@ cc_library(
         "ecsact/runtime/serialize.hh",
     ],
     copts = copts,
-    deps = [":common", ":core"],
+    deps = [
+        ":common",
+        ":core",
+    ],
 )
 
 cc_library(
     name = "static",
     hdrs = ["ecsact/runtime/static.h"],
+    copts = copts,
+    deps = [":common"],
+)
+
+cc_library(
+    name = "si_wasm",
+    hdrs = [
+        "ecsact/si/wasm.h",
+        "ecsact/si/wasm.hh",
+    ],
     copts = copts,
     deps = [":common"],
 )
@@ -118,11 +131,11 @@ cc_library(
     hdrs = ["ecsact/runtime.h"],
     copts = copts,
     deps = [
+        ":async",
         ":core",
         ":dynamic",
         ":meta",
         ":serialize",
         ":static",
-        ":async",
     ],
 )
