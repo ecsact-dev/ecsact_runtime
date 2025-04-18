@@ -6,6 +6,7 @@
 #include <functional>
 #include <optional>
 #include <cassert>
+#include "ecsact/runtime/common.hh"
 #include "ecsact/runtime/core.h"
 
 namespace ecsact::core {
@@ -14,7 +15,7 @@ class builder_entity {
 	friend class execution_options;
 
 public:
-	template<typename C>
+	template<ecsact::component C>
 	ECSACT_ALWAYS_INLINE auto add_component(C* component) -> builder_entity& {
 		components.push_back(ecsact_component{
 			.component_id = C::id,
@@ -38,7 +39,7 @@ public:
 	 * The lifetime of @p `component` must be maintained until the
 	 * `ecsact::core::execution_options` destructor occurs or `clear()` occurs.
 	 */
-	template<typename C>
+	template<ecsact::component C>
 	void add_component(ecsact_entity_id entity, C* component) {
 		add_components_container.push_back(
 			ecsact_component{.component_id = C::id, .component_data = component}
@@ -50,7 +51,7 @@ public:
 	 * The lifetime of @p `component` must be maintained until the
 	 * `ecsact::core::execution_options` destructor occurs or `clear()` occurs.
 	 */
-	template<typename C>
+	template<ecsact::component_without_indexed_fields C>
 	void update_component(ecsact_entity_id entity, C* component) {
 		update_components_container.push_back(
 			ecsact_component{.component_id = C::id, .component_data = component}
@@ -58,7 +59,7 @@ public:
 		update_entities_container.push_back(entity);
 	}
 
-	template<typename C>
+	template<ecsact::component_without_indexed_fields C>
 	ECSACT_ALWAYS_INLINE void remove_component(ecsact_entity_id entity_id) {
 		remove_component_ids_container.push_back(C::id);
 		remove_entities_container.push_back(entity_id);
@@ -186,12 +187,12 @@ public:
 	inline any_component_view(const any_component_view&) = default;
 	inline ~any_component_view() = default;
 
-	template<typename C>
+	template<ecsact::component C>
 	auto is() const -> bool {
 		return _component_id == C::id;
 	}
 
-	template<typename C>
+	template<ecsact::component C>
 	auto as() const -> const C& {
 		assert(is<C>());
 		return *static_cast<const C*>(_component_data);
@@ -226,7 +227,7 @@ public:
 	 * Set the init callback for component @tp C. Overwrite existing callback
 	 * for @tp C if one exists.
 	 */
-	template<typename C>
+	template<ecsact::component C>
 	auto set_init_callback( //
 		init_component_callback_t<C> callback
 	) -> execution_events_collector& {
@@ -244,7 +245,7 @@ public:
 	 * Set the update callback for component @tp C. Overwrite existing callback
 	 * for @tp C if one exists.
 	 */
-	template<typename C>
+	template<ecsact::component C>
 	auto set_update_callback( //
 		update_component_callback_t<C> callback
 	) -> execution_events_collector& {
@@ -263,7 +264,7 @@ public:
 	 * Set the remove callback for component @tp C. Overwrite existing callback
 	 * for @tp C if one exists.
 	 */
-	template<typename C>
+	template<ecsact::component C>
 	auto set_remove_callback( //
 		remove_component_callback_t<C> callback
 	) -> execution_events_collector& {
@@ -646,140 +647,91 @@ public:
 		return ecsact_hash_registry(_id);
 	}
 
-	template<typename Component, typename... AssocFields>
-		requires(!std::is_empty_v<Component>)
+	template<ecsact::non_tag_component_without_indexed_fields C>
 	ECSACT_ALWAYS_INLINE auto get_component( //
-		ecsact_entity_id entity_id,
-		AssocFields&&... assoc_fields
-	) -> const Component& {
-		if constexpr(Component::has_assoc_fields) {
-			static_assert(
-				sizeof...(AssocFields) > 0,
-				"must be called with assoc fields"
-			);
-		}
-
-		if constexpr(sizeof...(AssocFields) > 0) {
-			const void* assoc_field_values[sizeof...(AssocFields)] = {
-				&assoc_fields...,
-			};
-
-			return *reinterpret_cast<const Component*>(
-				ecsact_get_component(_id, entity_id, Component::id, assoc_field_values)
-			);
-		} else {
-			return *reinterpret_cast<const Component*>(
-				ecsact_get_component(_id, entity_id, Component::id, nullptr)
-			);
-		}
+		ecsact_entity_id entity_id
+	) -> const C& {
+		return *reinterpret_cast<const C*>(
+			ecsact_get_component(_id, entity_id, C::id, nullptr)
+		);
 	}
 
-	template<typename Component, typename... AssocFields>
-	ECSACT_ALWAYS_INLINE bool has_component(
-		ecsact_entity_id entity_id,
-		AssocFields&&... assoc_fields
-	) {
-		if constexpr(Component::has_assoc_fields) {
-			static_assert(
-				sizeof...(AssocFields) > 0,
-				"must be called with assoc fields"
-			);
-		}
-
-		if constexpr(sizeof...(AssocFields) > 0) {
-			const void* assoc_field_values[sizeof...(AssocFields)] = {
-				&assoc_fields...,
-			};
-			return ecsact_has_component(
-				_id,
-				entity_id,
-				Component::id,
-				assoc_field_values
-			);
-		} else {
-			return ecsact_has_component(_id, entity_id, Component::id, nullptr);
-		}
+	template<ecsact::non_tag_component_with_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto get_component( //
+		ecsact_entity_id        entity_id,
+		const C::IndexedFields& indexed_fields
+	) -> const C& {
+		return *reinterpret_cast<const C*>(
+			ecsact_get_component(_id, entity_id, C::id, &indexed_fields)
+		);
 	}
 
-	template<typename Component>
-		requires(std::is_empty_v<Component>)
+	template<ecsact::component_without_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto has_component(ecsact_entity_id entity_id) -> bool {
+		return ecsact_has_component(_id, entity_id, C::id, nullptr);
+	}
+
+	template<ecsact::component_with_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto has_component(
+		ecsact_entity_id        entity_id,
+		const C::IndexedFields& indexed_fields
+	) -> bool {
+		return ecsact_has_component(_id, entity_id, C::id, &indexed_fields);
+	}
+
+	template<ecsact::tag_component Component>
 	ECSACT_ALWAYS_INLINE auto add_component(ecsact_entity_id entity_id) {
 		return ecsact_add_component(_id, entity_id, Component::id, nullptr);
 	}
 
-	template<typename Component>
+	template<ecsact::component C>
 	ECSACT_ALWAYS_INLINE auto add_component(
 		ecsact_entity_id entity_id,
-		const Component& component
+		const C&         component
 	) {
-		if constexpr(std::is_empty_v<Component>) {
-			return ecsact_add_component(_id, entity_id, Component::id, nullptr);
+		if constexpr(ecsact::tag_component<C>) {
+			return ecsact_add_component(_id, entity_id, C::id, nullptr);
 		} else {
-			return ecsact_add_component(_id, entity_id, Component::id, &component);
+			return ecsact_add_component(_id, entity_id, C::id, &component);
 		}
 	}
 
-	template<typename Component, typename... AssocFields>
+	template<ecsact::non_tag_component_without_indexed_fields C>
 	ECSACT_ALWAYS_INLINE auto update_component(
 		ecsact_entity_id entity_id,
-		const Component& component,
-		AssocFields&&... assoc_fields
+		const C&         component
 	) {
-		if constexpr(Component::has_assoc_fields) {
-			static_assert(
-				sizeof...(AssocFields) > 0,
-				"must be called with assoc fields"
-			);
-		}
-
-		if constexpr(sizeof...(AssocFields) > 0) {
-			const void* assoc_field_values[sizeof...(AssocFields)] = {
-				&assoc_fields...,
-			};
-			return ecsact_update_component(
-				_id,
-				entity_id,
-				Component::id,
-				&component,
-				assoc_field_values
-			);
-		} else {
-			return ecsact_update_component(
-				_id,
-				entity_id,
-				Component::id,
-				&component,
-				nullptr
-			);
-		}
+		return ecsact_update_component(_id, entity_id, C::id, &component, nullptr);
 	}
 
-	template<typename Component, typename... AssocFields>
-	ECSACT_ALWAYS_INLINE auto remove_component(
-		ecsact_entity_id entity_id,
-		AssocFields&&... assoc_fields
+	template<ecsact::non_tag_component_with_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto update_component(
+		ecsact_entity_id        entity_id,
+		const C&                component,
+		const C::IndexedFields& indexed_fields
+	) {
+		return ecsact_update_component(
+			_id,
+			entity_id,
+			C::id,
+			&component,
+			&indexed_fields
+		);
+	}
+
+	template<ecsact::component_without_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto remove_component( //
+		ecsact_entity_id entity_id
 	) -> void {
-		if constexpr(Component::has_assoc_fields) {
-			static_assert(
-				sizeof...(AssocFields) > 0,
-				"must be called with assoc fields"
-			);
-		}
+		return ecsact_remove_component(_id, entity_id, C::id, nullptr);
+	}
 
-		if constexpr(sizeof...(AssocFields) > 0) {
-			const void* assoc_field_values[sizeof...(AssocFields)] = {
-				&assoc_fields...,
-			};
-
-			return ecsact_remove_component(
-				_id,
-				entity_id,
-				Component::id,
-				assoc_field_values
-			);
-		} else {
-			return ecsact_remove_component(_id, entity_id, Component::id, nullptr);
-		}
+	template<ecsact::component_with_indexed_fields C>
+	ECSACT_ALWAYS_INLINE auto remove_component( //
+		ecsact_entity_id        entity_id,
+		const C::IndexedFields& indexed_fields
+	) -> void {
+		return ecsact_remove_component(_id, entity_id, C::id, &indexed_fields);
 	}
 
 	ECSACT_ALWAYS_INLINE auto count_entities() const -> int32_t {
