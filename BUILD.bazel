@@ -26,7 +26,10 @@ filegroup(
 
 cc_library(
     name = "common",
-    hdrs = ["ecsact/runtime/common.h"],
+    hdrs = [
+        "ecsact/runtime/common.h",
+        "ecsact/runtime/common.hh",
+    ],
     copts = copts,
 )
 
